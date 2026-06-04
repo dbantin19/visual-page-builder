@@ -53,6 +53,7 @@
     $navSetting  = \App\Models\NavSetting::get();
     $alignClass  = ['left' => 'justify-start', 'center' => 'justify-center', 'right' => 'justify-end'][$navSetting->alignment] ?? 'justify-start';
     $logoPos     = $navSetting->logo_position ?? 'left';
+    $isCenterStacked = $logoPos === 'center' && $alignClass === 'justify-center';
     $navItems   = \App\Models\NavMenuItem::with([
         'page',
         'children' => fn($q) => $q->orderBy('sort_order')->with([
@@ -73,7 +74,7 @@
 
     {{-- ── Desktop top bar ────────────────────────────────────────────── --}}
     {{-- Logo center uses absolute positioning so items loop only appears once --}}
-    <div class="hidden md:flex items-center px-6 h-14 relative">
+    <div class="hidden md:flex items-center px-6 {{ $isCenterStacked ? 'flex-col py-2 gap-1' : 'h-14 relative' }}">
 
         @if($logoPos === 'left')
             <a href="/" class="flex items-center gap-2 shrink-0 {{ $alignClass === 'justify-end' ? 'mr-auto' : 'mr-5' }}">
@@ -87,8 +88,8 @@
                 <span class="text-white font-bold text-sm tracking-wide">Poseidon</span>
             </a>
         @elseif($logoPos === 'center')
-            {{-- Absolutely centered — items take full width with padding so they don't overlap --}}
-            <a href="/" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;"
+            {{-- Stacked: normal flow center. Non-stacked: absolutely centered in the row --}}
+            <a href="/" @if(!$isCenterStacked) style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:10;" @endif
                class="flex items-center gap-2 shrink-0">
                 <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
                     <path d="M8 4 C8 4,6 8,6 11 C6 13.5,7.5 15,9 15 L9 27" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -102,7 +103,7 @@
         @endif
 
         {{-- Desktop nav items --}}
-        <div class="flex items-center gap-1 flex-1 {{ $alignClass }} {{ $logoPos === 'center' ? 'px-40' : '' }}">
+        <div class="flex items-center gap-1 {{ $isCenterStacked ? 'justify-center' : 'flex-1 '.$alignClass.($logoPos === 'center' ? ' px-40' : '') }}">
             @foreach($navItems as $item)
                 @php $href = $item->resolvedUrl(); $isActive = request()->is(ltrim($href, '/')); @endphp
 
