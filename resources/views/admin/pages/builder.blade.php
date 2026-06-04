@@ -814,6 +814,167 @@ bm.add('pb-badge', {
     content: '<span style="display:inline-block;padding:4px 12px;background:#e0e7ff;color:#4338ca;border-radius:99px;font-size:12px;font-weight:600;letter-spacing:.04em;">Badge</span>',
 });
 
+// ─── Service Sections blocks
+bm.add('pb-service-hero', {
+    label: 'Service Hero', category: 'Service Sections',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><circle cx="12" cy="10" r="2.5"/></svg>`,
+    content: `<section style="position:relative;min-height:520px;background:linear-gradient(rgba(10,20,40,0.72),rgba(10,20,40,0.72)),url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80') center/cover no-repeat;display:flex;align-items:center;justify-content:center;text-align:center;padding:80px 24px;">
+  <div style="max-width:760px;margin:0 auto;">
+    <div style="display:inline-block;background:rgba(29,107,58,.9);color:#fff;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 18px;border-radius:99px;margin-bottom:20px;">Same-Day Service Available</div>
+    <h1 style="font-size:52px;font-weight:800;color:#ffffff;line-height:1.1;margin:0 0 14px;">Your Company Name Here</h1>
+    <p style="font-size:20px;color:rgba(255,255,255,.88);margin:0 0 8px;font-weight:500;">Service Type A, Service Type B &amp; Service Type C</p>
+    <p style="font-size:15px;color:rgba(255,255,255,.65);margin:0 0 36px;">Serving the Greater Metro Area — Licensed &amp; Insured</p>
+    <a href="tel:8000000000" style="display:inline-block;padding:16px 44px;background:#d97706;color:#fff;border-radius:10px;font-weight:800;font-size:28px;text-decoration:none;letter-spacing:-0.5px;box-shadow:0 4px 20px rgba(217,119,6,.4);">(800) 000-0000</a>
+    <p style="color:rgba(255,255,255,.5);font-size:13px;margin:14px 0 0;">Available 24/7 · All calls answered by a live operator</p>
+  </div>
+</section>`,
+});
+
+bm.add('pb-service-cards', {
+    label: 'Service Cards', category: 'Service Sections',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="6" height="16" rx="1"/><rect x="9" y="4" width="6" height="16" rx="1"/><rect x="17" y="4" width="6" height="16" rx="1"/><line x1="1" y1="10" x2="7" y2="10"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="17" y1="10" x2="23" y2="10"/></svg>`,
+    content: `<section style="background:#f8fafc;padding:60px 24px;">
+  <div style="max-width:1200px;margin:0 auto;">
+    <h2 style="text-align:center;font-size:36px;font-weight:800;color:#1e3a5f;margin:0 0 8px;">Our Services</h2>
+    <p style="text-align:center;color:#64748b;margin:0 0 40px;font-size:16px;">Expert solutions — done right the first time</p>
+    <div style="display:flex;flex-wrap:wrap;gap:0;border-radius:16px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.15);">
+      <div style="flex:1 1 300px;min-height:340px;position:relative;overflow:hidden;background:linear-gradient(135deg,#1e3a5f,#0f2744);">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 40%,rgba(0,0,0,.3) 100%);"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:28px 24px;text-align:center;">
+          <div style="width:52px;height:52px;background:rgba(217,119,6,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="26" height="26" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div>
+          <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0 0 10px;">Service One</h3>
+          <p style="color:rgba(255,255,255,.75);font-size:14px;margin:0 0 18px;line-height:1.5;">Describe this service. Add your key selling points here.</p>
+          <a href="#" style="display:inline-block;padding:10px 24px;background:#d97706;color:#fff;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;">Book Online Now</a>
+        </div>
+      </div>
+      <div style="flex:1 1 300px;min-height:340px;position:relative;overflow:hidden;background:linear-gradient(135deg,#14532d,#0a3a1f);">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 40%,rgba(0,0,0,.3) 100%);"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:28px 24px;text-align:center;">
+          <div style="width:52px;height:52px;background:rgba(217,119,6,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="26" height="26" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg></div>
+          <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0 0 10px;">Service Two</h3>
+          <p style="color:rgba(255,255,255,.75);font-size:14px;margin:0 0 18px;line-height:1.5;">Describe this service. Add your key selling points here.</p>
+          <a href="#" style="display:inline-block;padding:10px 24px;background:#d97706;color:#fff;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;">Book Online Now</a>
+        </div>
+      </div>
+      <div style="flex:1 1 300px;min-height:340px;position:relative;overflow:hidden;background:linear-gradient(135deg,#4c1d95,#2d0f63);">
+        <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.8) 40%,rgba(0,0,0,.3) 100%);"></div>
+        <div style="position:absolute;bottom:0;left:0;right:0;padding:28px 24px;text-align:center;">
+          <div style="width:52px;height:52px;background:rgba(217,119,6,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;"><svg width="26" height="26" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg></div>
+          <h3 style="color:#fff;font-size:20px;font-weight:700;margin:0 0 10px;">Service Three</h3>
+          <p style="color:rgba(255,255,255,.75);font-size:14px;margin:0 0 18px;line-height:1.5;">Describe this service. Add your key selling points here.</p>
+          <a href="#" style="display:inline-block;padding:10px 24px;background:#d97706;color:#fff;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;">Book Online Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>`,
+});
+
+bm.add('pb-accordion', {
+    label: 'Accordion', category: 'Service Sections',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="5" rx="1.5"/><rect x="2" y="10" width="20" height="5" rx="1.5"/><rect x="2" y="16" width="20" height="5" rx="1.5"/></svg>`,
+    content: `<section style="background:#1e3a5f;padding:40px 24px;">
+  <div style="max-width:960px;margin:0 auto;">
+    <h2 style="color:#fff;font-size:24px;font-weight:700;margin:0 0 6px;text-align:center;">Service Areas</h2>
+    <p style="color:rgba(255,255,255,.6);text-align:center;margin:0 0 24px;font-size:14px;">Click a region to see coverage and contact info</p>
+    <div style="border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.3);">
+      <div style="border-bottom:1px solid #e5e7eb;">
+        <button onclick="(function(btn){var body=btn.nextElementSibling,ch=btn.querySelector('.acc-ch'),open=body.style.display==='block';document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none';});document.querySelectorAll('.acc-ch').forEach(function(c){c.style.transform='';});if(!open){body.style.display='block';ch.style.transform='rotate(180deg)';};})(this)" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border:none;cursor:pointer;font-size:16px;font-weight:600;color:#1e3a5f;text-align:left;">
+          <span>Region One</span>
+          <svg class="acc-ch" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform .2s;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="acc-body" style="display:none;padding:16px 20px 24px;background:#f9fafb;"><p style="margin:0 0 8px;color:#374151;">Covering all cities in this region.</p><a href="tel:8000000000" style="color:#1d6b3a;font-weight:700;font-size:18px;">(800) 000-0000</a></div>
+      </div>
+      <div style="border-bottom:1px solid #e5e7eb;">
+        <button onclick="(function(btn){var body=btn.nextElementSibling,ch=btn.querySelector('.acc-ch'),open=body.style.display==='block';document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none';});document.querySelectorAll('.acc-ch').forEach(function(c){c.style.transform='';});if(!open){body.style.display='block';ch.style.transform='rotate(180deg)';};})(this)" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border:none;cursor:pointer;font-size:16px;font-weight:600;color:#1e3a5f;text-align:left;">
+          <span>Region Two</span>
+          <svg class="acc-ch" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform .2s;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="acc-body" style="display:none;padding:16px 20px 24px;background:#f9fafb;"><p style="margin:0 0 8px;color:#374151;">Covering all cities in this region.</p><a href="tel:8000000000" style="color:#1d6b3a;font-weight:700;font-size:18px;">(800) 000-0000</a></div>
+      </div>
+      <div>
+        <button onclick="(function(btn){var body=btn.nextElementSibling,ch=btn.querySelector('.acc-ch'),open=body.style.display==='block';document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none';});document.querySelectorAll('.acc-ch').forEach(function(c){c.style.transform='';});if(!open){body.style.display='block';ch.style.transform='rotate(180deg)';};})(this)" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border:none;cursor:pointer;font-size:16px;font-weight:600;color:#1e3a5f;text-align:left;">
+          <span>Region Three</span>
+          <svg class="acc-ch" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform .2s;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div class="acc-body" style="display:none;padding:16px 20px 24px;background:#f9fafb;"><p style="margin:0 0 8px;color:#374151;">Covering all cities in this region.</p><a href="tel:8000000000" style="color:#1d6b3a;font-weight:700;font-size:18px;">(800) 000-0000</a></div>
+      </div>
+    </div>
+  </div>
+</section>`,
+});
+
+bm.add('pb-why-choose', {
+    label: 'Why Choose Us', category: 'Service Sections',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>`,
+    content: `<section style="background:#f0f7ff;padding:60px 24px;">
+  <div style="max-width:900px;margin:0 auto;text-align:center;">
+    <h2 style="font-size:34px;font-weight:800;color:#1e3a5f;margin:0 0 8px;">Why Choose Us?</h2>
+    <p style="color:#64748b;font-size:16px;margin:0 0 40px;">We're not just another service company — we're your neighbors.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;text-align:left;">
+      <div style="background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px;"><span style="color:#1d6b3a;font-size:22px;flex-shrink:0;">✓</span><span style="color:#1e293b;font-weight:600;font-size:15px;">Same Day Service</span></div>
+      <div style="background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px;"><span style="color:#1d6b3a;font-size:22px;flex-shrink:0;">✓</span><span style="color:#1e293b;font-weight:600;font-size:15px;">All Calls Answered By A Live Operator 24/7</span></div>
+      <div style="background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px;"><span style="color:#1d6b3a;font-size:22px;flex-shrink:0;">✓</span><span style="color:#1e293b;font-weight:600;font-size:15px;">Licensed, Bonded &amp; Insured Technicians</span></div>
+      <div style="background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px;"><span style="color:#1d6b3a;font-size:22px;flex-shrink:0;">✓</span><span style="color:#1e293b;font-weight:600;font-size:15px;">Free, No-Obligation Service Estimates</span></div>
+      <div style="background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px;"><span style="color:#1d6b3a;font-size:22px;flex-shrink:0;">✓</span><span style="color:#1e293b;font-weight:600;font-size:15px;">Industry-Leading Warranty On All Work</span></div>
+      <div style="background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.06);display:flex;align-items:flex-start;gap:14px;"><span style="color:#1d6b3a;font-size:22px;flex-shrink:0;">✓</span><span style="color:#1e293b;font-weight:600;font-size:15px;">5-Star Rated · Transparent Pricing</span></div>
+    </div>
+  </div>
+</section>`,
+});
+
+bm.add('pb-trust-badges', {
+    label: 'Discount Badges', category: 'Service Sections',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 20v-2a6 6 0 0112 0v2"/><path d="M18 8h2M4 8h2"/></svg>`,
+    content: `<section style="background:#fff;padding:56px 24px;">
+  <div style="max-width:900px;margin:0 auto;text-align:center;">
+    <h2 style="font-size:28px;font-weight:800;color:#1e3a5f;margin:0 0 8px;">Special Discounts</h2>
+    <p style="color:#64748b;font-size:15px;margin:0 0 36px;">We proudly offer discounts to those who serve our community.</p>
+    <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:24px;">
+      <div style="width:160px;text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#1e3a5f,#3b82f6);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(30,58,95,.25);"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="white" stroke-width="2"><circle cx="22" cy="15" r="8"/><path d="M6 38c0-8.8 7.2-16 16-16s16 7.2 16 16"/></svg></div><p style="font-weight:700;color:#1e3a5f;font-size:15px;margin:0 0 4px;">Senior Citizens</p><p style="color:#d97706;font-weight:800;font-size:18px;margin:0;">10% OFF</p></div>
+      <div style="width:160px;text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#14532d,#22c55e);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(20,83,45,.25);"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="white" stroke-width="2"><path d="M8 12l6-6 8 4 8-4 6 6-2 14-12 6-12-6z"/></svg></div><p style="font-weight:700;color:#1e3a5f;font-size:15px;margin:0 0 4px;">Military</p><p style="color:#d97706;font-weight:800;font-size:18px;margin:0;">10% OFF</p></div>
+      <div style="width:160px;text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#b45309,#f59e0b);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(180,83,9,.25);"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="white" stroke-width="2"><path d="M22 6l4 10h10l-8 6 3 10-9-6-9 6 3-10-8-6h10z"/></svg></div><p style="font-weight:700;color:#1e3a5f;font-size:15px;margin:0 0 4px;">First Responders</p><p style="color:#d97706;font-weight:800;font-size:18px;margin:0;">10% OFF</p></div>
+      <div style="width:160px;text-align:center;"><div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#4c1d95,#8b5cf6);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(76,29,149,.25);"><svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="white" stroke-width="2"><path d="M22 6v32M6 22h32"/></svg></div><p style="font-weight:700;color:#1e3a5f;font-size:15px;margin:0 0 4px;">Educators</p><p style="color:#d97706;font-weight:800;font-size:18px;margin:0;">10% OFF</p></div>
+    </div>
+  </div>
+</section>`,
+});
+
+bm.add('pb-showroom', {
+    label: 'Showroom CTA', category: 'Service Sections',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`,
+    content: `<section style="background:linear-gradient(135deg,#0f172a,#1e3a5f);padding:60px 24px;">
+  <div style="max-width:900px;margin:0 auto;text-align:center;">
+    <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:48px 40px;">
+      <div style="width:72px;height:72px;background:rgba(217,119,6,.9);border-radius:50%;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(217,119,6,.4);"><svg width="34" height="34" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg></div>
+      <h2 style="color:#fff;font-size:34px;font-weight:800;margin:0 0 12px;">Browse Our Online Showroom</h2>
+      <p style="color:rgba(255,255,255,.7);font-size:17px;line-height:1.6;max-width:560px;margin:0 auto 10px;">Sort by style, price, color, and more. Find the perfect option to complement your home.</p>
+      <p style="color:rgba(255,255,255,.5);font-size:14px;margin:0 0 28px;">Hundreds of styles · Multiple price points · Instant visualization</p>
+      <a href="#" style="display:inline-block;padding:14px 40px;background:#d97706;color:#fff;border-radius:10px;font-weight:700;font-size:17px;text-decoration:none;box-shadow:0 4px 20px rgba(217,119,6,.4);">View Now →</a>
+    </div>
+  </div>
+</section>`,
+});
+
+bm.add('pb-footer-banner', {
+    label: 'Footer Banner', category: 'Service Sections',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="16" width="20" height="6" rx="1.5"/><path d="M12 2v10M7 7l5-5 5 5"/></svg>`,
+    content: `<section style="background:linear-gradient(135deg,#1e3a5f,#0f2744);padding:80px 24px;text-align:center;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;opacity:.05;background:repeating-linear-gradient(45deg,#fff,#fff 2px,transparent 2px,transparent 20px);"></div>
+  <div style="position:relative;max-width:760px;margin:0 auto;">
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;">
+      <div style="height:2px;background:rgba(217,119,6,.6);width:80px;"></div>
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="4" y="14" width="40" height="22" rx="2" stroke="#d97706" stroke-width="2.5"/><line x1="4" y1="21" x2="44" y2="21" stroke="#d97706" stroke-width="2"/><line x1="4" y1="28" x2="44" y2="28" stroke="#d97706" stroke-width="2"/></svg>
+      <div style="height:2px;background:rgba(217,119,6,.6);width:80px;"></div>
+    </div>
+    <h2 style="color:#ffffff;font-size:42px;font-weight:900;margin:0 0 12px;line-height:1.1;letter-spacing:-0.5px;">Your Company Name</h2>
+    <p style="color:#fbbf24;font-size:22px;font-weight:700;margin:0 0 28px;letter-spacing:.02em;">Your Tagline Here</p>
+    <p style="color:rgba(255,255,255,.65);font-size:15px;margin:0 0 36px;">Licensed · Bonded · Insured · Available 24/7</p>
+    <a href="tel:8000000000" style="display:inline-block;padding:18px 52px;background:#d97706;color:#fff;border-radius:12px;font-weight:800;font-size:26px;text-decoration:none;box-shadow:0 6px 32px rgba(217,119,6,.45);letter-spacing:-0.5px;">(800) 000-0000</a>
+  </div>
+</section>`,
+});
+
 // ─── Load saved content
 if (SAVED_DATA) {
     try {
