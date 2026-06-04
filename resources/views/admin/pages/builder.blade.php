@@ -290,6 +290,16 @@
             font-size: 12px !important;
             width: 100% !important;
         }
+        #traits-wrap .gjs-trt-trait__wrp textarea.editor-content-field {
+            min-height: 76px !important;
+            line-height: 1.45 !important;
+            resize: vertical !important;
+        }
+        #traits-wrap .gjs-trt-trait__wrp input.editor-content-field:focus,
+        #traits-wrap .gjs-trt-trait__wrp textarea.editor-content-field:focus {
+            border-color: #818cf8 !important;
+            outline: none !important;
+        }
 
         /* ─── EMPTY STATE ─── */
         .empty-panel {
@@ -700,6 +710,485 @@ const editor = grapesjs.init({
         styles: ['https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap'],
         scripts: [],
     },
+});
+
+// Content fields in the Settings tab
+const CONTENT_TRAIT_PREFIX = '__editor_content_';
+const TEXT_SETTING_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'cite', 'li', 'label', 'button', 'a']);
+
+function escapeHtml(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}
+
+function childComponents(component) {
+    const components = component && component.components ? component.components() : null;
+    return components ? components.models : [];
+}
+
+function getTagName(component) {
+    return String(component?.get?.('tagName') || '').toLowerCase();
+}
+
+function getComponentText(component) {
+    const el = component?.getEl?.();
+    if (el) return el.textContent.replace(/\u00a0/g, ' ').trim();
+
+    const content = component?.get?.('content');
+    if (content) return String(content).trim();
+
+    return childComponents(component).map(getComponentText).join('').trim();
+}
+
+function setComponentText(component, value) {
+    if (!component) return;
+
+    if (component.components) {
+        component.components(escapeHtml(value));
+    } else {
+        component.set?.('content', value);
+    }
+
+    component.view?.render?.();
+}
+
+function walkComponents(component, callback) {
+    childComponents(component).forEach(child => {
+        callback(child);
+        walkComponents(child, callback);
+    });
+}
+
+function findFirstDescendant(component, predicate) {
+    let found = null;
+    walkComponents(component, child => {
+        if (!found && predicate(child)) found = child;
+    });
+    return found;
+}
+
+function findBenefitParts(component) {
+    if (getTagName(component) !== 'div') return null;
+
+    const spans = childComponents(component).filter(child => getTagName(child) === 'span');
+    if (spans.length < 2) return null;
+
+    const iconText = getComponentText(spans[0]);
+    const labelText = getComponentText(spans[1]);
+    const styles = component.getStyle ? component.getStyle() : {};
+    const isFlex = String(styles.display || '').toLowerCase().includes('flex');
+    const hasShortIcon = iconText.length > 0 && iconText.length <= 3;
+
+    if (!isFlex || !hasShortIcon || !labelText) return null;
+
+    return { icon: spans[0], text: spans[1] };
+}
+
+function findBenefitCards(component) {
+    const cards = [];
+    walkComponents(component, child => {
+        const parts = findBenefitParts(child);
+        if (parts) cards.push({ component: child, ...parts });
+    });
+    return cards;
+}
+
+function findWhyChooseParts(component) {
+    const benefitCards = findBenefitCards(component);
+    if (benefitCards.length < 2) return null;
+
+    const heading = findFirstDescendant(component, child => /^h[1-6]$/.test(getTagName(child)));
+    const subheading = findFirstDescendant(component, child => getTagName(child) === 'p');
+
+    return { heading, subheading, benefits: benefitCards };
+}
+
+function getEditableFieldValue(component, field) {
+    if (!component || !field) return '';
+
+    if (field.kind === 'text') return getComponentText(component);
+    if (field.kind === 'attr') return component.getAttributes?.()[field.name] || '';
+
+    if (field.kind === 'benefit-icon' || field.kind === 'benefit-text') {
+        const parts = findBenefitParts(component);
+        if (!parts) return '';
+        return getComponentText(field.kind === 'benefit-icon' ? parts.icon : parts.text);
+    }
+
+    if (field.kind === 'why-heading') {
+        return getComponentText(findWhyChooseParts(component)?.heading);
+    }
+
+    if (field.kind === 'why-subheading') {
+        return getComponentText(findWhyChooseParts(component)?.subheading);
+    }
+
+    if (field.kind === 'why-benefit') {
+        const benefit = findWhyChooseParts(component)?.benefits[field.index];
+        return getComponentText(benefit?.text);
+    }
+
+    return '';
+}
+
+function updateEditableField(component, field, value) {
+    if (!component || !field) return;
+
+    if (field.kind === 'text') {
+        setComponentText(component, value);
+        return;
+    }
+
+    if (field.kind === 'attr') {
+        component.addAttributes({ [field.name]: value });
+        return;
+    }
+
+    if (field.kind === 'benefit-icon' || field.kind === 'benefit-text') {
+        const parts = findBenefitParts(component);
+        if (parts) setComponentText(field.kind === 'benefit-icon' ? parts.icon : parts.text, value);
+        return;
+    }
+
+    if (field.kind === 'why-heading') {
+        setComponentText(findWhyChooseParts(component)?.heading, value);
+        return;
+    }
+
+    if (field.kind === 'why-subheading') {
+        setComponentText(findWhyChooseParts(component)?.subheading, value);
+        return;
+    }
+
+    if (field.kind === 'why-benefit') {
+        const benefit = findWhyChooseParts(component)?.benefits[field.index];
+        if (benefit) setComponentText(benefit.text, value);
+    }
+}
+
+function registerContentTrait(type, tagName) {
+    editor.TraitManager.addType(type, {
+        createInput({ trait }) {
+            const input = document.createElement(tagName);
+            input.className = 'editor-content-field';
+            input.placeholder = trait.get('placeholder') || '';
+            input.addEventListener('input', () => updateEditableField(editor.getSelected(), trait.get('editorField'), input.value));
+            return input;
+        },
+        onEvent({ elInput, component, trait }) {
+            updateEditableField(component, trait.get('editorField'), elInput.value);
+        },
+        onUpdate({ elInput, component, trait }) {
+            elInput.value = getEditableFieldValue(component, trait.get('editorField'));
+        },
+    });
+}
+
+registerContentTrait('editor-content-input', 'input');
+registerContentTrait('editor-content-textarea', 'textarea');
+
+function contentTrait(name, label, field, options = {}) {
+    return {
+        type: options.type || 'editor-content-input',
+        name: CONTENT_TRAIT_PREFIX + name,
+        label,
+        editorField: field,
+        placeholder: options.placeholder || '',
+    };
+}
+
+function getSerializableTraits(component) {
+    const traits = typeof component.getTraits === 'function'
+        ? component.getTraits()
+        : (component.get('traits')?.models || []);
+
+    return traits
+        .map(trait => ({ ...(trait.attributes || trait) }))
+        .filter(trait => !String(trait.name || '').startsWith(CONTENT_TRAIT_PREFIX));
+}
+
+function setComponentTraits(component, traits) {
+    if (typeof component.setTraits === 'function') {
+        component.setTraits(traits);
+    } else if (component.get('traits')) {
+        component.get('traits').reset(traits);
+    } else {
+        component.set('traits', traits);
+    }
+}
+
+function buildContentTraits(component) {
+    const tag = getTagName(component);
+    const traits = [];
+    const existingTraitNames = new Set(getSerializableTraits(component).map(trait => trait.name));
+    const whyChoose = findWhyChooseParts(component);
+    const benefitParts = findBenefitParts(component);
+    const isTextElement = TEXT_SETTING_TAGS.has(tag) || component.get?.('type') === 'text';
+    const hasTrait = name => existingTraitNames.has(name);
+
+    if (whyChoose) {
+        if (whyChoose.heading) {
+            traits.push(contentTrait('why_heading', 'Heading', { kind: 'why-heading' }, {
+                type: 'editor-content-textarea',
+                placeholder: 'Section heading',
+            }));
+        }
+        if (whyChoose.subheading) {
+            traits.push(contentTrait('why_subheading', 'Subheading', { kind: 'why-subheading' }, {
+                type: 'editor-content-textarea',
+                placeholder: 'Section subheading',
+            }));
+        }
+        whyChoose.benefits.forEach((benefit, index) => {
+            traits.push(contentTrait(`why_benefit_${index}`, `Benefit ${index + 1}`, { kind: 'why-benefit', index }, {
+                type: 'editor-content-textarea',
+                placeholder: 'Benefit text',
+            }));
+        });
+    } else if (benefitParts) {
+        traits.push(contentTrait('benefit_icon', 'Icon', { kind: 'benefit-icon' }, { placeholder: 'Icon' }));
+        traits.push(contentTrait('benefit_text', 'Benefit', { kind: 'benefit-text' }, {
+            type: 'editor-content-textarea',
+            placeholder: 'Benefit text',
+        }));
+    } else if (isTextElement) {
+        traits.push(contentTrait('text', 'Text', { kind: 'text' }, {
+            type: 'editor-content-textarea',
+            placeholder: 'Text',
+        }));
+    }
+
+    if (tag === 'a' && !hasTrait('href')) {
+        traits.push(contentTrait('href', 'Link URL', { kind: 'attr', name: 'href' }, { placeholder: 'https://example.com' }));
+    }
+
+    if (tag === 'img' || component.get?.('type') === 'image') {
+        if (!hasTrait('src')) {
+            traits.push(contentTrait('src', 'Image URL', { kind: 'attr', name: 'src' }, { placeholder: 'https://example.com/image.jpg' }));
+        }
+        if (!hasTrait('alt')) {
+            traits.push(contentTrait('alt', 'Alt Text', { kind: 'attr', name: 'alt' }, {
+                type: 'editor-content-textarea',
+                placeholder: 'Describe the image',
+            }));
+        }
+    }
+
+    if (tag === 'input' || tag === 'textarea') {
+        if (!hasTrait('placeholder')) {
+            traits.push(contentTrait('placeholder', 'Placeholder', { kind: 'attr', name: 'placeholder' }, { placeholder: 'Placeholder text' }));
+        }
+        if (!hasTrait('value')) {
+            traits.push(contentTrait('value', 'Value', { kind: 'attr', name: 'value' }, { placeholder: 'Default value' }));
+        }
+    }
+
+    return traits;
+}
+
+function showRightPane(panelName) {
+    const rightPanel = document.getElementById('panel-right');
+    const tab = rightPanel.querySelector(`.p-tab[data-panel="${panelName}"]`);
+    if (tab && !tab.classList.contains('active')) tab.click();
+}
+
+const BACKGROUND_IMAGE_FUNCTIONS = [
+    'repeating-linear-gradient',
+    'repeating-radial-gradient',
+    'linear-gradient',
+    'radial-gradient',
+    'url',
+];
+const BACKGROUND_REPEAT_VALUES = ['no-repeat', 'repeat-x', 'repeat-y', 'space', 'round', 'repeat'];
+const CSS_COLOR_KEYWORDS = new Set([
+    'transparent', 'currentcolor', 'black', 'white', 'red', 'green', 'blue',
+    'yellow', 'orange', 'purple', 'gray', 'grey', 'silver', 'maroon', 'navy',
+    'teal', 'lime', 'aqua', 'fuchsia', 'olive',
+]);
+
+function readCssFunction(value, start) {
+    let depth = 0;
+    let quote = '';
+
+    for (let i = start; i < value.length; i++) {
+        const char = value[i];
+        if (quote) {
+            if (char === '\\') i++;
+            else if (char === quote) quote = '';
+            continue;
+        }
+
+        if (char === '"' || char === "'") {
+            quote = char;
+        } else if (char === '(') {
+            depth++;
+        } else if (char === ')') {
+            depth--;
+            if (depth === 0) {
+                return { text: value.slice(start, i + 1), end: i + 1 };
+            }
+        }
+    }
+
+    return { text: value.slice(start), end: value.length };
+}
+
+function extractBackgroundImages(background) {
+    const images = [];
+    let remainder = '';
+    const lower = background.toLowerCase();
+
+    for (let i = 0; i < background.length;) {
+        const fn = BACKGROUND_IMAGE_FUNCTIONS.find(name => lower.startsWith(`${name}(`, i));
+        if (!fn) {
+            remainder += background[i];
+            i++;
+            continue;
+        }
+
+        const parsed = readCssFunction(background, i);
+        images.push(parsed.text);
+        remainder += ' ';
+        i = parsed.end;
+    }
+
+    return { images, remainder };
+}
+
+function splitCssList(value) {
+    const parts = [];
+    let depth = 0;
+    let quote = '';
+    let start = 0;
+
+    for (let i = 0; i < value.length; i++) {
+        const char = value[i];
+        if (quote) {
+            if (char === '\\') i++;
+            else if (char === quote) quote = '';
+            continue;
+        }
+
+        if (char === '"' || char === "'") quote = char;
+        else if (char === '(') depth++;
+        else if (char === ')') depth--;
+        else if (char === ',' && depth === 0) {
+            parts.push(value.slice(start, i).trim());
+            start = i + 1;
+        }
+    }
+
+    parts.push(value.slice(start).trim());
+    return parts.filter(Boolean);
+}
+
+function findCssColor(value) {
+    const colorFunction = value.match(/\b(?:rgba?|hsla?)\([^)]+\)/i);
+    if (colorFunction) return colorFunction[0];
+
+    const hex = value.match(/#[0-9a-f]{3,8}\b/i);
+    if (hex) return hex[0];
+
+    const keyword = value
+        .replace(/[(),/]/g, ' ')
+        .split(/\s+/)
+        .find(token => CSS_COLOR_KEYWORDS.has(token.toLowerCase()));
+
+    return keyword || '';
+}
+
+function firstGradientColor(images) {
+    const gradient = images.find(image => image.toLowerCase().includes('gradient('));
+    if (!gradient) return '';
+
+    const body = gradient.slice(gradient.indexOf('(') + 1, gradient.lastIndexOf(')'));
+    const stops = splitCssList(body);
+    const colorStops = stops.filter((stop, index) => {
+        if (index > 0) return true;
+        return !/^(to\s|circle\b|ellipse\b|at\s|[-\d.]+(?:deg|rad|turn)\b)/i.test(stop.trim());
+    });
+
+    for (const stop of colorStops) {
+        const color = findCssColor(stop);
+        if (color) return color;
+    }
+
+    return '';
+}
+
+function normalizeBackgroundPosition(value) {
+    const tokens = value.toLowerCase().match(/\b(left|center|right|top|bottom)\b/g) || [];
+    if (!tokens.length) return '';
+    if (tokens.length === 1) {
+        if (tokens[0] === 'top' || tokens[0] === 'bottom') return `${tokens[0]} center`;
+        if (tokens[0] === 'left' || tokens[0] === 'right') return `center ${tokens[0]}`;
+        return 'center center';
+    }
+
+    const vertical = tokens.find(token => token === 'top' || token === 'bottom') || 'center';
+    const horizontal = tokens.find(token => token === 'left' || token === 'right') || 'center';
+    return `${vertical} ${horizontal}`;
+}
+
+function parseBackgroundPlacement(remainder) {
+    const text = remainder.replace(/\b(?:rgba?|hsla?)\([^)]+\)/gi, ' ').replace(/#[0-9a-f]{3,8}\b/gi, ' ');
+    const repeat = BACKGROUND_REPEAT_VALUES.find(value => text.toLowerCase().includes(value)) || '';
+    const sizeMatch = text.match(/\/\s*([^,;]+)/);
+    const size = sizeMatch
+        ? sizeMatch[1].replace(new RegExp(`\\b(?:${BACKGROUND_REPEAT_VALUES.join('|')})\\b`, 'gi'), '').trim()
+        : (text.match(/\b(?:cover|contain)\b/i)?.[0] || '');
+    const positionSource = sizeMatch ? text.slice(0, sizeMatch.index) : text;
+    const position = normalizeBackgroundPosition(positionSource);
+
+    return { repeat, size, position };
+}
+
+function parseBackgroundShorthand(background) {
+    if (!background || background === 'none') return {};
+
+    const { images, remainder } = extractBackgroundImages(String(background));
+    const placement = parseBackgroundPlacement(remainder);
+    const color = findCssColor(remainder) || firstGradientColor(images);
+    const styles = {};
+
+    if (color) styles['background-color'] = color;
+    if (images.length) styles['background-image'] = images.join(', ');
+    if (placement.repeat) styles['background-repeat'] = placement.repeat;
+    if (placement.size) styles['background-size'] = placement.size;
+    if (placement.position) styles['background-position'] = placement.position;
+
+    return styles;
+}
+
+function syncBackgroundShorthandToLonghands(component) {
+    const styles = component?.getStyle?.() || {};
+    const shorthand = styles.background;
+    if (!shorthand) return;
+
+    const parsed = parseBackgroundShorthand(shorthand);
+    const patch = {};
+    Object.entries(parsed).forEach(([property, value]) => {
+        if (value && !styles[property]) patch[property] = value;
+    });
+
+    if (Object.keys(patch).length) {
+        component.addStyle(patch);
+    }
+}
+
+editor.on('component:selected', component => {
+    if (!component) return;
+
+    syncBackgroundShorthandToLonghands(component);
+
+    const contentTraits = buildContentTraits(component);
+    setComponentTraits(component, [...getSerializableTraits(component), ...contentTraits]);
+
+    if (contentTraits.length) {
+        showRightPane('traits');
+    }
 });
 
 // ─── Custom blocks
@@ -1141,7 +1630,7 @@ function injectGradientIntoBackground() {
     });
 
     // Sync controls from selected component's existing styles
-    editor.on('component:selected', component => {
+    function syncGradientControls(component) {
         if (!component) return;
         const styles = component.getStyle();
         // Opacity
@@ -1160,7 +1649,10 @@ function injectGradientIntoBackground() {
             giType.value = 'none';
         }
         updateOpts();
-    });
+    }
+
+    editor.on('component:selected', syncGradientControls);
+    syncGradientControls(editor.getSelected());
 }
 
 // Inject as soon as the Background sector is available (on first component select)
@@ -1449,6 +1941,7 @@ function buildStyleSectors() {
         {
             name: 'Background', open: false,
             properties: [
+                { property: 'background' },
                 { property: 'background-color', type: 'color' },
                 { property: 'background-image' },
                 { property: 'background-repeat', type: 'select', list: [
