@@ -10,7 +10,7 @@
     <p class="text-sm text-amber-800 font-medium">You have unsaved changes.</p>
     <div class="flex items-center gap-3">
         <button onclick="discardChanges()" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Discard</button>
-        <button onclick="saveNav()"
+        <button type="button" onclick="saveNav()"
                 class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg transition-colors">
             Save changes
         </button>
@@ -435,15 +435,19 @@ function markDirty() {
 }
 function discardChanges() { window.location.reload(); }
 
+var suppressUnsavedWarning = false;
+
 window.addEventListener('beforeunload', function(e) {
-    if (!document.getElementById('save-bar').classList.contains('hidden')) {
+    if (!suppressUnsavedWarning && !document.getElementById('save-bar').classList.contains('hidden')) {
         e.preventDefault(); e.returnValue = '';
     }
 });
 
 // Suppress beforeunload for deliberate form navigations (add / edit / delete)
 document.querySelectorAll('form:not(#save-form)').forEach(function(f) {
-    f.addEventListener('submit', function() { window.onbeforeunload = null; });
+    f.addEventListener('submit', function(e) {
+        if (!e.defaultPrevented) suppressUnsavedWarning = true;
+    });
 });
 
 // ── Logo position (JS-only until Save) ───────────────────────────────────
@@ -464,7 +468,7 @@ function setLogoPosition(pos) {
 
 function updatePreviewLogoPosition(pos) {
     var logo     = document.getElementById('preview-logo');
-    var navBar   = document.getElementById('preview-nav-bar');
+    var navBar   = document.getElementById('preview-desktop-nav');
     var items    = document.getElementById('preview-items');
     var logoZoneL = document.getElementById('preview-logo-zone-l');
     var logoZoneC = document.getElementById('preview-logo-zone-c');
@@ -693,6 +697,7 @@ function outdentItem(id) {
 // ── Read state & Save ────────────────────────────────────────────────────
 function readNavState() {
     var items = [];
+    var list = document.getElementById('nav-items-list');
     function walk(ul, parentId) {
         var order = 0;
         Array.from(ul.children).forEach(function(li) {
@@ -702,7 +707,7 @@ function readNavState() {
             if (cul) walk(cul, parseInt(li.dataset.id));
         });
     }
-    walk(document.getElementById('nav-items-list'), null);
+    if (list) walk(list, null);
     return { alignment: currentAlignment, logoPosition: currentLogoPosition, items: items };
 }
 
@@ -727,7 +732,7 @@ function saveNav() {
         hidden('items[' + idx + '][sort_order]', item.sort_order);
     });
 
-    window.onbeforeunload = null; // don't warn on intentional save
+    suppressUnsavedWarning = true;
     document.body.appendChild(form);
     form.submit();
 }

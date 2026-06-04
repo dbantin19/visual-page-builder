@@ -26,6 +26,15 @@
             <span class="text-xl font-bold tracking-wide text-white">Poseidon</span>
         </div>
         <nav class="flex-1 py-4 space-y-0.5">
+            <a href="{{ route('admin.navigation.index') }}"
+               class="flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors
+                      {{ request()->routeIs('admin.navigation.*') ? 'bg-blue-700 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16M4 18h10"/>
+                </svg>
+                Menu Navigation
+            </a>
             <a href="{{ route('admin.pages.index') }}"
                class="flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors
                       {{ request()->routeIs('admin.pages.*') ? 'bg-blue-700 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
@@ -35,14 +44,14 @@
                 </svg>
                 Pages
             </a>
-            <a href="{{ route('admin.navigation.index') }}"
+            <a href="{{ route('admin.footer.index') }}"
                class="flex items-center gap-3 px-6 py-3 text-sm font-medium transition-colors
-                      {{ request()->routeIs('admin.navigation.*') ? 'bg-blue-700 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
+                      {{ request()->routeIs('admin.footer.*') ? 'bg-blue-700 text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white' }}">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 6h16M4 12h16M4 18h10"/>
+                          d="M3 17h18M5 17V7a2 2 0 012-2h10a2 2 0 012 2v10M8 10h8M8 13h5"/>
                 </svg>
-                Menu Navigation
+                Footer
             </a>
         </nav>
         <div class="px-6 py-4 border-t border-gray-700">

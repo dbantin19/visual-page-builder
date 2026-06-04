@@ -37,6 +37,10 @@ class NavMenuController extends Controller
 
     public function saveAll(Request $request)
     {
+        if (! $request->has('items')) {
+            $request->merge(['items' => []]);
+        }
+
         $request->validate([
             'alignment'              => 'required|in:left,center,right',
             'logo_position'          => 'required|in:left,center,right',

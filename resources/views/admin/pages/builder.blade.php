@@ -171,7 +171,17 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
 
         /* ─── BLOCK MANAGER ─── */
+        #blocks-wrap,
+        #blocks-wrap .gjs-blocks-cs,
+        #blocks-wrap .gjs-one-bg,
+        #blocks-wrap .gjs-block-categories,
+        #blocks-wrap .gjs-block-category {
+            background: #0f172a !important;
+        }
         #blocks-wrap .gjs-block-categories { padding: 0; }
+        #blocks-wrap .gjs-block-category {
+            border-bottom: 1px solid #1e293b !important;
+        }
         #blocks-wrap .gjs-block-category .gjs-title {
             background: #0f172a !important;
             color: #475569 !important;
@@ -254,7 +264,11 @@
             padding: 9px 12px !important;
         }
         #styles-wrap .gjs-sm-properties { padding: 8px 10px !important; gap: 6px !important; }
-        #styles-wrap .gjs-sm-property { background: transparent !important; }
+        #styles-wrap .gjs-sm-property {
+            background: transparent !important;
+            min-width: 0 !important;
+            max-width: 100% !important;
+        }
         #styles-wrap .gjs-sm-label { color: #64748b !important; font-size: 11px !important; margin-bottom: 3px !important; }
         #styles-wrap .gjs-field,
         #styles-wrap .gjs-field input,
@@ -351,6 +365,14 @@
         .gjs-badge { background: #4f46e5 !important; color: #fff !important; border-radius: 4px !important; }
 
         /* ─── GRADIENT & OPACITY (injected into Background sector) ─── */
+        #gi-wrap {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            flex: 1 1 100%;
+            overflow: hidden;
+        }
+        #gi-wrap, #gi-wrap * { box-sizing: border-box; }
         .gi-sep {
             border-top: 1px solid #1e293b;
             margin: 6px 0 2px;
@@ -358,20 +380,23 @@
         .gi-row {
             display: flex; align-items: center; gap: 8px;
             padding: 3px 0;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
         }
         .gi-label {
             font-size: 11px; color: #64748b;
-            width: 90px; flex-shrink: 0;
+            width: 82px; flex-shrink: 0;
         }
         .gi-row select, .gi-row input[type=range] {
-            flex: 1; background: #1e293b; border: 1px solid #334155;
+            flex: 1 1 0; background: #1e293b; border: 1px solid #334155;
             color: #cbd5e1; border-radius: 5px; padding: 4px 6px;
-            font-size: 11px; outline: none; min-width: 0;
+            font-size: 11px; outline: none; min-width: 0; width: 0; max-width: 100%;
         }
         .gi-row select:focus { border-color: #818cf8; }
-        .gi-colors { display: flex; gap: 6px; flex: 1; }
+        .gi-colors { display: flex; gap: 6px; flex: 1 1 0; min-width: 0; max-width: 100%; }
         .gi-color-wrap {
-            flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+            flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;
         }
         .gi-color-wrap span { font-size: 10px; color: #475569; }
         .gi-row input[type=color] {
@@ -1464,6 +1489,22 @@ bm.add('pb-footer-banner', {
 </section>`,
 });
 
+function setBlockCategoriesOpen(open) {
+    if (bm.getCategories) {
+        bm.getCategories().each(category => category.set('open', open));
+    }
+
+    document.querySelectorAll('#blocks-wrap .gjs-block-category').forEach(category => {
+        category.classList.toggle('gjs-open', open);
+    });
+}
+
+function collapseBlockCategories() {
+    setBlockCategoriesOpen(false);
+}
+
+setTimeout(collapseBlockCategories, 0);
+
 // ─── Load saved content
 if (SAVED_DATA) {
     try {
@@ -1479,7 +1520,10 @@ if (SAVED_DATA) {
 }
 
 // Force the canvas to fill the available area after first render
-editor.on('load', () => setTimeout(() => editor.refresh(), 50));
+editor.on('load', () => setTimeout(() => {
+    collapseBlockCategories();
+    editor.refresh();
+}, 50));
 
 // ─── Device buttons
 document.querySelectorAll('.device-btn').forEach(btn => {
@@ -1496,17 +1540,22 @@ document.getElementById('btn-redo').addEventListener('click', () => editor.runCo
 
 // ─── Block search
 document.getElementById('block-search').addEventListener('input', function () {
-    const q = this.value.toLowerCase();
+    const q = this.value.trim().toLowerCase();
     document.querySelectorAll('#blocks-wrap .gjs-block').forEach(block => {
         const label = block.querySelector('.gjs-block-label');
         const text = (label ? label.textContent : block.textContent).toLowerCase();
-        block.style.display = text.includes(q) ? '' : 'none';
+        const matches = text.includes(q);
+        block.dataset.searchMatch = matches ? 'true' : 'false';
+        if (matches) block.style.removeProperty('display');
+        else block.style.setProperty('display', 'none', 'important');
     });
     // Hide empty categories
     document.querySelectorAll('#blocks-wrap .gjs-block-category').forEach(cat => {
-        const visible = [...cat.querySelectorAll('.gjs-block')].some(b => b.style.display !== 'none');
+        const visible = [...cat.querySelectorAll('.gjs-block')].some(b => b.dataset.searchMatch !== 'false');
         cat.style.display = visible ? '' : 'none';
+        cat.classList.toggle('gjs-open', Boolean(q && visible));
     });
+    if (!q) collapseBlockCategories();
 });
 
 // ─── Gradient & Opacity — injected into the Background sector

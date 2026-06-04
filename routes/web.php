@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('admin.pages.index'));
 Route::get('/login', fn() => redirect()->route('admin.login'))->name('login');
-Route::get('/{slug}', [PagesController::class, 'show'])->name('pages.show')->where('slug', '[a-z0-9-]+');
 
 Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -22,7 +21,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Authenticated routes
     Route::middleware('auth')->group(function () {
-        Route::get('/', fn() => redirect()->route('admin.pages.index'));
+        Route::get('/', fn() => redirect()->route('admin.navigation.index'));
+        Route::view('footer', 'admin.footer.index')->name('footer.index');
         Route::resource('pages', PagesController::class);
         Route::get('pages/{page}/builder', [PagesController::class, 'builder'])->name('pages.builder');
         Route::post('pages/{page}/builder', [PagesController::class, 'saveBuilder'])->name('pages.builder.save');
@@ -43,3 +43,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('navigation/reorder', [NavMenuController::class, 'reorder'])->name('navigation.reorder');
     });
 });
+
+Route::get('/{slug}', [PagesController::class, 'show'])->name('pages.show')->where('slug', '[a-z0-9-]+');
