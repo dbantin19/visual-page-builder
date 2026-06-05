@@ -23,6 +23,8 @@ class Page extends Model
         'body_section',
         'content',
         'builder_data',
+        'draft_content',
+        'draft_builder_data',
     ];
 
     protected function casts(): array

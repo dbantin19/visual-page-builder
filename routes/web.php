@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Admin\NavMenuController;
 use App\Http\Controllers\Admin\PagesController;
 use App\Http\Controllers\Admin\TemplatesController;
+use App\Http\Controllers\Admin\UploadsController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('admin.pages.index'));
@@ -31,6 +32,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('pages/{page}/use-template', [PagesController::class, 'useTemplate'])->name('pages.use-template');
         Route::post('templates', [TemplatesController::class, 'store'])->name('templates.store');
         Route::delete('templates/{template}', [TemplatesController::class, 'destroy'])->name('templates.destroy');
+        Route::get('uploads', [UploadsController::class, 'index'])->name('uploads.index');
+        Route::post('uploads', [UploadsController::class, 'store'])->name('uploads.store');
+        Route::delete('uploads', [UploadsController::class, 'destroyMany'])->name('uploads.destroy-many');
+        Route::delete('uploads/{filename}', [UploadsController::class, 'destroy'])->name('uploads.destroy');
 
         Route::get('navigation', [NavMenuController::class, 'index'])->name('navigation.index');
         Route::post('navigation/save-all', [NavMenuController::class, 'saveAll'])->name('navigation.save-all');

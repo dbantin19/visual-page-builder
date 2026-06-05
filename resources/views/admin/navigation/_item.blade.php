@@ -42,18 +42,6 @@
 
         <div class="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
 
-            {{-- Indent → --}}
-            <button type="button"
-                    data-action="indent"
-                    onclick="indentItem({{ $item->id }})"
-                    title="Nest under item above"
-                    class="text-gray-400 hover:text-blue-600 transition-colors leading-none {{ $isFirst || $depth >= 3 ? 'hidden' : '' }}">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6v12"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h13m0 0-4-4m4 4-4 4"/>
-                </svg>
-            </button>
-
             {{-- Outdent ← --}}
             <button type="button"
                     data-action="outdent"
@@ -63,6 +51,18 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 6v12"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H7m0 0 4-4m-4 4 4 4"/>
+                </svg>
+            </button>
+
+            {{-- Indent → --}}
+            <button type="button"
+                    data-action="indent"
+                    onclick="indentItem({{ $item->id }})"
+                    title="Nest under item above"
+                    class="text-gray-400 hover:text-blue-600 transition-colors leading-none {{ $isFirst || $depth >= 3 ? 'hidden' : '' }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6v12"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12h13m0 0-4-4m4 4-4 4"/>
                 </svg>
             </button>
 

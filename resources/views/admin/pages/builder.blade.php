@@ -152,14 +152,14 @@
             flex-shrink: 0;
         }
         .p-tab {
-            flex: 1; background: transparent; border: none; color: #475569;
+            flex: 1; background: transparent; border: none; color: #cbd5e1;
             padding: 10px 0; cursor: pointer;
             font-size: 12px; font-weight: 500;
             border-bottom: 2px solid transparent;
             transition: all .15s; letter-spacing: .02em;
         }
-        .p-tab.active { color: #818cf8; border-bottom-color: #818cf8; }
-        .p-tab:hover:not(.active) { color: #94a3b8; }
+        .p-tab.active { color: #c4b5fd; border-bottom-color: #818cf8; }
+        .p-tab:hover:not(.active) { color: #f8fafc; }
 
         .p-body { flex: 1; overflow-y: auto; overflow-x: hidden; }
         .p-pane { display: none; }
@@ -176,7 +176,7 @@
         #blocks-wrap .gjs-one-bg,
         #blocks-wrap .gjs-block-categories,
         #blocks-wrap .gjs-block-category {
-            background: #0f172a !important;
+            background-color: var(--gjs-primary-color) !important;
         }
         #blocks-wrap .gjs-block-categories { padding: 0; }
         #blocks-wrap .gjs-block-category {
@@ -184,7 +184,7 @@
         }
         #blocks-wrap .gjs-block-category .gjs-title {
             background: #0f172a !important;
-            color: #475569 !important;
+            color: #cbd5e1 !important;
             font-size: 10px !important;
             font-weight: 700 !important;
             letter-spacing: .08em !important;
@@ -198,24 +198,31 @@
         }
         #blocks-wrap .gjs-block-category .gjs-title svg {
             width: 12px !important; height: 12px !important;
-            color: #475569 !important; flex-shrink: 0 !important;
+            color: #cbd5e1 !important; flex-shrink: 0 !important;
         }
         #blocks-wrap .gjs-blocks-c {
+            display: none !important;
             grid-template-columns: 1fr 1fr;
             gap: 6px;
-            padding: 8px;
+            padding: 0;
         }
         #blocks-wrap .gjs-open .gjs-blocks-c {
             display: grid !important;
+            padding: 8px;
+            background-color: var(--gjs-primary-color) !important;
+        }
+        #blocks-wrap .gjs-open .gjs-blocks-c:empty {
+            display: none !important;
+            padding: 0 !important;
         }
         #blocks-wrap .gjs-block {
             width: auto !important;
             height: auto !important;
             min-height: 60px !important;
-            background: #1e293b !important;
+            background-color: var(--gjs-primary-color) !important;
             border: 1px solid #1e293b !important;
             border-radius: 8px !important;
-            color: #94a3b8 !important;
+            color: #e2e8f0 !important;
             font-size: 11px !important;
             font-weight: 500 !important;
             display: flex !important;
@@ -228,9 +235,9 @@
             cursor: grab !important;
         }
         #blocks-wrap .gjs-block:hover {
-            background: #1e3a5f !important;
+            background: #1e293b !important;
             border-color: #818cf8 !important;
-            color: #e0e7ff !important;
+            color: #fff !important;
         }
         #blocks-wrap .gjs-block:active { cursor: grabbing !important; }
         #blocks-wrap .gjs-block .gjs-block-label { font-size: 11px !important; }
@@ -241,12 +248,12 @@
         #layers-wrap .gjs-layer {
             background: transparent !important;
             border-color: #1e293b !important;
-            color: #94a3b8 !important;
+            color: #e2e8f0 !important;
         }
         #layers-wrap .gjs-layer:hover { background: #1e293b !important; }
-        #layers-wrap .gjs-layer.gjs-selected { background: #1e293b !important; color: #e0e7ff !important; }
-        #layers-wrap .gjs-layer-title-c { color: #94a3b8 !important; }
-        #layers-wrap .gjs-layer-count { color: #475569 !important; }
+        #layers-wrap .gjs-layer.gjs-selected { background: #1e293b !important; color: #fff !important; }
+        #layers-wrap .gjs-layer-title-c { color: #e2e8f0 !important; }
+        #layers-wrap .gjs-layer-count { color: #94a3b8 !important; }
 
         /* ─── STYLE MANAGER ─── */
         #styles-wrap .gjs-sm-sector {
@@ -256,7 +263,7 @@
         #styles-wrap .gjs-sm-sector-title {
             background: #0f172a !important;
             border-color: #1e293b !important;
-            color: #475569 !important;
+            color: #cbd5e1 !important;
             font-size: 10px !important;
             font-weight: 700 !important;
             letter-spacing: .08em !important;
@@ -269,36 +276,36 @@
             min-width: 0 !important;
             max-width: 100% !important;
         }
-        #styles-wrap .gjs-sm-label { color: #64748b !important; font-size: 11px !important; margin-bottom: 3px !important; }
+        #styles-wrap .gjs-sm-label { color: #e2e8f0 !important; font-size: 11px !important; margin-bottom: 3px !important; }
         #styles-wrap .gjs-field,
         #styles-wrap .gjs-field input,
         #styles-wrap .gjs-field select,
         #styles-wrap .gjs-select {
             background: #1e293b !important;
             border-color: #334155 !important;
-            color: #cbd5e1 !important;
+            color: #f8fafc !important;
             border-radius: 5px !important;
             font-size: 12px !important;
         }
         #styles-wrap .gjs-field:focus-within { border-color: #818cf8 !important; }
         #styles-wrap .gjs-sm-radio input:checked + .gjs-sm-radio-item { background: #4f46e5 !important; color: #fff !important; }
-        #styles-wrap .gjs-sm-radio-item { background: #1e293b !important; color: #64748b !important; border-color: #334155 !important; }
+        #styles-wrap .gjs-sm-radio-item { background: #1e293b !important; color: #cbd5e1 !important; border-color: #334155 !important; }
         #styles-wrap .gjs-clm-tags-btn,
         #styles-wrap .gjs-field-color-picker { border-color: #334155 !important; }
-        #styles-wrap .gjs-sm-units { background: #1e293b !important; border-color: #334155 !important; color: #64748b !important; }
+        #styles-wrap .gjs-sm-units { background: #1e293b !important; border-color: #334155 !important; color: #cbd5e1 !important; }
 
         /* ─── TRAIT MANAGER ─── */
         #traits-wrap .gjs-trt-trait {
             border-color: #1e293b !important;
             padding: 6px 10px !important;
         }
-        #traits-wrap .gjs-trt-trait__label { color: #64748b !important; font-size: 11px !important; }
+        #traits-wrap .gjs-trt-trait__label { color: #e2e8f0 !important; font-size: 11px !important; }
         #traits-wrap .gjs-trt-trait__wrp input,
         #traits-wrap .gjs-trt-trait__wrp select,
         #traits-wrap .gjs-trt-trait__wrp textarea {
             background: #1e293b !important;
             border: 1px solid #334155 !important;
-            color: #cbd5e1 !important;
+            color: #f8fafc !important;
             border-radius: 5px !important;
             padding: 5px 8px !important;
             font-size: 12px !important;
@@ -314,12 +321,273 @@
             border-color: #818cf8 !important;
             outline: none !important;
         }
+        #traits-wrap .gjs-trt-trait--editor-upload-picker .gjs-field,
+        #traits-wrap .gjs-trt-trait--editor-upload-picker .gjs-field-wrp {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+        #styles-wrap .gjs-sm-property__background-image .gjs-field {
+            display: flex !important;
+            align-items: stretch !important;
+            gap: 4px !important;
+            padding-right: 4px !important;
+        }
+        #styles-wrap .gjs-sm-property__background-image input {
+            min-width: 0 !important;
+            flex: 1 1 auto !important;
+        }
+        .bg-image-pick-upload {
+            width: 26px;
+            height: 26px;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #1e293b;
+            color: #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 auto;
+            cursor: pointer;
+            padding: 0;
+            transition: all .15s;
+        }
+        .bg-image-pick-upload:hover {
+            border-color: #818cf8;
+            background: #4f46e5;
+            color: #fff;
+        }
+        .bg-image-pick-upload svg {
+            width: 14px;
+            height: 14px;
+        }
+        .upload-picker-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+        }
+        .upload-picker-trigger {
+            width: 32px;
+            height: 30px;
+            flex-shrink: 0;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            background: #1e293b;
+            color: #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all .15s;
+        }
+        .upload-picker-trigger:hover,
+        .upload-picker-trigger.has-value {
+            border-color: #818cf8;
+            background: #312e81;
+            color: #fff;
+        }
+        .upload-picker-trigger svg {
+            width: 16px;
+            height: 16px;
+        }
+        .upload-picker-current {
+            min-width: 0;
+            color: #94a3b8;
+            font-size: 11px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        #media-picker-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 99996;
+            background: rgba(2, 6, 23, .72);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        #media-picker-overlay.open { display: flex; }
+        #media-picker-modal {
+            width: min(820px, 100%);
+            max-height: min(720px, calc(100vh - 48px));
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            box-shadow: 0 24px 70px rgba(0,0,0,.62);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .mp-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 16px 18px;
+            border-bottom: 1px solid #1e293b;
+        }
+        #media-picker-title {
+            color: #f8fafc;
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0;
+        }
+        #media-picker-close {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            background: #1e293b;
+            color: #cbd5e1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        #media-picker-close:hover {
+            border-color: #818cf8;
+            color: #fff;
+        }
+        #media-picker-close svg {
+            width: 15px;
+            height: 15px;
+        }
+        .mp-controls {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 18px;
+            border-bottom: 1px solid #1e293b;
+        }
+        #media-picker-search {
+            flex: 1 1 260px;
+            min-width: 0;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            border-radius: 7px;
+            padding: 8px 10px;
+            font-size: 12px;
+            outline: none;
+        }
+        #media-picker-search::placeholder { color: #64748b; }
+        #media-picker-search:focus { border-color: #818cf8; }
+        #media-picker-extension-filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+        .mp-filter-label {
+            color: #94a3b8;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+        }
+        .mp-filter-option {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .mp-filter-option input {
+            width: 13px;
+            height: 13px;
+            accent-color: #4f46e5;
+        }
+        #media-picker-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            padding: 18px;
+            overflow-y: auto;
+            min-height: 220px;
+        }
+        .mp-card {
+            min-width: 0;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            background: #111827;
+            color: inherit;
+            text-align: left;
+            overflow: hidden;
+            cursor: pointer;
+            padding: 0;
+            transition: border-color .15s, transform .15s, box-shadow .15s;
+        }
+        .mp-card:hover,
+        .mp-card.selected {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 1px #818cf8;
+        }
+        .mp-card:active { transform: translateY(1px); }
+        .mp-preview {
+            position: relative;
+            aspect-ratio: 4 / 3;
+            background: #020617;
+        }
+        .mp-preview img,
+        .mp-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .mp-type-badge {
+            position: absolute;
+            right: 7px;
+            bottom: 7px;
+            border-radius: 4px;
+            background: rgba(2, 6, 23, .78);
+            color: #fff;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .mp-meta {
+            padding: 8px 9px;
+            min-width: 0;
+        }
+        .mp-name {
+            color: #f8fafc;
+            font-size: 11px;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .mp-size {
+            margin-top: 2px;
+            color: #64748b;
+            font-size: 10px;
+        }
+        #media-picker-empty {
+            display: none;
+            padding: 42px 18px;
+            color: #94a3b8;
+            text-align: center;
+            font-size: 13px;
+        }
+        #media-picker-empty.visible { display: block; }
+        #media-picker-gallery.empty { display: none; }
 
         /* ─── EMPTY STATE ─── */
         .empty-panel {
             padding: 32px 16px;
             text-align: center;
-            color: #334155;
+            color: #94a3b8;
             font-size: 12px;
             line-height: 1.6;
         }
@@ -335,13 +603,13 @@
             width: 100%;
             background: #1e293b;
             border: 1px solid #334155;
-            color: #cbd5e1;
+            color: #f8fafc;
             padding: 6px 10px;
             border-radius: 6px;
             font-size: 12px;
             outline: none;
         }
-        .search-wrap input::placeholder { color: #475569; }
+        .search-wrap input::placeholder { color: #94a3b8; }
         .search-wrap input:focus { border-color: #818cf8; }
 
         /* ─── GRAPESJS CANVAS OVERRIDES ─── */
@@ -385,12 +653,12 @@
             min-width: 0;
         }
         .gi-label {
-            font-size: 11px; color: #64748b;
+            font-size: 11px; color: #e2e8f0;
             width: 82px; flex-shrink: 0;
         }
         .gi-row select, .gi-row input[type=range] {
             flex: 1 1 0; background: #1e293b; border: 1px solid #334155;
-            color: #cbd5e1; border-radius: 5px; padding: 4px 6px;
+            color: #f8fafc; border-radius: 5px; padding: 4px 6px;
             font-size: 11px; outline: none; min-width: 0; width: 0; max-width: 100%;
         }
         .gi-row select:focus { border-color: #818cf8; }
@@ -398,14 +666,63 @@
         .gi-color-wrap {
             flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 3px;
         }
-        .gi-color-wrap span { font-size: 10px; color: #475569; }
+        .gi-color-wrap span { font-size: 10px; color: #94a3b8; }
         .gi-row input[type=color] {
             width: 100%; height: 28px; border-radius: 5px;
             border: 1px solid #334155; background: #1e293b;
             cursor: pointer; padding: 2px;
         }
         .gi-opacity-val {
-            font-size: 11px; color: #64748b; width: 30px; text-align: right; flex-shrink: 0;
+            font-size: 11px; color: #cbd5e1; width: 30px; text-align: right; flex-shrink: 0;
+        }
+        #pa-wrap {
+            width: 100%;
+            flex: 1 1 100%;
+            border-top: 1px solid #1e293b;
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+        .pa-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+        .pa-label {
+            width: 82px;
+            flex-shrink: 0;
+            color: #e2e8f0;
+            font-size: 11px;
+        }
+        .pa-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4px;
+            flex: 1;
+            min-width: 0;
+        }
+        .pa-btn {
+            height: 28px;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #1e293b;
+            color: #cbd5e1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: all .15s;
+        }
+        .pa-btn:hover,
+        .pa-btn.active {
+            background: #4f46e5;
+            border-color: #818cf8;
+            color: #fff;
+        }
+        .pa-btn svg {
+            width: 15px;
+            height: 15px;
         }
 
         /* ─── HISTORY MODAL ─── */
@@ -542,7 +859,7 @@
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
             </svg>
-            Save Draft
+            Save &amp; Publish
         </button>
         <button id="save-chevron" title="More save options">
             <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -628,6 +945,25 @@
 
 <div id="toast"></div>
 
+<div id="media-picker-overlay" aria-hidden="true">
+    <div id="media-picker-modal" role="dialog" aria-modal="true" aria-labelledby="media-picker-title">
+        <div class="mp-header">
+            <h2 id="media-picker-title">Choose Upload</h2>
+            <button type="button" id="media-picker-close" aria-label="Close media picker">
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="mp-controls">
+            <input type="text" id="media-picker-search" placeholder="Search uploads...">
+            <div id="media-picker-extension-filters"></div>
+        </div>
+        <div id="media-picker-gallery"></div>
+        <div id="media-picker-empty">No uploads match.</div>
+    </div>
+</div>
+
 {{-- ─── HISTORY MODAL ─── --}}
 <div id="history-overlay">
     <div id="history-modal">
@@ -675,7 +1011,8 @@
 <script>
 const SAVE_URL   = @json(route('admin.pages.builder.save', $page));
 const CSRF_TOKEN = @json(csrf_token());
-const SAVED_DATA = @json($page->builder_data);
+const SAVED_DATA = @json($page->draft_builder_data ?? $page->builder_data);
+const UPLOADED_MEDIA = @json($uploadedMedia ?? []);
 
 // ─── Panel tabs
 function initTabs(panelEl) {
@@ -830,11 +1167,61 @@ function findWhyChooseParts(component) {
     return { heading, subheading, benefits: benefitCards };
 }
 
+function getEditableAttributeValue(component, name) {
+    const attributeValue = component?.getAttributes?.()[name];
+    if (attributeValue !== undefined && attributeValue !== null && attributeValue !== '') {
+        return String(attributeValue);
+    }
+
+    const componentValue = component?.get?.(name);
+    if (componentValue !== undefined && componentValue !== null && componentValue !== '') {
+        return String(componentValue);
+    }
+
+    return '';
+}
+
+function updateEditableAttribute(component, name, value) {
+    component.addAttributes({ [name]: value });
+
+    if (['src', 'poster'].includes(name)) {
+        component.set?.(name, value);
+        const el = component.getEl?.();
+        if (el) {
+            if (value) el.setAttribute(name, value);
+            else el.removeAttribute(name);
+            if (name === 'src' && el.tagName?.toLowerCase() === 'video') el.load?.();
+        }
+    }
+
+    component.view?.render?.();
+}
+
+function markEditorFieldInput(input, field) {
+    input.dataset.editorFieldKind = field?.kind || '';
+    input.dataset.editorFieldName = field?.name || '';
+}
+
+function syncEditorFieldInputs(field, value) {
+    if (!field?.kind) return;
+
+    document.querySelectorAll('#traits-wrap .editor-content-field').forEach(input => {
+        if (input.dataset.editorFieldKind !== field.kind || input.dataset.editorFieldName !== (field.name || '')) return;
+        if (input.classList.contains('upload-picker-field')) {
+            updateUploadPickerTrigger(input, value, input.dataset.uploadKind || 'image');
+        } else if (input.tagName?.toLowerCase() === 'select') {
+            input.value = Array.from(input.options).some(option => option.value === value) ? value : '';
+        } else {
+            input.value = value;
+        }
+    });
+}
+
 function getEditableFieldValue(component, field) {
     if (!component || !field) return '';
 
     if (field.kind === 'text') return getComponentText(component);
-    if (field.kind === 'attr') return component.getAttributes?.()[field.name] || '';
+    if (field.kind === 'attr') return getEditableAttributeValue(component, field.name);
 
     if (field.kind === 'benefit-icon' || field.kind === 'benefit-text') {
         const parts = findBenefitParts(component);
@@ -867,7 +1254,8 @@ function updateEditableField(component, field, value) {
     }
 
     if (field.kind === 'attr') {
-        component.addAttributes({ [field.name]: value });
+        updateEditableAttribute(component, field.name, value);
+        syncEditorFieldInputs(field, value);
         return;
     }
 
@@ -898,6 +1286,7 @@ function registerContentTrait(type, tagName) {
         createInput({ trait }) {
             const input = document.createElement(tagName);
             input.className = 'editor-content-field';
+            markEditorFieldInput(input, trait.get('editorField'));
             input.placeholder = trait.get('placeholder') || '';
             input.addEventListener('input', () => updateEditableField(editor.getSelected(), trait.get('editorField'), input.value));
             return input;
@@ -914,6 +1303,407 @@ function registerContentTrait(type, tagName) {
 registerContentTrait('editor-content-input', 'input');
 registerContentTrait('editor-content-textarea', 'textarea');
 
+function uploadedMediaForKind(kind) {
+    return UPLOADED_MEDIA.filter(item => item.type === kind);
+}
+
+function mediaExtension(item) {
+    const name = String(item?.name || item?.url || '').toLowerCase();
+    const parts = name.split('.');
+    return parts.length > 1 ? parts.pop() : '';
+}
+
+function mediaKindLabel(kind) {
+    return kind === 'video' ? 'video' : 'image';
+}
+
+function formatUploadSize(bytes) {
+    const size = Number(bytes) || 0;
+    if (size >= 1024 * 1024) return `${(size / 1024 / 1024).toFixed(1).replace(/\.0$/, '')} MB`;
+    if (size >= 1024) return `${(size / 1024).toFixed(1).replace(/\.0$/, '')} KB`;
+    return size ? `${size} B` : '';
+}
+
+function uploadedMediaForUrl(value, kind = '') {
+    return UPLOADED_MEDIA.find(item => item.url === value && (!kind || item.type === kind))
+        || UPLOADED_MEDIA.find(item => item.url === value)
+        || null;
+}
+
+function filenameFromUrl(value) {
+    if (!value) return '';
+
+    try {
+        return decodeURIComponent(new URL(value, window.location.origin).pathname.split('/').filter(Boolean).pop() || value);
+    } catch {
+        return String(value).split('/').filter(Boolean).pop() || String(value);
+    }
+}
+
+function updateUploadPickerTrigger(wrapper, value, kind = 'image') {
+    const item = uploadedMediaForUrl(value, kind);
+    const label = mediaKindLabel(kind);
+    const displayName = item?.name || filenameFromUrl(value) || `Choose ${label}`;
+    const button = wrapper.querySelector('.upload-picker-trigger');
+    const current = wrapper.querySelector('.upload-picker-current');
+
+    wrapper.dataset.currentValue = value || '';
+    if (current) current.textContent = value ? displayName : 'No upload selected';
+    if (button) {
+        button.classList.toggle('has-value', Boolean(value));
+        button.title = value ? `Change uploaded ${label}: ${displayName}` : `Choose uploaded ${label}`;
+        button.setAttribute('aria-label', button.title);
+    }
+}
+
+const mediaPicker = {
+    active: null,
+    hiddenExtensions: new Set(),
+    overlay: document.getElementById('media-picker-overlay'),
+    title: document.getElementById('media-picker-title'),
+    close: document.getElementById('media-picker-close'),
+    search: document.getElementById('media-picker-search'),
+    filters: document.getElementById('media-picker-extension-filters'),
+    gallery: document.getElementById('media-picker-gallery'),
+    empty: document.getElementById('media-picker-empty'),
+};
+
+function renderMediaPickerFilters(kind) {
+    const extensions = Array.from(new Set(uploadedMediaForKind(kind).map(mediaExtension).filter(Boolean))).sort();
+    mediaPicker.filters.innerHTML = '';
+
+    if (!extensions.length) return;
+
+    const label = document.createElement('span');
+    label.className = 'mp-filter-label';
+    label.textContent = 'Hide';
+    mediaPicker.filters.appendChild(label);
+
+    extensions.forEach(extension => {
+        const filterLabel = document.createElement('label');
+        filterLabel.className = 'mp-filter-option';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = extension;
+        checkbox.checked = mediaPicker.hiddenExtensions.has(extension);
+        checkbox.addEventListener('change', () => {
+            if (checkbox.checked) mediaPicker.hiddenExtensions.add(extension);
+            else mediaPicker.hiddenExtensions.delete(extension);
+            renderMediaPickerGallery();
+        });
+
+        const text = document.createElement('span');
+        text.textContent = extension.toUpperCase();
+
+        filterLabel.append(checkbox, text);
+        mediaPicker.filters.appendChild(filterLabel);
+    });
+}
+
+function mediaMatchesPicker(item) {
+    const query = mediaPicker.search.value.trim().toLowerCase();
+    const extension = mediaExtension(item);
+    if (mediaPicker.hiddenExtensions.has(extension)) return false;
+    if (!query) return true;
+
+    return String(item.name || '').toLowerCase().includes(query)
+        || extension.includes(query);
+}
+
+function buildMediaPreview(item) {
+    const preview = document.createElement('div');
+    preview.className = 'mp-preview';
+
+    const mediaEl = document.createElement(item.type === 'video' ? 'video' : 'img');
+    mediaEl.src = item.url;
+    if (item.type === 'video') {
+        mediaEl.muted = true;
+        mediaEl.playsInline = true;
+        mediaEl.preload = 'metadata';
+    } else {
+        mediaEl.alt = item.name || '';
+        mediaEl.loading = 'lazy';
+    }
+    preview.appendChild(mediaEl);
+
+    if (item.type === 'video') {
+        const badge = document.createElement('span');
+        badge.className = 'mp-type-badge';
+        badge.textContent = 'Video';
+        preview.appendChild(badge);
+    }
+
+    return preview;
+}
+
+function renderMediaPickerGallery() {
+    const active = mediaPicker.active;
+    if (!active) return;
+
+    const selectedValue = active.getValue ? active.getValue() : getEditableFieldValue(active.component, active.field);
+    const items = uploadedMediaForKind(active.kind).filter(mediaMatchesPicker);
+
+    mediaPicker.gallery.innerHTML = '';
+    mediaPicker.gallery.classList.toggle('empty', items.length === 0);
+    mediaPicker.empty.classList.toggle('visible', items.length === 0);
+
+    items.forEach(item => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'mp-card';
+        card.classList.toggle('selected', item.url === selectedValue);
+        card.title = item.name || '';
+
+        const meta = document.createElement('div');
+        meta.className = 'mp-meta';
+
+        const name = document.createElement('div');
+        name.className = 'mp-name';
+        name.textContent = item.name || filenameFromUrl(item.url);
+
+        const size = document.createElement('div');
+        size.className = 'mp-size';
+        size.textContent = [mediaExtension(item).toUpperCase(), formatUploadSize(item.size)].filter(Boolean).join(' - ');
+
+        meta.append(name, size);
+        card.append(buildMediaPreview(item), meta);
+        card.addEventListener('click', () => {
+            if (active.onChoose) {
+                active.onChoose(item);
+            } else {
+                updateEditableField(active.component || editor.getSelected(), active.field, item.url);
+                updateUploadPickerTrigger(active.wrapper, item.url, active.kind);
+            }
+            closeMediaPicker();
+        });
+
+        mediaPicker.gallery.appendChild(card);
+    });
+}
+
+function openMediaPicker(trait, wrapper) {
+    const kind = trait.get('uploadKind') || 'image';
+    const component = editor.getSelected();
+    const label = mediaKindLabel(kind);
+
+    mediaPicker.active = {
+        component,
+        field: trait.get('editorField'),
+        kind,
+        wrapper,
+    };
+    mediaPicker.hiddenExtensions = new Set();
+    mediaPicker.search.value = '';
+    mediaPicker.title.textContent = `Choose Uploaded ${label.charAt(0).toUpperCase()}${label.slice(1)}`;
+    renderMediaPickerFilters(kind);
+    renderMediaPickerGallery();
+    mediaPicker.overlay.classList.add('open');
+    mediaPicker.overlay.setAttribute('aria-hidden', 'false');
+    setTimeout(() => mediaPicker.search.focus(), 30);
+}
+
+function closeMediaPicker() {
+    mediaPicker.overlay.classList.remove('open');
+    mediaPicker.overlay.setAttribute('aria-hidden', 'true');
+    mediaPicker.active = null;
+}
+
+mediaPicker.close.addEventListener('click', closeMediaPicker);
+mediaPicker.overlay.addEventListener('click', event => {
+    if (event.target === mediaPicker.overlay) closeMediaPicker();
+});
+mediaPicker.search.addEventListener('input', renderMediaPickerGallery);
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && mediaPicker.overlay.classList.contains('open')) closeMediaPicker();
+});
+
+const EMPTY_BACKGROUND_IMAGE_VALUE = "url('')";
+
+function cssUrlForImage(url) {
+    return `url('${String(url || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'")}')`;
+}
+
+function getCssUrlValue(value) {
+    const match = String(value || '').match(/url\(\s*(['"]?)(.*?)\1\s*\)/i);
+    return match ? match[2] : '';
+}
+
+function isCssImageValue(value) {
+    const text = String(value || '').trim().toLowerCase();
+    return text === '' || text === 'none' || text.includes('gradient(') || text.startsWith('url(');
+}
+
+function backgroundImagePropertyEl() {
+    return document.querySelector('#styles-wrap .gjs-sm-property__background-image')
+        || [...document.querySelectorAll('#styles-wrap .gjs-sm-property')].find(property => {
+            const label = property.querySelector('.gjs-sm-label')?.textContent.trim().toLowerCase();
+            return label === 'background image';
+        });
+}
+
+function backgroundImageInputEl() {
+    return backgroundImagePropertyEl()?.querySelector('input, textarea') || null;
+}
+
+function selectedBackgroundImageValue() {
+    return String(editor.getSelected()?.getStyle?.()?.['background-image'] || '');
+}
+
+function syncBackgroundImageInput() {
+    const input = backgroundImageInputEl();
+    if (!input) return;
+
+    input.placeholder = EMPTY_BACKGROUND_IMAGE_VALUE;
+
+    const styleValue = selectedBackgroundImageValue();
+    if (styleValue && document.activeElement !== input) {
+        input.value = styleValue;
+        return;
+    }
+
+    if (!input.value.trim()) {
+        input.value = EMPTY_BACKGROUND_IMAGE_VALUE;
+    }
+}
+
+function selectBackgroundUrlSlot(input) {
+    const value = input.value || EMPTY_BACKGROUND_IMAGE_VALUE;
+    const start = value.indexOf("'") + 1;
+    const end = value.lastIndexOf("'");
+    if (start > 0 && end >= start && typeof input.setSelectionRange === 'function') {
+        input.setSelectionRange(start, end);
+    }
+}
+
+function normalizeBackgroundImageInput(input, commit = false) {
+    const value = input.value.trim();
+    if (!value || value === EMPTY_BACKGROUND_IMAGE_VALUE) {
+        if (!value) input.value = EMPTY_BACKGROUND_IMAGE_VALUE;
+        return;
+    }
+
+    if (isCssImageValue(value)) return;
+
+    const normalized = cssUrlForImage(value);
+    input.value = normalized;
+
+    if (commit) {
+        editor.getSelected()?.addStyle({ 'background-image': normalized });
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+}
+
+function applyBackgroundImageUrl(url) {
+    const component = editor.getSelected();
+    if (!component) return;
+
+    const value = cssUrlForImage(url);
+    component.addStyle({ 'background-image': value });
+
+    const input = backgroundImageInputEl();
+    if (input) {
+        input.value = value;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    showToast('Background image selected.');
+}
+
+function openBackgroundImagePicker() {
+    const component = editor.getSelected();
+    if (!component) {
+        showToast('Select an element first.', 'err');
+        return;
+    }
+
+    mediaPicker.active = {
+        component,
+        kind: 'image',
+        getValue: () => getCssUrlValue(selectedBackgroundImageValue()),
+        onChoose: item => applyBackgroundImageUrl(item.url),
+    };
+    mediaPicker.hiddenExtensions = new Set();
+    mediaPicker.search.value = '';
+    mediaPicker.title.textContent = 'Choose Uploaded Background Image';
+    renderMediaPickerFilters('image');
+    renderMediaPickerGallery();
+    mediaPicker.overlay.classList.add('open');
+    mediaPicker.overlay.setAttribute('aria-hidden', 'false');
+    setTimeout(() => mediaPicker.search.focus(), 30);
+}
+
+function injectBackgroundImagePicker() {
+    const property = backgroundImagePropertyEl();
+    const input = backgroundImageInputEl();
+    if (!property || !input) return;
+
+    if (!input.dataset.bgImageReady) {
+        input.dataset.bgImageReady = 'true';
+        input.addEventListener('focus', () => {
+            if (!input.value.trim()) input.value = EMPTY_BACKGROUND_IMAGE_VALUE;
+            requestAnimationFrame(() => selectBackgroundUrlSlot(input));
+        });
+        input.addEventListener('blur', () => normalizeBackgroundImageInput(input, true));
+        input.addEventListener('change', () => normalizeBackgroundImageInput(input, true));
+    }
+
+    const field = property.querySelector('.gjs-field') || property;
+    if (!field.querySelector('.bg-image-pick-upload')) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'bg-image-pick-upload';
+        button.title = 'Choose from uploads';
+        button.setAttribute('aria-label', 'Choose background image from uploads');
+        button.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>';
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            openBackgroundImagePicker();
+        });
+        field.appendChild(button);
+    }
+
+    syncBackgroundImageInput();
+}
+
+function scheduleBackgroundImagePickerInjection() {
+    setTimeout(injectBackgroundImagePicker, 0);
+    setTimeout(injectBackgroundImagePicker, 150);
+}
+
+editor.on('load', scheduleBackgroundImagePickerInjection);
+editor.on('component:selected', scheduleBackgroundImagePickerInjection);
+editor.on('component:styleUpdate', scheduleBackgroundImagePickerInjection);
+
+editor.TraitManager.addType('editor-upload-picker', {
+    createInput({ trait }) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'editor-content-field upload-picker-field';
+        wrapper.dataset.uploadKind = trait.get('uploadKind') || 'image';
+        markEditorFieldInput(wrapper, trait.get('editorField'));
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'upload-picker-trigger';
+        button.innerHTML = '<svg fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>';
+        button.addEventListener('click', () => openMediaPicker(trait, wrapper));
+
+        const current = document.createElement('span');
+        current.className = 'upload-picker-current';
+
+        wrapper.append(button, current);
+        updateUploadPickerTrigger(wrapper, getEditableFieldValue(editor.getSelected(), trait.get('editorField')), wrapper.dataset.uploadKind);
+
+        return wrapper;
+    },
+    onUpdate({ elInput, component, trait }) {
+        updateUploadPickerTrigger(elInput, getEditableFieldValue(component, trait.get('editorField')), trait.get('uploadKind') || 'image');
+    },
+});
+
 function contentTrait(name, label, field, options = {}) {
     return {
         type: options.type || 'editor-content-input',
@@ -921,6 +1711,7 @@ function contentTrait(name, label, field, options = {}) {
         label,
         editorField: field,
         placeholder: options.placeholder || '',
+        uploadKind: options.uploadKind || '',
     };
 }
 
@@ -990,6 +1781,10 @@ function buildContentTraits(component) {
     }
 
     if (tag === 'img' || component.get?.('type') === 'image') {
+        traits.push(contentTrait('uploaded_image_src', 'Uploaded Image', { kind: 'attr', name: 'src' }, {
+            type: 'editor-upload-picker',
+            uploadKind: 'image',
+        }));
         if (!hasTrait('src')) {
             traits.push(contentTrait('src', 'Image URL', { kind: 'attr', name: 'src' }, { placeholder: 'https://example.com/image.jpg' }));
         }
@@ -998,6 +1793,23 @@ function buildContentTraits(component) {
                 type: 'editor-content-textarea',
                 placeholder: 'Describe the image',
             }));
+        }
+    }
+
+    if (tag === 'video' || component.get?.('type') === 'video') {
+        traits.push(contentTrait('uploaded_video_src', 'Uploaded Video', { kind: 'attr', name: 'src' }, {
+            type: 'editor-upload-picker',
+            uploadKind: 'video',
+        }));
+        if (!hasTrait('src')) {
+            traits.push(contentTrait('src', 'Video URL', { kind: 'attr', name: 'src' }, { placeholder: 'https://example.com/video.mp4' }));
+        }
+        traits.push(contentTrait('uploaded_video_poster', 'Uploaded Poster', { kind: 'attr', name: 'poster' }, {
+            type: 'editor-upload-picker',
+            uploadKind: 'image',
+        }));
+        if (!hasTrait('poster')) {
+            traits.push(contentTrait('poster', 'Poster URL', { kind: 'attr', name: 'poster' }, { placeholder: 'https://example.com/poster.jpg' }));
         }
     }
 
@@ -1027,6 +1839,7 @@ const BACKGROUND_IMAGE_FUNCTIONS = [
     'url',
 ];
 const BACKGROUND_REPEAT_VALUES = ['no-repeat', 'repeat-x', 'repeat-y', 'space', 'round', 'repeat'];
+const BACKGROUND_ATTACHMENT_VALUES = ['fixed', 'local', 'scroll'];
 const CSS_COLOR_KEYWORDS = new Set([
     'transparent', 'currentcolor', 'black', 'white', 'red', 'green', 'blue',
     'yellow', 'orange', 'purple', 'gray', 'grey', 'silver', 'maroon', 'navy',
@@ -1160,14 +1973,16 @@ function normalizeBackgroundPosition(value) {
 function parseBackgroundPlacement(remainder) {
     const text = remainder.replace(/\b(?:rgba?|hsla?)\([^)]+\)/gi, ' ').replace(/#[0-9a-f]{3,8}\b/gi, ' ');
     const repeat = BACKGROUND_REPEAT_VALUES.find(value => text.toLowerCase().includes(value)) || '';
+    const attachment = BACKGROUND_ATTACHMENT_VALUES.find(value => text.toLowerCase().includes(value)) || '';
+    const ignoredPlacementValues = [...BACKGROUND_REPEAT_VALUES, ...BACKGROUND_ATTACHMENT_VALUES].join('|');
     const sizeMatch = text.match(/\/\s*([^,;]+)/);
     const size = sizeMatch
-        ? sizeMatch[1].replace(new RegExp(`\\b(?:${BACKGROUND_REPEAT_VALUES.join('|')})\\b`, 'gi'), '').trim()
+        ? sizeMatch[1].replace(new RegExp(`\\b(?:${ignoredPlacementValues})\\b`, 'gi'), '').trim()
         : (text.match(/\b(?:cover|contain)\b/i)?.[0] || '');
     const positionSource = sizeMatch ? text.slice(0, sizeMatch.index) : text;
     const position = normalizeBackgroundPosition(positionSource);
 
-    return { repeat, size, position };
+    return { repeat, size, position, attachment };
 }
 
 function parseBackgroundShorthand(background) {
@@ -1183,6 +1998,7 @@ function parseBackgroundShorthand(background) {
     if (placement.repeat) styles['background-repeat'] = placement.repeat;
     if (placement.size) styles['background-size'] = placement.size;
     if (placement.position) styles['background-position'] = placement.position;
+    if (placement.attachment) styles['background-attachment'] = placement.attachment;
 
     return styles;
 }
@@ -1326,6 +2142,18 @@ bm.add('pb-badge', {
     label: 'Badge', category: 'Elements',
     media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="9" width="18" height="6" rx="3"/></svg>`,
     content: '<span style="display:inline-block;padding:4px 12px;background:#e0e7ff;color:#4338ca;border-radius:99px;font-size:12px;font-weight:600;letter-spacing:.04em;">Badge</span>',
+});
+
+bm.add('pb-image', {
+    label: 'Image', category: 'Elements',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="10" r="1.5"/><path d="M21 15l-4.5-4.5a2 2 0 00-2.8 0L7 17"/></svg>`,
+    content: '<img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=80" alt="Content image" style="display:block;width:100%;max-width:720px;height:auto;border-radius:12px;object-fit:cover;">',
+});
+
+bm.add('pb-video', {
+    label: 'Video', category: 'Elements',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>`,
+    content: '<video src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4" controls playsinline style="display:block;width:100%;max-width:720px;border-radius:12px;background:#0f172a;"></video>',
 });
 
 // ─── Service Sections blocks
@@ -1565,16 +2393,97 @@ function hexFromRgb(rgb) {
     return '#' + m.slice(0,3).map(n => parseInt(n).toString(16).padStart(2,'0')).join('');
 }
 
+function hexFromCssColor(value) {
+    const color = String(value || '').trim();
+    if (color.startsWith('rgb')) return hexFromRgb(color);
+
+    const hex = color.match(/#[0-9a-f]{3,8}\b/i);
+    if (!hex) return '#000000';
+
+    const raw = hex[0].slice(1);
+    if (raw.length === 3 || raw.length === 4) {
+        return '#' + raw.slice(0, 3).split('').map(char => char + char).join('');
+    }
+
+    return '#' + raw.slice(0, 6);
+}
+
+function clampOpacity(value) {
+    const parsed = parseFloat(value);
+    if (Number.isNaN(parsed)) return 1;
+    return Math.max(0, Math.min(1, parsed));
+}
+
+function opacityFromCssColor(value) {
+    const color = String(value || '').trim();
+    const rgba = color.match(/rgba?\(([^)]*)\)/i);
+    if (rgba) {
+        const body = rgba[1].trim();
+        const slashAlpha = body.match(/\/\s*([\d.]+%?)/);
+        if (slashAlpha) {
+            const alpha = slashAlpha[1].endsWith('%') ? parseFloat(slashAlpha[1]) / 100 : parseFloat(slashAlpha[1]);
+            return clampOpacity(alpha);
+        }
+
+        const parts = body.split(',').map(part => part.trim());
+        if (parts.length >= 4) {
+            const alpha = parts[3].endsWith('%') ? parseFloat(parts[3]) / 100 : parseFloat(parts[3]);
+            return clampOpacity(alpha);
+        }
+    }
+
+    const hex = color.match(/#([0-9a-f]{4}|[0-9a-f]{8})\b/i);
+    if (hex) {
+        const alphaHex = hex[1].length === 4 ? hex[1][3] + hex[1][3] : hex[1].slice(6, 8);
+        return clampOpacity(parseInt(alphaHex, 16) / 255);
+    }
+
+    return 1;
+}
+
 function parseGradient(bgImage) {
     if (!bgImage) return null;
-    const lin = bgImage.match(/linear-gradient\(\s*([^,]+?)\s*,\s*([^,]+?)\s*,\s*([^)]+?)\s*\)/i);
-    if (lin) return { type: 'linear', dir: lin[1].trim(), c1: lin[2].trim(), c2: lin[3].trim() };
-    const rad = bgImage.match(/radial-gradient\([^,]+,\s*([^,]+?)\s*,\s*([^)]+?)\s*\)/i);
-    if (rad) return { type: 'radial', c1: rad[1].trim(), c2: rad[2].trim() };
-    return null;
+    const lower = bgImage.toLowerCase();
+    const linearIndex = lower.indexOf('linear-gradient(');
+    const radialIndex = lower.indexOf('radial-gradient(');
+    const isLinear = linearIndex > -1 && (radialIndex === -1 || linearIndex < radialIndex);
+    const start = isLinear ? linearIndex : radialIndex;
+    if (start < 0) return null;
+
+    const gradient = readCssFunction(bgImage, start).text;
+    const body = gradient.slice(gradient.indexOf('(') + 1, gradient.lastIndexOf(')'));
+    const parts = splitCssList(body);
+    if (parts.length < 2) return null;
+
+    let dir = '';
+    let stops = parts;
+    if (isLinear && /^(to\s|[-\d.]+(?:deg|rad|turn)\b)/i.test(parts[0].trim())) {
+        dir = parts[0].trim();
+        stops = parts.slice(1);
+    } else if (!isLinear && /^(circle\b|ellipse\b|at\s)/i.test(parts[0].trim())) {
+        stops = parts.slice(1);
+    }
+
+    if (stops.length < 2) return null;
+
+    return {
+        type: isLinear ? 'linear' : 'radial',
+        dir,
+        c1: stops[0].trim(),
+        c2: stops[1].trim(),
+        opacity: Math.min(opacityFromCssColor(stops[0]), opacityFromCssColor(stops[1])),
+    };
 }
 
 const GRADIENT_HTML = `
+<div class="gi-sep"></div>
+<div class="gi-row">
+  <span class="gi-label">Effect</span>
+  <select id="gi-effect">
+    <option value="none">None</option>
+    <option value="parallax">Parallax</option>
+  </select>
+</div>
 <div class="gi-sep"></div>
 <div class="gi-row">
   <span class="gi-label">Opacity</span>
@@ -1603,6 +2512,11 @@ const GRADIENT_HTML = `
       <option value="45deg">45°</option>
       <option value="135deg">135°</option>
     </select>
+  </div>
+  <div class="gi-row">
+    <span class="gi-label">Grad opacity</span>
+    <input type="range" id="gi-gradient-opacity" min="0" max="1" step="0.01" value="1">
+    <span class="gi-opacity-val" id="gi-gradient-opacity-val">100%</span>
   </div>
   <div class="gi-row">
     <span class="gi-label">Colors</span>
@@ -1648,9 +2562,32 @@ function injectGradientIntoBackground() {
     const giC2   = document.getElementById('gi-c2');
     const giOpts = document.getElementById('gi-opts');
     const giDirRow = document.getElementById('gi-dir-row');
+    const giEffect = document.getElementById('gi-effect');
+    const giGradientOpacity = document.getElementById('gi-gradient-opacity');
+    const giGradientOpacityVal = document.getElementById('gi-gradient-opacity-val');
+    giEffect.value = 'none';
+
+    function rgbaFromHex(hex, opacity) {
+        const raw = hex.replace('#', '');
+        const normalized = raw.length === 3 ? raw.split('').map(char => char + char).join('') : raw;
+        const r = parseInt(normalized.slice(0, 2), 16);
+        const g = parseInt(normalized.slice(2, 4), 16);
+        const b = parseInt(normalized.slice(4, 6), 16);
+        const alpha = Math.round(clampOpacity(opacity) * 100) / 100;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function gradientColor(hex) {
+        const opacity = clampOpacity(giGradientOpacity.value);
+        return opacity >= 1 ? hex : rgbaFromHex(hex, opacity);
+    }
+
+    function updateGradientOpacityLabel() {
+        giGradientOpacityVal.textContent = Math.round(clampOpacity(giGradientOpacity.value) * 100) + '%';
+    }
 
     function buildGrad() {
-        const t = giType.value, c1 = giC1.value, c2 = giC2.value;
+        const t = giType.value, c1 = gradientColor(giC1.value), c2 = gradientColor(giC2.value);
         if (t === 'none') return 'none';
         if (t === 'radial') return `radial-gradient(circle, ${c1}, ${c2})`;
         return `linear-gradient(${giDir.value}, ${c1}, ${c2})`;
@@ -1667,10 +2604,63 @@ function injectGradientIntoBackground() {
         c.addStyle({ 'background-image': buildGrad() });
     }
 
+    function getBackgroundEffect(styles) {
+        const attachment = String(styles['background-attachment'] || 'scroll').toLowerCase();
+        if (attachment !== 'fixed') return 'none';
+
+        const repeat = String(styles['background-repeat'] || '').toLowerCase();
+        const size = String(styles['background-size'] || '').toLowerCase();
+        const position = normalizeBackgroundPosition(String(styles['background-position'] || ''));
+
+        if (repeat === 'no-repeat' && size === 'cover' && position === 'center center') {
+            return 'parallax';
+        }
+
+        return 'none';
+    }
+
+    function applyBackgroundEffect() {
+        const c = editor.getSelected(); if (!c) return;
+        const mode = giEffect.value;
+        const patch = {};
+
+        if (mode === 'parallax') {
+            Object.assign(patch, {
+                'background-attachment': 'fixed',
+                'background-repeat': 'no-repeat',
+                'background-size': 'cover',
+                'background-position': 'center center',
+            });
+        } else {
+            patch['background-attachment'] = 'scroll';
+        }
+
+        c.addStyle(patch);
+        setTimeout(() => syncGradientControls(editor.getSelected()), 0);
+    }
+
     giType.addEventListener('change', () => { updateOpts(); applyGradient(); });
     giDir.addEventListener('change', applyGradient);
     giC1.addEventListener('input', applyGradient);
     giC2.addEventListener('input', applyGradient);
+    giGradientOpacity.addEventListener('input', () => {
+        updateGradientOpacityLabel();
+        applyGradient();
+    });
+    giEffect.addEventListener('change', applyBackgroundEffect);
+
+    props.addEventListener('change', event => {
+        const syncSelectors = [
+            '.gjs-sm-property__background-attachment select',
+            '.gjs-sm-property__background-repeat select',
+            '.gjs-sm-property__background-size select',
+            '.gjs-sm-property__background-position select',
+        ];
+
+        if (syncSelectors.some(selector => event.target.matches(selector))) {
+            setTimeout(() => syncGradientControls(editor.getSelected()), 0);
+        }
+    });
 
     giOpacity.addEventListener('input', () => {
         const v = parseFloat(giOpacity.value);
@@ -1680,8 +2670,13 @@ function injectGradientIntoBackground() {
 
     // Sync controls from selected component's existing styles
     function syncGradientControls(component) {
-        if (!component) return;
+        if (!component) {
+            giEffect.value = 'none';
+            return;
+        }
+
         const styles = component.getStyle();
+        giEffect.value = getBackgroundEffect(styles);
         // Opacity
         const op = styles.opacity !== undefined ? parseFloat(styles.opacity) : 1;
         giOpacity.value = op;
@@ -1690,13 +2685,15 @@ function injectGradientIntoBackground() {
         const parsed = parseGradient(styles['background-image'] || '');
         if (parsed) {
             giType.value = parsed.type;
-            const toHex = v => v.startsWith('rgb') ? hexFromRgb(v) : v.slice(0,7);
-            giC1.value = toHex(parsed.c1);
-            giC2.value = toHex(parsed.c2);
-            if (parsed.type === 'linear' && parsed.dir) giDir.value = parsed.dir;
+            giC1.value = hexFromCssColor(parsed.c1);
+            giC2.value = hexFromCssColor(parsed.c2);
+            giGradientOpacity.value = parsed.opacity ?? 1;
+            if (parsed.type === 'linear') giDir.value = parsed.dir || 'to right';
         } else {
             giType.value = 'none';
+            giGradientOpacity.value = 1;
         }
+        updateGradientOpacityLabel();
         updateOpts();
     }
 
@@ -1704,8 +2701,109 @@ function injectGradientIntoBackground() {
     syncGradientControls(editor.getSelected());
 }
 
-// Inject as soon as the Background sector is available (on first component select)
-editor.on('component:selected', injectGradientIntoBackground);
+// Inject as soon as the Background sector is available.
+function scheduleGradientInjection() {
+    setTimeout(injectGradientIntoBackground, 0);
+    setTimeout(injectGradientIntoBackground, 150);
+}
+
+editor.on('load', scheduleGradientInjection);
+editor.on('component:selected', scheduleGradientInjection);
+
+const ALIGNMENT_HTML = `
+<div id="pa-wrap">
+  <div class="pa-row">
+    <span class="pa-label">Align</span>
+    <div class="pa-buttons">
+      <button type="button" class="pa-btn" data-align="left" title="Align left" aria-label="Align left">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="10" x2="14" y2="10"/><line x1="4" y1="14" x2="20" y2="14"/><line x1="4" y1="18" x2="14" y2="18"/></svg>
+      </button>
+      <button type="button" class="pa-btn" data-align="center" title="Align center" aria-label="Align center">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="7" y1="10" x2="17" y2="10"/><line x1="4" y1="14" x2="20" y2="14"/><line x1="7" y1="18" x2="17" y2="18"/></svg>
+      </button>
+      <button type="button" class="pa-btn" data-align="right" title="Align right" aria-label="Align right">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="10" y1="10" x2="20" y2="10"/><line x1="4" y1="14" x2="20" y2="14"/><line x1="10" y1="18" x2="20" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</div>`;
+
+function inferAlignment(component) {
+    if (!component) return 'left';
+
+    const styles = component.getStyle?.() || {};
+    const textAlign = String(styles['text-align'] || '').toLowerCase();
+    if (['left', 'center', 'right'].includes(textAlign)) return textAlign;
+
+    const marginLeft = String(styles['margin-left'] || '').toLowerCase();
+    const marginRight = String(styles['margin-right'] || '').toLowerCase();
+    if (marginLeft === 'auto' && marginRight === 'auto') return 'center';
+    if (marginLeft === 'auto') return 'right';
+    if (marginRight === 'auto') return 'left';
+
+    const el = component.getEl?.();
+    if (el) {
+        const computed = el.ownerDocument.defaultView.getComputedStyle(el);
+        const computedAlign = String(computed.textAlign || '').toLowerCase();
+        if (['left', 'center', 'right'].includes(computedAlign)) return computedAlign;
+    }
+
+    return 'left';
+}
+
+function syncAlignmentControls(component = editor.getSelected()) {
+    const active = inferAlignment(component);
+    document.querySelectorAll('#pa-wrap .pa-btn').forEach(button => {
+        button.classList.toggle('active', button.dataset.align === active);
+    });
+}
+
+function applyAlignment(value) {
+    const component = editor.getSelected();
+    if (!component || !['left', 'center', 'right'].includes(value)) return;
+
+    const tag = getTagName(component);
+    const type = component.get?.('type');
+    component.addStyle({ 'text-align': value });
+
+    if (['img', 'video', 'iframe'].includes(tag) || ['image', 'video'].includes(type)) {
+        const marginPatch = value === 'center'
+            ? { display: 'block', 'margin-left': 'auto', 'margin-right': 'auto' }
+            : value === 'right'
+                ? { display: 'block', 'margin-left': 'auto', 'margin-right': '0' }
+                : { display: 'block', 'margin-left': '0', 'margin-right': 'auto' };
+        component.addStyle(marginPatch);
+    }
+
+    if (['a', 'button'].includes(tag)) {
+        component.parent?.()?.addStyle({ 'text-align': value });
+    }
+
+    syncAlignmentControls(component);
+}
+
+function injectAlignmentIntoLayout() {
+    const props = document.querySelector('#styles-wrap .gjs-sm-sector__layout .gjs-sm-properties');
+    if (!props) return;
+
+    if (!document.getElementById('pa-wrap')) {
+        props.insertAdjacentHTML('beforeend', ALIGNMENT_HTML);
+        document.querySelectorAll('#pa-wrap .pa-btn').forEach(button => {
+            button.addEventListener('click', () => applyAlignment(button.dataset.align));
+        });
+    }
+
+    syncAlignmentControls();
+}
+
+function scheduleAlignmentInjection() {
+    setTimeout(injectAlignmentIntoLayout, 0);
+    setTimeout(injectAlignmentIntoLayout, 150);
+}
+
+editor.on('load', scheduleAlignmentInjection);
+editor.on('component:selected', scheduleAlignmentInjection);
+editor.on('component:styleUpdate', syncAlignmentControls);
 
 // ─── Toast helper
 const toast = document.getElementById('toast');
@@ -1726,7 +2824,7 @@ document.getElementById('save-chevron').addEventListener('click', e => {
 document.addEventListener('click', () => saveMenu.classList.remove('open'));
 saveMenu.addEventListener('click', e => e.stopPropagation());
 
-document.getElementById('save-btn').addEventListener('click', () => doSave('draft'));
+document.getElementById('save-btn').addEventListener('click', () => doSave('publish'));
 
 document.querySelectorAll('[data-save-action]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2004,6 +3102,11 @@ function buildStyleSectors() {
                 { property: 'background-position', type: 'select', list: [
                     { value: 'center center', name: 'Center' }, { value: 'top center', name: 'Top' },
                     { value: 'bottom center', name: 'Bottom' },
+                ]},
+                { property: 'background-attachment', type: 'select', list: [
+                    { value: 'scroll', name: 'Scroll' },
+                    { value: 'fixed', name: 'Fixed' },
+                    { value: 'local', name: 'Local' },
                 ]},
             ]
         },

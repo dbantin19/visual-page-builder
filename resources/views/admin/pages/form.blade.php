@@ -23,7 +23,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM14 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zM14 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/>
             </svg>
-            Use from Template
+            Create from Template
         </button>
         <a href="{{ route('admin.pages.index') }}" class="text-sm text-gray-500 hover:text-gray-700 transition-colors">
             &larr; Back to Pages
@@ -144,7 +144,7 @@
 
         {{-- Header --}}
         <div style="display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #e5e7eb;flex-shrink:0;">
-            <h2 style="font-size:15px;font-weight:600;color:#111827;margin:0;">Use from Template</h2>
+            <h2 style="font-size:15px;font-weight:600;color:#111827;margin:0;">Create from Template</h2>
             <button id="form-tmpl-close" style="background:transparent;border:none;cursor:pointer;color:#9ca3af;padding:4px;border-radius:4px;display:flex;align-items:center;">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>

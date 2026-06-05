@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\PageTemplate;
 use App\Models\PageVersion;
+use App\Support\ContentUploads;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -52,7 +53,7 @@ class PagesController extends Controller
     {
         $data = $this->validated($request, $page->id);
         $page->update($data);
-        return redirect()->route('admin.pages.index')->with('success', 'Page updated.');
+        return redirect()->route('admin.pages.edit', $page)->with('success', 'Page updated.');
     }
 
     public function destroy(Page $page)
@@ -69,7 +70,9 @@ class PagesController extends Controller
 
     public function builder(Page $page)
     {
-        return view('admin.pages.builder', compact('page'));
+        $uploadedMedia = ContentUploads::all();
+
+        return view('admin.pages.builder', compact('page', 'uploadedMedia'));
     }
 
     public function useTemplate(Request $request, Page $page)
@@ -97,10 +100,18 @@ class PagesController extends Controller
             'styles'     => json_decode($request->input('styles', '[]')),
         ]);
 
-        $updates = ['content' => $content, 'builder_data' => $builderData];
-        if ($request->has('publish')) {
-            $updates['is_published'] = $request->boolean('publish');
-        }
+        $updates = $request->boolean('publish')
+            ? [
+                'content' => $content,
+                'builder_data' => $builderData,
+                'draft_content' => null,
+                'draft_builder_data' => null,
+                'is_published' => true,
+            ]
+            : [
+                'draft_content' => $content,
+                'draft_builder_data' => $builderData,
+            ];
 
         $page->update($updates);
 
@@ -138,8 +149,8 @@ class PagesController extends Controller
         abort_if($version->page_id !== $page->id, 404);
 
         $page->update([
-            'content'      => $version->content,
-            'builder_data' => $version->builder_data,
+            'draft_content'      => $version->content,
+            'draft_builder_data' => $version->builder_data,
         ]);
 
         return response()->json(['success' => true, 'builder_data' => $version->builder_data]);

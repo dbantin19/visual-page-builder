@@ -7,6 +7,8 @@ use App\Models\NavMenuItem;
 use App\Models\NavSetting;
 use App\Models\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class NavMenuController extends Controller
 {
@@ -27,12 +29,16 @@ class NavMenuController extends Controller
         ->get();
 
         $pages = Page::orderBy('name')->get();
+        $publishedPages = Page::where('is_published', true)
+            ->get()
+            ->sortBy(fn(Page $page) => preg_replace('/\s+/', '{', strtolower($page->name)))
+            ->values();
         $navSetting = NavSetting::get();
 
         $flatItems = [];
         $this->flattenItems($items, $flatItems, 0);
 
-        return view('admin.navigation.index', compact('items', 'pages', 'flatItems', 'navSetting'));
+        return view('admin.navigation.index', compact('items', 'pages', 'publishedPages', 'flatItems', 'navSetting'));
     }
 
     public function saveAll(Request $request)
@@ -45,22 +51,59 @@ class NavMenuController extends Controller
             'alignment'              => 'required|in:left,center,right',
             'logo_position'          => 'required|in:left,center,right',
             'items'                  => 'present|array',
-            'items.*.id'             => 'required|integer|exists:nav_menu_items,id',
+            'items.*.id'             => 'nullable|integer|exists:nav_menu_items,id',
             'items.*.parent_id'      => 'nullable|integer|exists:nav_menu_items,id',
             'items.*.sort_order'     => 'required|integer|min:0',
+            'items.*.label'          => 'nullable|string|max:255',
+            'items.*.page_id'        => 'nullable|integer|exists:pages,id',
+            'items.*.url'            => 'nullable|string|max:500',
         ]);
 
-        NavSetting::get()->update([
-            'alignment'     => $request->input('alignment'),
-            'logo_position' => $request->input('logo_position'),
-        ]);
+        foreach ($request->input('items') as $index => $row) {
+            $hasId = isset($row['id']) && $row['id'] !== '';
 
-        foreach ($request->input('items') as $row) {
-            NavMenuItem::where('id', $row['id'])->update([
-                'parent_id'  => isset($row['parent_id']) && $row['parent_id'] !== '' ? (int) $row['parent_id'] : null,
-                'sort_order' => (int) $row['sort_order'],
-            ]);
+            if (! $hasId && blank($row['label'] ?? null)) {
+                throw ValidationException::withMessages([
+                    "items.$index.label" => 'A label is required for new menu items.',
+                ]);
+            }
+
+            if (! $hasId && blank($row['page_id'] ?? null) && blank($row['url'] ?? null)) {
+                throw ValidationException::withMessages([
+                    "items.$index.page_id" => 'New menu items must link to a page or URL.',
+                ]);
+            }
         }
+
+        DB::transaction(function () use ($request) {
+            NavSetting::get()->update([
+                'alignment'     => $request->input('alignment'),
+                'logo_position' => $request->input('logo_position'),
+            ]);
+
+            foreach ($request->input('items') as $row) {
+                $parentId = isset($row['parent_id']) && $row['parent_id'] !== '' ? (int) $row['parent_id'] : null;
+
+                if (isset($row['id']) && $row['id'] !== '') {
+                    NavMenuItem::where('id', $row['id'])->update([
+                        'parent_id'  => $parentId,
+                        'sort_order' => (int) $row['sort_order'],
+                    ]);
+
+                    continue;
+                }
+
+                $pageId = $row['page_id'] ?? null;
+
+                NavMenuItem::create([
+                    'label'      => $row['label'],
+                    'page_id'    => $pageId ?: null,
+                    'url'        => $pageId ? null : ($row['url'] ?? null),
+                    'parent_id'  => $parentId,
+                    'sort_order' => (int) $row['sort_order'],
+                ]);
+            }
+        });
 
         return redirect()->route('admin.navigation.index')->with('success', 'Navigation saved.');
     }

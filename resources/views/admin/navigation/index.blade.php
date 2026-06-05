@@ -9,7 +9,7 @@
 <div id="save-bar" class="hidden -mx-8 -mt-8 mb-8 px-8 py-3 bg-amber-50 border-b border-amber-200 flex items-center justify-between">
     <p class="text-sm text-amber-800 font-medium">You have unsaved changes.</p>
     <div class="flex items-center gap-3">
-        <button onclick="discardChanges()" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Discard</button>
+        <button type="button" onclick="discardChanges()" class="text-sm text-gray-600 hover:text-gray-900 font-medium">Discard</button>
         <button type="button" onclick="saveNav()"
                 class="px-4 py-2 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium rounded-lg transition-colors">
             Save changes
@@ -17,7 +17,8 @@
     </div>
 </div>
 
-<div class="max-w-2xl">
+<div class="max-w-6xl grid grid-cols-1 xl:grid-cols-[minmax(0,42rem)_20rem] gap-6 items-start">
+    <div class="min-w-0">
 
     {{-- ── Add item form ───────────────────────────────────────────────── --}}
     <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -90,7 +91,7 @@
     </div>
 
     {{-- ── Current menu structure ──────────────────────────────────────── --}}
-    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+    <div id="nav-drop-zone" class="bg-white rounded-xl border border-gray-200 overflow-hidden transition-shadow">
         <div class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
             <h2 class="text-sm font-semibold text-gray-700 shrink-0 mr-auto">Current Navigation</h2>
 
@@ -171,26 +172,23 @@
             @endif
         </div>
 
-        @if($items->isEmpty())
-            <div class="p-12 text-center">
-                <svg class="w-8 h-8 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-                <p class="text-gray-500 text-sm">No menu items yet.</p>
-            </div>
-        @else
-            <ul id="nav-items-list" class="divide-y divide-gray-100">
-                @foreach($items as $item)
-                    @include('admin.navigation._item', [
-                        'item'      => $item,
-                        'depth'     => 0,
-                        'isFirst'   => $loop->first,
-                        'pages'     => $pages,
-                        'flatItems' => $flatItems,
-                    ])
-                @endforeach
-            </ul>
-        @endif
+        <div id="nav-empty-state" class="{{ $items->isEmpty() ? '' : 'hidden' }} p-12 text-center">
+            <svg class="w-8 h-8 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <p class="text-gray-500 text-sm">No menu items yet.</p>
+        </div>
+        <ul id="nav-items-list" class="divide-y divide-gray-100 {{ $items->isEmpty() ? 'hidden' : '' }}">
+            @foreach($items as $item)
+                @include('admin.navigation._item', [
+                    'item'      => $item,
+                    'depth'     => 0,
+                    'isFirst'   => $loop->first,
+                    'pages'     => $pages,
+                    'flatItems' => $flatItems,
+                ])
+            @endforeach
+        </ul>
     </div>
 
     {{-- ── Live preview ────────────────────────────────────────────────── --}}
@@ -412,6 +410,42 @@
         </div>
     </div>
     @endif
+    </div>
+
+    <aside class="bg-white rounded-xl border border-gray-200 overflow-hidden xl:sticky xl:top-6">
+        <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
+            <h2 class="text-sm font-semibold text-gray-700">Published Pages</h2>
+            <span class="text-xs font-medium text-gray-400">{{ $publishedPages->count() }}</span>
+        </div>
+
+        <div class="max-h-[calc(100vh-12rem)] overflow-y-auto divide-y divide-gray-100">
+            @forelse($publishedPages as $page)
+                <div draggable="true"
+                     data-page-source
+                     data-page-id="{{ $page->id }}"
+                     data-page-label="{{ $page->name }}"
+                     data-page-url="/{{ $page->slug }}"
+                     class="group px-5 py-3 flex items-center gap-3 cursor-grab hover:bg-blue-50/60 transition-colors">
+                    <span class="text-gray-300 group-hover:text-blue-500 transition-colors shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+                        </svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-gray-800 truncate">{{ $page->name }}</p>
+                        <p class="text-xs text-blue-500 truncate">/{{ $page->slug }}</p>
+                    </div>
+                </div>
+            @empty
+                <div class="px-5 py-10 text-center">
+                    <svg class="w-8 h-8 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <p class="text-sm text-gray-500">No published pages.</p>
+                </div>
+            @endforelse
+        </div>
+    </aside>
 </div>
 
 <script>
@@ -433,7 +467,10 @@ document.querySelectorAll('select[name="page_id"]').forEach(function(s) { syncUr
 function markDirty() {
     document.getElementById('save-bar').classList.remove('hidden');
 }
-function discardChanges() { window.location.reload(); }
+function discardChanges() {
+    suppressUnsavedWarning = true;
+    window.location.reload();
+}
 
 var suppressUnsavedWarning = false;
 
@@ -449,6 +486,83 @@ document.querySelectorAll('form:not(#save-form)').forEach(function(f) {
         if (!e.defaultPrevented) suppressUnsavedWarning = true;
     });
 });
+
+var pendingNewItemId = 0;
+
+function isNavItem(el) {
+    return !!(el && el.nodeType === 1 && el.hasAttribute('data-id'));
+}
+
+function updateEmptyState() {
+    var list = document.getElementById('nav-items-list');
+    var emptyState = document.getElementById('nav-empty-state');
+    if (!list || !emptyState) return;
+
+    var hasItems = Array.from(list.children).some(function(el) { return isNavItem(el); });
+    list.classList.toggle('hidden', !hasItems);
+    emptyState.classList.toggle('hidden', hasItems);
+}
+
+function createPageNavItem(page) {
+    var li = document.createElement('li');
+    li.setAttribute('data-id', '');
+    li.dataset.new = 'true';
+    li.dataset.tempId = 'new-' + (++pendingNewItemId);
+    li.dataset.label = page.label;
+    li.dataset.pageId = page.id;
+    li.dataset.url = '';
+    li.setAttribute('draggable', 'true');
+
+    li.innerHTML = [
+        '<div class="pl-6 pr-6 py-3 flex items-center gap-3 hover:bg-gray-50 group bg-blue-50/30">',
+            '<span class="cursor-grab text-gray-300 hover:text-gray-500 drag-handle select-none shrink-0">',
+                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">',
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>',
+                '</svg>',
+            '</span>',
+            '<div class="flex-1 min-w-0">',
+                '<span data-role="label" class="text-sm font-medium text-gray-900"></span>',
+                '<span class="ml-2 text-xs"><span data-role="url" class="text-blue-500"></span></span>',
+                '<span class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-600">new</span>',
+            '</div>',
+            '<div class="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">',
+                '<button type="button" data-action="remove-new" class="text-xs text-red-500 hover:text-red-700 font-medium">Remove</button>',
+            '</div>',
+        '</div>'
+    ].join('');
+
+    li.querySelector('[data-role="label"]').textContent = page.label;
+    li.querySelector('[data-role="url"]').textContent = page.url;
+    li.querySelector('[data-action="remove-new"]').addEventListener('click', function() {
+        removeNewItem(li);
+    });
+
+    return li;
+}
+
+function addPageToNavigation(page, beforeItem) {
+    var list = document.getElementById('nav-items-list');
+    if (!list) return;
+
+    var li = createPageNavItem(page);
+    if (beforeItem) {
+        list.insertBefore(li, beforeItem);
+    } else {
+        list.appendChild(li);
+    }
+
+    updateEmptyState();
+    refreshButtons();
+    markDirty();
+}
+
+function removeNewItem(li) {
+    if (!li) return;
+    li.remove();
+    updateEmptyState();
+    refreshButtons();
+    markDirty();
+}
 
 // ── Logo position (JS-only until Save) ───────────────────────────────────
 var currentLogoPosition = '{{ $navSetting->logo_position ?? 'left' }}';
@@ -581,7 +695,7 @@ function getSubtreeDepth(li, cur) {
     if (!ul) return cur;
     var max = cur;
     Array.from(ul.children).forEach(function(c) {
-        if (c.dataset && c.dataset.id) max = Math.max(max, getSubtreeDepth(c, cur + 1));
+        if (isNavItem(c)) max = Math.max(max, getSubtreeDepth(c, cur + 1));
     });
     return max;
 }
@@ -595,7 +709,7 @@ function updateItemStyles(li) {
     if (row)  { row.classList.add(pl);  row.classList.toggle('bg-gray-50/40', d > 0); }
     if (edit) edit.classList.add(pl);
     var ul = li.querySelector(':scope > ul');
-    if (ul) Array.from(ul.children).forEach(function(c) { if (c.dataset && c.dataset.id) updateItemStyles(c); });
+    if (ul) Array.from(ul.children).forEach(function(c) { if (isNavItem(c)) updateItemStyles(c); });
 }
 
 function refreshButtons() {
@@ -604,7 +718,7 @@ function refreshButtons() {
     list.querySelectorAll('[data-id]').forEach(function(li) {
         var d = getDepth(li);
         var pul = li.parentElement;
-        var sibs = Array.from(pul.children).filter(function(e) { return e.dataset && e.dataset.id; });
+        var sibs = Array.from(pul.children).filter(function(e) { return isNavItem(e); });
         var isFirst = sibs[0] === li;
 
         var ib = li.querySelector(':scope > div [data-action="indent"]');
@@ -615,7 +729,7 @@ function refreshButtons() {
         var badge = li.querySelector(':scope > div .sub-count');
         if (badge) {
             var cul = li.querySelector(':scope > ul');
-            var cnt = cul ? Array.from(cul.children).filter(function(c) { return c.dataset && c.dataset.id; }).length : 0;
+            var cnt = cul ? Array.from(cul.children).filter(function(c) { return isNavItem(c); }).length : 0;
             badge.textContent = cnt + ' sub';
             badge.classList.toggle('hidden', cnt === 0);
         }
@@ -629,7 +743,7 @@ function indentItem(id) {
     var list = document.getElementById('nav-items-list');
     var li   = list.querySelector('[data-id="' + id + '"]');
     var pul  = li.parentElement;
-    var sibs = Array.from(pul.children).filter(function(e) { return e.dataset && e.dataset.id; });
+    var sibs = Array.from(pul.children).filter(function(e) { return isNavItem(e); });
     var idx  = sibs.indexOf(li);
     if (idx <= 0) return;
 
@@ -651,7 +765,7 @@ function outdentItem(id) {
     var li      = list.querySelector('[data-id="' + id + '"]');
     var cul     = li.parentElement;
     var parentLi = cul.parentElement;
-    if (!parentLi || !parentLi.dataset || !parentLi.dataset.id) return;
+    if (!isNavItem(parentLi)) return;
 
     var gpul = parentLi.parentElement;
     gpul.insertBefore(li, parentLi.nextSibling);
@@ -666,7 +780,58 @@ function outdentItem(id) {
 (function() {
     var list = document.getElementById('nav-items-list');
     if (!list) return;
+    var dropZone = document.getElementById('nav-drop-zone');
     var dragging = null;
+    var draggedPage = null;
+
+    function topLevelTarget(e) {
+        var target = null, el = e.target;
+        while (el && el !== list && el !== dropZone) {
+            if (el.parentElement === list && isNavItem(el)) { target = el; break; }
+            el = el.parentElement;
+        }
+        return target;
+    }
+
+    function pageFromEvent(e) {
+        if (draggedPage) return draggedPage;
+        if (!e.dataTransfer) return null;
+
+        var raw = e.dataTransfer.getData('application/x-poseidon-page');
+        if (!raw) return null;
+
+        try {
+            return JSON.parse(raw);
+        } catch (err) {
+            return null;
+        }
+    }
+
+    function clearDropState() {
+        if (!dropZone) return;
+        dropZone.classList.remove('ring-2', 'ring-blue-300', 'ring-offset-2');
+    }
+
+    document.querySelectorAll('[data-page-source]').forEach(function(source) {
+        source.addEventListener('dragstart', function(e) {
+            draggedPage = {
+                id: source.dataset.pageId,
+                label: source.dataset.pageLabel,
+                url: source.dataset.pageUrl
+            };
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'copy';
+                e.dataTransfer.setData('application/x-poseidon-page', JSON.stringify(draggedPage));
+                e.dataTransfer.setData('text/plain', draggedPage.label);
+            }
+            setTimeout(function() { source.classList.add('opacity-60'); }, 0);
+        });
+        source.addEventListener('dragend', function() {
+            source.classList.remove('opacity-60');
+            draggedPage = null;
+            clearDropState();
+        });
+    });
 
     list.addEventListener('dragstart', function(e) {
         var li = e.target.closest('[data-id]');
@@ -683,15 +848,43 @@ function outdentItem(id) {
     list.addEventListener('dragover', function(e) {
         e.preventDefault();
         if (!dragging) return;
-        var target = null, el = e.target;
-        while (el && el !== list) {
-            if (el.parentElement === list && el.dataset && el.dataset.id) { target = el; break; }
-            el = el.parentElement;
-        }
+        var target = topLevelTarget(e);
         if (!target || target === dragging) return;
         var r = target.getBoundingClientRect();
         list.insertBefore(dragging, e.clientY < r.top + r.height / 2 ? target : target.nextSibling);
     });
+
+    if (dropZone) {
+        dropZone.addEventListener('dragover', function(e) {
+            var page = pageFromEvent(e);
+            if (!page) return;
+
+            e.preventDefault();
+            if (e.dataTransfer) e.dataTransfer.dropEffect = 'copy';
+            dropZone.classList.add('ring-2', 'ring-blue-300', 'ring-offset-2');
+        });
+
+        dropZone.addEventListener('dragleave', function(e) {
+            if (!dropZone.contains(e.relatedTarget)) clearDropState();
+        });
+
+        dropZone.addEventListener('drop', function(e) {
+            var page = pageFromEvent(e);
+            if (!page) return;
+
+            e.preventDefault();
+            var target = topLevelTarget(e);
+            var beforeItem = null;
+            if (target) {
+                var r = target.getBoundingClientRect();
+                beforeItem = e.clientY < r.top + r.height / 2 ? target : target.nextSibling;
+            }
+
+            addPageToNavigation(page, beforeItem);
+            draggedPage = null;
+            clearDropState();
+        });
+    }
 })();
 
 // ── Read state & Save ────────────────────────────────────────────────────
@@ -701,10 +894,20 @@ function readNavState() {
     function walk(ul, parentId) {
         var order = 0;
         Array.from(ul.children).forEach(function(li) {
-            if (!li.dataset || !li.dataset.id) return;
-            items.push({ id: parseInt(li.dataset.id), parent_id: parentId, sort_order: order++ });
+            if (!isNavItem(li)) return;
+
+            var id = li.dataset.id ? parseInt(li.dataset.id, 10) : null;
+            var item = { id: id, parent_id: parentId, sort_order: order++ };
+
+            if (li.dataset.new === 'true') {
+                item.label = li.dataset.label;
+                item.page_id = li.dataset.pageId || null;
+                item.url = li.dataset.url || null;
+            }
+
+            items.push(item);
             var cul = li.querySelector(':scope > ul');
-            if (cul) walk(cul, parseInt(li.dataset.id));
+            if (cul && id) walk(cul, id);
         });
     }
     if (list) walk(list, null);
@@ -720,7 +923,7 @@ function saveNav() {
 
     function hidden(name, val) {
         var i = document.createElement('input');
-        i.type = 'hidden'; i.name = name; i.value = val === null ? '' : val;
+        i.type = 'hidden'; i.name = name; i.value = val == null ? '' : val;
         form.appendChild(i);
     }
     hidden('_token', '{{ csrf_token() }}');
@@ -730,6 +933,9 @@ function saveNav() {
         hidden('items[' + idx + '][id]',         item.id);
         hidden('items[' + idx + '][parent_id]',  item.parent_id);
         hidden('items[' + idx + '][sort_order]', item.sort_order);
+        if (item.label !== undefined) hidden('items[' + idx + '][label]', item.label);
+        if (item.page_id !== undefined) hidden('items[' + idx + '][page_id]', item.page_id);
+        if (item.url !== undefined) hidden('items[' + idx + '][url]', item.url);
     });
 
     suppressUnsavedWarning = true;
