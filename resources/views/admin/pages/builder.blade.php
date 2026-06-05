@@ -365,6 +365,26 @@
             cursor: not-allowed;
             opacity: .55;
         }
+        .editor-color-field {
+            display: flex;
+            align-items: stretch;
+            gap: 7px;
+            width: 100%;
+        }
+        .editor-color-field .editor-color-swatch {
+            width: 36px;
+            height: 34px;
+            flex: 0 0 36px;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            background: #1e293b;
+            cursor: pointer;
+            padding: 3px;
+        }
+        .editor-color-field .editor-color-text {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
         #styles-wrap .gjs-sm-property__background-image .gjs-field {
             display: flex !important;
             align-items: stretch !important;
@@ -1775,8 +1795,9 @@ function serviceAreaCardMarkup(area = {}) {
     const description = String(area.description || `Covering all cities in the ${name} area.`).trim();
     const phone = String(area.phone || '(800) 000-0000').trim();
     const href = String(area.href || phoneHrefFromText(phone)).trim();
+    const background = String(area.background || '#f8fafc').trim();
 
-    return `<article data-service-area-card="true" style="background:#f8fafc;border:1px solid rgba(30,58,95,.12);border-radius:10px;padding:14px 12px;min-height:140px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 14px rgba(15,23,42,.12);">
+    return `<article data-service-area-card="true" style="background:${escapeAttribute(background)};border:1px solid rgba(30,58,95,.12);border-radius:10px;padding:14px 12px;min-height:140px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 14px rgba(15,23,42,.12);">
   <h3 data-service-area-name="true" style="color:#1e3a5f;font-size:14px;font-weight:800;line-height:1.25;margin:0;"><span style="color:#d97706;margin-right:4px;">&#128205;</span>${escapeHtml(name)}</h3>
   <p data-service-area-description="true" style="color:#475569;font-size:12px;line-height:1.45;margin:0;flex:1 1 auto;">${escapeHtml(description)}</p>
   <a data-service-area-phone="true" href="${escapeAttribute(href)}" style="color:#1d6b3a;font-size:13px;font-weight:800;text-decoration:none;">${escapeHtml(phone)}</a>
@@ -1817,6 +1838,35 @@ function findServiceAreaCards(component) {
     });
 
     return cards;
+}
+
+function serviceAreaCardBackground(card) {
+    const styles = card?.getStyle?.() || {};
+    return String(cssPropertyValue(styles, 'background-color') || cssPropertyValue(styles, 'background') || '#f8fafc').trim();
+}
+
+function serviceAreaCardsBackgroundValue(component) {
+    const backgrounds = findServiceAreaCards(component)
+        .map(serviceAreaCardBackground)
+        .filter(Boolean);
+
+    if (!backgrounds.length) return '#f8fafc';
+
+    const first = backgrounds[0].toLowerCase();
+    return backgrounds.every(background => background.toLowerCase() === first) ? backgrounds[0] : '';
+}
+
+function updateServiceAreaCardsBackground(component, value) {
+    const background = String(value || '').trim();
+    if (!background) return;
+
+    findServiceAreaCards(component).forEach(card => {
+        card.addStyle({
+            background,
+            'background-color': background,
+        });
+    });
+    component.view?.render?.();
 }
 
 function serviceAreaCardParts(card) {
@@ -1952,6 +2002,7 @@ function addServiceAreaCard(component) {
         name: `Service Area ${nextIndex}`,
         description: `Covering all cities in Service Area ${nextIndex}.`,
         phone: '(800) 000-0000',
+        background: serviceAreaCardsBackgroundValue(component) || '#f8fafc',
     }));
     normalizeServiceAreaCards(component);
     component.view?.render?.();
@@ -1967,6 +2018,7 @@ function getServiceAreaFieldValue(component, field) {
 
     if (field.kind === 'service-area-heading') return getComponentText(parts.heading);
     if (field.kind === 'service-area-subheading') return getComponentText(parts.subheading);
+    if (field.kind === 'service-area-card-background') return serviceAreaCardsBackgroundValue(component);
 
     const card = serviceAreaCardAt(component, field.index);
     const cardParts = serviceAreaCardParts(card);
@@ -1991,6 +2043,11 @@ function updateServiceAreaField(component, field, value) {
 
     if (field.kind === 'service-area-subheading') {
         setComponentText(parts.subheading, value);
+        return;
+    }
+
+    if (field.kind === 'service-area-card-background') {
+        updateServiceAreaCardsBackground(component, value);
         return;
     }
 
@@ -2228,6 +2285,56 @@ editor.TraitManager.addType('editor-action-button', {
     },
     onUpdate({ elInput, component }) {
         elInput.disabled = !component;
+    },
+});
+
+function colorInputValue(value) {
+    const text = String(value || '').trim();
+    const fullHex = text.match(/^#([0-9a-f]{6})$/i);
+    if (fullHex) return `#${fullHex[1]}`;
+
+    const shortHex = text.match(/^#([0-9a-f]{3})$/i);
+    if (shortHex) {
+        return `#${shortHex[1].split('').map(char => char + char).join('')}`;
+    }
+
+    return '#ffffff';
+}
+
+editor.TraitManager.addType('editor-color-field', {
+    createInput({ trait }) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'editor-color-field';
+
+        const swatch = document.createElement('input');
+        swatch.type = 'color';
+        swatch.className = 'editor-color-swatch';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'editor-content-field editor-color-text';
+        input.placeholder = trait.get('placeholder') || '';
+        markEditorFieldInput(input, trait.get('editorField'));
+
+        swatch.addEventListener('input', () => {
+            input.value = swatch.value;
+            updateEditableField(editor.getSelected(), trait.get('editorField'), input.value);
+        });
+        input.addEventListener('input', () => {
+            swatch.value = colorInputValue(input.value);
+            updateEditableField(editor.getSelected(), trait.get('editorField'), input.value);
+        });
+
+        wrapper.append(swatch, input);
+        return wrapper;
+    },
+    onUpdate({ elInput, component, trait }) {
+        const value = getEditableFieldValue(component, trait.get('editorField'));
+        const input = elInput.querySelector('.editor-color-text');
+        const swatch = elInput.querySelector('.editor-color-swatch');
+        if (input && document.activeElement !== input) input.value = value;
+        if (input) input.placeholder = value ? (trait.get('placeholder') || '') : 'mixed';
+        if (swatch && document.activeElement !== swatch) swatch.value = colorInputValue(value);
     },
 });
 
@@ -2642,15 +2749,20 @@ function isLegacyCardContainer(component) {
 
     const styles = component.getStyle?.() || {};
     const mediaStyles = media.getStyle?.() || {};
-    const hasCardShell = String(styles['max-width'] || '').includes('360')
-        || String(styles['box-shadow'] || styles.boxShadow || '').includes('rgba')
-        || String(styles.overflow || '').toLowerCase() === 'hidden';
+    const maxWidth = String(styles['max-width'] || styles.maxWidth || '').trim();
+    const hasCardShell = maxWidth.includes('360')
+        && String(styles.overflow || '').toLowerCase() === 'hidden';
     const hasMediaTop = String(mediaStyles.height || '').includes('180')
         || String(mediaStyles.background || '').includes('linear-gradient')
         || String(mediaStyles['background-image'] || '').includes('linear-gradient');
     const hasHeading = Boolean(findFirstDescendant(component, child => /^h[1-6]$/.test(getTagName(child))));
 
     return hasCardShell && hasMediaTop && hasHeading;
+}
+
+function isCardMediaAreaComponent(component) {
+    const parent = component?.parent?.();
+    return Boolean(componentHasAttribute(component, 'data-card-media') && parent && isLegacyCardContainer(parent));
 }
 
 function upgradeCardMediaAreas() {
@@ -2748,6 +2860,9 @@ function injectCardMediaPickers() {
     const scaleY = frameRect.height / (frameEl.clientHeight || frameRect.height || 1);
 
     canvasDocument.querySelectorAll(CARD_MEDIA_SELECTOR).forEach(mediaEl => {
+        const mediaComponent = componentByCanvasElement(mediaEl);
+        if (!isCardMediaAreaComponent(mediaComponent)) return;
+
         mediaEl.style.position = mediaEl.style.position || 'relative';
         let mediaRect = mediaEl.getBoundingClientRect();
         if (mediaRect.width <= 0 || mediaRect.height <= 0) {
@@ -2801,7 +2916,7 @@ function applyCardMediaImage(component, item) {
 
 function openCardMediaPickerForElement(mediaEl) {
     const component = componentByCanvasElement(mediaEl);
-    if (!component) {
+    if (!isCardMediaAreaComponent(component)) {
         showToast('Select a card image area first.', 'err');
         return;
     }
@@ -2947,6 +3062,12 @@ function buildOwnContentTraits(component, options = {}) {
         const serviceAreaCards = findServiceAreaCards(component);
 
         traits.push(actionTrait('service_area_add_card', 'Cards', 'add-service-area-card', 'Add service area card'));
+        traits.push(contentTrait('service_area_card_background', 'Card Background', {
+            kind: 'service-area-card-background',
+        }, {
+            type: 'editor-color-field',
+            placeholder: '#f8fafc',
+        }));
 
         if (normalizedServiceAreas.heading) {
             traits.push(contentTrait('service_area_heading', 'Heading', { kind: 'service-area-heading' }, {
