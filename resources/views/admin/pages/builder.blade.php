@@ -109,14 +109,16 @@
         /* ─── LAYOUT ─── */
         #app {
             display: flex;
-            height: 100vh;
-            padding-top: 52px;
+            height: calc(100vh - 52px);
+            margin-top: 52px;
+            min-height: 0;
         }
 
         /* ─── LEFT PANEL ─── */
         #panel-left {
             width: 244px;
             flex-shrink: 0;
+            min-height: 0;
             background: #0f172a;
             border-right: 1px solid #1e293b;
             display: flex;
@@ -128,6 +130,7 @@
         #canvas-area {
             flex: 1;
             min-width: 0;
+            min-height: 0;
             background: #1e293b;
             overflow: auto;
             position: relative;
@@ -142,6 +145,7 @@
         #panel-right {
             width: 272px;
             flex-shrink: 0;
+            min-height: 0;
             background: #0f172a;
             border-left: 1px solid #1e293b;
             display: flex;
@@ -165,7 +169,7 @@
         .p-tab.active { color: #c4b5fd; border-bottom-color: #818cf8; }
         .p-tab:hover:not(.active) { color: #f8fafc; }
 
-        .p-body { flex: 1; overflow-y: auto; overflow-x: hidden; }
+        .p-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; }
         .p-pane { display: none; }
         .p-pane.active { display: block; }
 
@@ -296,6 +300,11 @@
         #styles-wrap .gjs-sm-radio-item { background: #1e293b !important; color: #cbd5e1 !important; border-color: #334155 !important; }
         #styles-wrap .gjs-clm-tags-btn,
         #styles-wrap .gjs-field-color-picker { border-color: #334155 !important; }
+        #styles-wrap .gjs-field-colorp { cursor: pointer !important; }
+        .sp-container.gjs-editor-sp {
+            max-width: calc(100vw - 16px) !important;
+            max-height: calc(100vh - 16px) !important;
+        }
         #styles-wrap .gjs-sm-units { background: #1e293b !important; border-color: #334155 !important; color: #cbd5e1 !important; }
 
         /* ─── TRAIT MANAGER ─── */
@@ -728,6 +737,255 @@
             width: 15px;
             height: 15px;
         }
+        #be-wrap {
+            width: 100%;
+            flex: 1 1 100%;
+            border-top: 1px solid #1e293b;
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+        #be-wrap,
+        #be-wrap * {
+            box-sizing: border-box;
+        }
+        .be-sides {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 4px;
+        }
+        .be-side {
+            height: 26px;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #1e293b;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 0 3px;
+            transition: all .15s;
+        }
+        .be-side:hover,
+        .be-side.active {
+            background: #4f46e5;
+            border-color: #818cf8;
+            color: #fff;
+        }
+        .be-preview-row {
+            display: grid;
+            grid-template-columns: 48px minmax(0, 1fr);
+            gap: 8px;
+            align-items: center;
+            margin-top: 8px;
+        }
+        #be-preview {
+            width: 44px;
+            height: 34px;
+            border-radius: 6px;
+            background: #f8fafc;
+            border: 1px solid #334155;
+        }
+        #be-target-label {
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .be-control,
+        .be-row {
+            margin-top: 7px;
+        }
+        .be-control-head,
+        .be-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+        .be-label {
+            width: 44px;
+            flex-shrink: 0;
+            color: #e2e8f0;
+            font-size: 11px;
+        }
+        #be-width-range {
+            flex: 1 1 auto;
+            min-width: 0;
+            accent-color: #4f46e5;
+        }
+        #be-width-number {
+            width: 58px;
+            flex-shrink: 0;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            color: #f8fafc;
+            font-size: 11px;
+            padding: 4px 6px;
+            outline: none;
+        }
+        #be-style {
+            flex: 1 1 auto;
+            min-width: 0;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            color: #f8fafc;
+            font-size: 11px;
+            padding: 4px 6px;
+            outline: none;
+        }
+        #be-color {
+            width: 100%;
+            height: 26px;
+            flex: 1 1 auto;
+            min-width: 0;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #1e293b;
+            cursor: pointer;
+            padding: 2px;
+        }
+        #be-width-number:focus,
+        #be-style:focus,
+        #be-color:focus {
+            border-color: #818cf8;
+        }
+        #be-wrap.is-disabled {
+            opacity: .55;
+        }
+        #se-wrap {
+            width: 100%;
+            flex: 1 1 100%;
+            border-top: 1px solid #1e293b;
+            margin-top: 8px;
+            padding-top: 8px;
+        }
+        #se-wrap,
+        #se-wrap * {
+            box-sizing: border-box;
+        }
+        .se-presets {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 4px;
+        }
+        .se-preset {
+            height: 26px;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #1e293b;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 0 4px;
+            transition: all .15s;
+        }
+        .se-preset:hover,
+        .se-preset.active {
+            background: #4f46e5;
+            border-color: #818cf8;
+            color: #fff;
+        }
+        .se-preview-row {
+            display: grid;
+            grid-template-columns: 48px minmax(0, 1fr);
+            gap: 8px;
+            align-items: center;
+            margin-top: 8px;
+        }
+        #se-preview {
+            width: 44px;
+            height: 34px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #f8fafc;
+        }
+        .se-toggles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            min-width: 0;
+        }
+        .se-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            color: #cbd5e1;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .se-toggle input {
+            width: 13px;
+            height: 13px;
+            accent-color: #4f46e5;
+        }
+        .se-control {
+            margin-top: 7px;
+        }
+        .se-control-head,
+        .se-color-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+        .se-control-label,
+        .se-color-label {
+            width: 44px;
+            flex-shrink: 0;
+            color: #e2e8f0;
+            font-size: 11px;
+        }
+        .se-number {
+            width: 58px;
+            flex-shrink: 0;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            color: #f8fafc;
+            font-size: 11px;
+            padding: 4px 6px;
+            outline: none;
+        }
+        .se-number:focus,
+        .se-color-row input[type=color]:focus {
+            border-color: #818cf8;
+        }
+        .se-control input[type=range],
+        .se-color-row input[type=range] {
+            flex: 1 1 auto;
+            min-width: 0;
+            accent-color: #4f46e5;
+        }
+        .se-color-row {
+            margin-top: 8px;
+        }
+        .se-color-row input[type=color] {
+            width: 42px;
+            height: 26px;
+            flex-shrink: 0;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #1e293b;
+            cursor: pointer;
+            padding: 2px;
+        }
+        #se-opacity-val {
+            width: 34px;
+            flex-shrink: 0;
+            text-align: right;
+            color: #cbd5e1;
+            font-size: 11px;
+        }
+        #se-wrap.is-disabled {
+            opacity: .55;
+        }
 
         /* ─── HISTORY MODAL ─── */
         #history-overlay {
@@ -1078,6 +1336,83 @@ const editor = grapesjs.init({
     },
 });
 
+const STYLE_COLOR_PICKER_MARGIN = 8;
+let styleColorPickerClampRaf = 0;
+
+function visibleStyleColorPickers() {
+    return [...document.querySelectorAll('.sp-container.gjs-editor-sp')].filter(picker => {
+        const styles = getComputedStyle(picker);
+        return styles.display !== 'none' && !picker.classList.contains('sp-hidden');
+    });
+}
+
+function clampStyleColorPickers() {
+    styleColorPickerClampRaf = 0;
+
+    visibleStyleColorPickers().forEach(picker => {
+        const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+        const viewportHeight = document.documentElement.clientHeight || window.innerHeight;
+        const maxWidth = Math.max(180, viewportWidth - STYLE_COLOR_PICKER_MARGIN * 2);
+        const maxHeight = Math.max(180, viewportHeight - STYLE_COLOR_PICKER_MARGIN * 2);
+
+        if (picker.style.position !== 'fixed') picker.style.position = 'fixed';
+        if (picker.style.maxWidth !== `${maxWidth}px`) picker.style.maxWidth = `${maxWidth}px`;
+        if (picker.style.maxHeight !== `${maxHeight}px`) picker.style.maxHeight = `${maxHeight}px`;
+
+        const rect = picker.getBoundingClientRect();
+        const nextLeft = Math.max(
+            STYLE_COLOR_PICKER_MARGIN,
+            Math.min(rect.left, viewportWidth - rect.width - STYLE_COLOR_PICKER_MARGIN)
+        );
+        const nextTop = Math.max(
+            STYLE_COLOR_PICKER_MARGIN,
+            Math.min(rect.top, viewportHeight - rect.height - STYLE_COLOR_PICKER_MARGIN)
+        );
+        const left = `${Math.round(nextLeft)}px`;
+        const top = `${Math.round(nextTop)}px`;
+        const overflowY = rect.height > maxHeight ? 'auto' : '';
+
+        if (picker.style.left !== left) picker.style.left = left;
+        if (picker.style.top !== top) picker.style.top = top;
+        if (picker.style.overflowY !== overflowY) picker.style.overflowY = overflowY;
+    });
+}
+
+function scheduleStyleColorPickerClamp() {
+    if (!styleColorPickerClampRaf) {
+        styleColorPickerClampRaf = requestAnimationFrame(clampStyleColorPickers);
+    }
+}
+
+function scheduleStyleColorPickerClampBurst() {
+    scheduleStyleColorPickerClamp();
+    setTimeout(scheduleStyleColorPickerClamp, 25);
+    setTimeout(scheduleStyleColorPickerClamp, 100);
+    setTimeout(scheduleStyleColorPickerClamp, 250);
+}
+
+document.addEventListener('pointerdown', event => {
+    if (event.target.closest?.('#styles-wrap .gjs-field-color, .sp-container.gjs-editor-sp')) {
+        scheduleStyleColorPickerClampBurst();
+    }
+}, true);
+
+document.addEventListener('click', event => {
+    if (event.target.closest?.('#styles-wrap .gjs-field-color, .sp-container.gjs-editor-sp')) {
+        scheduleStyleColorPickerClampBurst();
+    }
+}, true);
+
+document.querySelector('#panel-right .p-body')?.addEventListener('scroll', scheduleStyleColorPickerClamp, { passive: true });
+window.addEventListener('resize', scheduleStyleColorPickerClampBurst);
+
+new MutationObserver(scheduleStyleColorPickerClamp).observe(document.body, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['class', 'style'],
+});
+
 // Content fields in the Settings tab
 const CONTENT_TRAIT_PREFIX = '__editor_content_';
 const TEXT_SETTING_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'cite', 'li', 'label', 'button', 'a']);
@@ -1371,6 +1706,11 @@ const mediaPicker = {
     gallery: document.getElementById('media-picker-gallery'),
     empty: document.getElementById('media-picker-empty'),
 };
+const DEFAULT_HIDDEN_MEDIA_PICKER_EXTENSIONS = new Set(['webp']);
+
+function resetMediaPickerHiddenExtensions() {
+    mediaPicker.hiddenExtensions = new Set(DEFAULT_HIDDEN_MEDIA_PICKER_EXTENSIONS);
+}
 
 function renderMediaPickerFilters(kind) {
     const extensions = Array.from(new Set(uploadedMediaForKind(kind).map(mediaExtension).filter(Boolean))).sort();
@@ -1497,7 +1837,7 @@ function openMediaPicker(trait, wrapper) {
         kind,
         wrapper,
     };
-    mediaPicker.hiddenExtensions = new Set();
+    resetMediaPickerHiddenExtensions();
     mediaPicker.search.value = '';
     mediaPicker.title.textContent = `Choose Uploaded ${label.charAt(0).toUpperCase()}${label.slice(1)}`;
     renderMediaPickerFilters(kind);
@@ -1629,7 +1969,7 @@ function openBackgroundImagePicker() {
         getValue: () => getCssUrlValue(selectedBackgroundImageValue()),
         onChoose: item => applyBackgroundImageUrl(item.url),
     };
-    mediaPicker.hiddenExtensions = new Set();
+    resetMediaPickerHiddenExtensions();
     mediaPicker.search.value = '';
     mediaPicker.title.textContent = 'Choose Uploaded Background Image';
     renderMediaPickerFilters('image');
@@ -1681,6 +2021,257 @@ function scheduleBackgroundImagePickerInjection() {
 editor.on('load', scheduleBackgroundImagePickerInjection);
 editor.on('component:selected', scheduleBackgroundImagePickerInjection);
 editor.on('component:styleUpdate', scheduleBackgroundImagePickerInjection);
+
+const CARD_MEDIA_SELECTOR = '[data-card-media="true"]';
+const CARD_MEDIA_PICKER_SELECTOR = '[data-card-media-picker="true"]';
+let cardMediaPickerOpenLock = 0;
+let cardMediaOverlayLayer = null;
+
+function componentByCanvasElement(element) {
+    if (!element) return null;
+
+    const id = element.getAttribute('id');
+    if (id) {
+        const byId = editor.getWrapper().find(`#${CSS.escape(id)}`)[0];
+        if (byId) return byId;
+    }
+
+    let found = null;
+    walkComponents(editor.getWrapper(), component => {
+        if (!found && component.getEl?.() === element) found = component;
+    });
+
+    return found;
+}
+
+function isLegacyCardContainer(component) {
+    if (getTagName(component) !== 'div') return false;
+
+    const children = childComponents(component);
+    const media = children[0];
+    if (!media || getTagName(media) !== 'div') return false;
+
+    const styles = component.getStyle?.() || {};
+    const mediaStyles = media.getStyle?.() || {};
+    const hasCardShell = String(styles['max-width'] || '').includes('360')
+        || String(styles['box-shadow'] || styles.boxShadow || '').includes('rgba')
+        || String(styles.overflow || '').toLowerCase() === 'hidden';
+    const hasMediaTop = String(mediaStyles.height || '').includes('180')
+        || String(mediaStyles.background || '').includes('linear-gradient')
+        || String(mediaStyles['background-image'] || '').includes('linear-gradient');
+    const hasHeading = Boolean(findFirstDescendant(component, child => /^h[1-6]$/.test(getTagName(child))));
+
+    return hasCardShell && hasMediaTop && hasHeading;
+}
+
+function upgradeCardMediaAreas() {
+    walkComponents(editor.getWrapper(), component => {
+        if (!isLegacyCardContainer(component)) return;
+
+        const media = childComponents(component)[0];
+        const attributes = media.getAttributes?.() || {};
+        if (attributes['data-card-media'] !== 'true') {
+            media.addAttributes({ 'data-card-media': 'true' });
+        }
+
+        const mediaStyles = media.getStyle?.() || {};
+        if (!mediaStyles.position) {
+            media.addStyle({ position: 'relative' });
+        }
+    });
+}
+
+function cardMediaButtonHtml() {
+    return '<svg fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14"/></svg>';
+}
+
+function styleCardMediaButton(button) {
+    Object.assign(button.style, {
+        position: 'absolute',
+        left: '50%',
+        top: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '46px',
+        height: '46px',
+        border: '1px solid rgba(148, 163, 184, .45)',
+        borderRadius: '999px',
+        background: 'rgba(255, 255, 255, .92)',
+        color: '#1e40af',
+        boxShadow: '0 10px 24px rgba(15, 23, 42, .22)',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'pointer',
+        zIndex: '5',
+        padding: '0',
+        pointerEvents: 'auto',
+        transition: 'transform .15s ease, background .15s ease, box-shadow .15s ease',
+    });
+
+    const icon = button.querySelector('svg');
+    if (icon) {
+        Object.assign(icon.style, {
+            width: '22px',
+            height: '22px',
+            pointerEvents: 'none',
+        });
+    }
+}
+
+function cardMediaOverlayRoot() {
+    if (!cardMediaOverlayLayer) {
+        cardMediaOverlayLayer = document.createElement('div');
+        cardMediaOverlayLayer.id = 'card-media-picker-layer';
+        Object.assign(cardMediaOverlayLayer.style, {
+            position: 'fixed',
+            inset: '0',
+            zIndex: '9995',
+            pointerEvents: 'none',
+        });
+        document.body.appendChild(cardMediaOverlayLayer);
+    }
+
+    return cardMediaOverlayLayer;
+}
+
+function openCardMediaPickerFromControl(event, mediaEl) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation?.();
+
+    const now = Date.now();
+    if (now - cardMediaPickerOpenLock < 400) return;
+    cardMediaPickerOpenLock = now;
+
+    setTimeout(() => openCardMediaPickerForElement(mediaEl), 350);
+}
+
+function injectCardMediaPickers() {
+    const canvasDocument = editor.Canvas.getDocument();
+    const frameEl = editor.Canvas.getFrameEl?.() || document.querySelector('iframe.gjs-frame');
+    const layer = cardMediaOverlayRoot();
+    layer.innerHTML = '';
+
+    if (!canvasDocument || !frameEl) return;
+
+    const frameRect = frameEl.getBoundingClientRect();
+    const scaleX = frameRect.width / (frameEl.clientWidth || frameRect.width || 1);
+    const scaleY = frameRect.height / (frameEl.clientHeight || frameRect.height || 1);
+
+    canvasDocument.querySelectorAll(CARD_MEDIA_SELECTOR).forEach(mediaEl => {
+        mediaEl.style.position = mediaEl.style.position || 'relative';
+        let mediaRect = mediaEl.getBoundingClientRect();
+        if (mediaRect.width <= 0 || mediaRect.height <= 0) {
+            const parentRect = mediaEl.parentElement?.getBoundingClientRect();
+            if (!parentRect || parentRect.width <= 0 || parentRect.height <= 0) return;
+
+            const fallbackHeight = Math.min(180, Math.max(80, parentRect.height * .45));
+            mediaRect = {
+                left: parentRect.left,
+                top: parentRect.top,
+                width: parentRect.width,
+                height: fallbackHeight,
+                bottom: parentRect.top + fallbackHeight,
+            };
+        }
+        if (mediaRect.bottom < 0 || mediaRect.top > (frameEl.clientHeight || frameRect.height)) return;
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.innerHTML = cardMediaButtonHtml();
+        button.setAttribute('data-card-media-picker', 'true');
+        button.setAttribute('aria-label', 'Choose card image from uploads');
+        button.title = 'Choose card image';
+        styleCardMediaButton(button);
+        Object.assign(button.style, {
+            position: 'fixed',
+            left: `${frameRect.left + (mediaRect.left + mediaRect.width / 2) * scaleX}px`,
+            top: `${frameRect.top + (mediaRect.top + mediaRect.height / 2) * scaleY}px`,
+            zIndex: '9995',
+        });
+        button.addEventListener('click', event => openCardMediaPickerFromControl(event, mediaEl), true);
+        layer.appendChild(button);
+    });
+}
+
+function applyCardMediaImage(component, item) {
+    if (!component) return;
+
+    component.addAttributes({ 'data-card-media': 'true' });
+    component.addStyle({
+        position: 'relative',
+        'background-image': cssUrlForImage(item.url),
+        'background-size': 'cover',
+        'background-position': 'center',
+        'background-repeat': 'no-repeat',
+    });
+    component.view?.render?.();
+    scheduleCardMediaPickerInjection();
+    showToast('Card image selected.');
+}
+
+function openCardMediaPickerForElement(mediaEl) {
+    const component = componentByCanvasElement(mediaEl);
+    if (!component) {
+        showToast('Select a card image area first.', 'err');
+        return;
+    }
+
+    editor.select(component);
+    mediaPicker.active = {
+        component,
+        kind: 'image',
+        getValue: () => getCssUrlValue(component.getStyle?.()?.['background-image'] || ''),
+        onChoose: item => applyCardMediaImage(component, item),
+    };
+    resetMediaPickerHiddenExtensions();
+    mediaPicker.search.value = '';
+    mediaPicker.title.textContent = 'Choose Card Image';
+    renderMediaPickerFilters('image');
+    renderMediaPickerGallery();
+    mediaPicker.overlay.classList.add('open');
+    mediaPicker.overlay.setAttribute('aria-hidden', 'false');
+    setTimeout(() => mediaPicker.search.focus(), 30);
+}
+
+function handleCardMediaPickerEvent(event) {
+    const button = event.target.closest?.(CARD_MEDIA_PICKER_SELECTOR);
+    if (!button) return;
+
+    openCardMediaPickerFromControl(event, button.closest(CARD_MEDIA_SELECTOR));
+}
+
+function bindCardMediaPickerClicks() {
+    const canvasDocument = editor.Canvas.getDocument();
+    const canvasWindow = editor.Canvas.getWindow();
+    if (!canvasDocument || !canvasWindow || canvasWindow.__cardMediaPickerBound) return;
+
+    canvasWindow.__cardMediaPickerBound = true;
+    canvasWindow.addEventListener('pointerdown', handleCardMediaPickerEvent, true);
+    canvasWindow.addEventListener('mousedown', handleCardMediaPickerEvent, true);
+    canvasWindow.addEventListener('click', handleCardMediaPickerEvent, true);
+    canvasWindow.addEventListener('scroll', scheduleCardMediaPickerInjection, true);
+    window.addEventListener('resize', scheduleCardMediaPickerInjection);
+}
+
+function scheduleCardMediaPickerInjection() {
+    const refreshCardMediaPickers = () => {
+        upgradeCardMediaAreas();
+        bindCardMediaPickerClicks();
+        injectCardMediaPickers();
+    };
+
+    setTimeout(refreshCardMediaPickers, 0);
+    setTimeout(refreshCardMediaPickers, 200);
+    setTimeout(refreshCardMediaPickers, 900);
+}
+
+editor.on('load', scheduleCardMediaPickerInjection);
+editor.on('canvas:frame:load', scheduleCardMediaPickerInjection);
+editor.on('component:add', scheduleCardMediaPickerInjection);
+editor.on('component:selected', scheduleCardMediaPickerInjection);
+editor.on('component:styleUpdate', scheduleCardMediaPickerInjection);
+scheduleCardMediaPickerInjection();
 
 editor.TraitManager.addType('editor-upload-picker', {
     createInput({ trait }) {
@@ -2050,7 +2641,7 @@ bm.add('pb-section', {
 });
 
 bm.add('pb-hero', {
-    label: 'Hero', category: 'Layout',
+    label: 'Hero', category: 'Elements',
     media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="2" y1="13" x2="22" y2="13"/><circle cx="12" cy="8.5" r="2"/></svg>`,
     content: `<section style="padding:100px 24px;background:linear-gradient(135deg,#1e40af,#7c3aed);color:#fff;text-align:center;">
   <h1 style="font-size:52px;font-weight:800;margin-bottom:16px;line-height:1.1;">Your Hero Headline</h1>
@@ -2059,7 +2650,24 @@ bm.add('pb-hero', {
 </section>`,
 });
 
+bm.add('pb-row', {
+    label: 'Row', category: 'Layout',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="10" rx="1.5"/><line x1="8" y1="7" x2="8" y2="17"/><line x1="16" y1="7" x2="16" y2="17"/></svg>`,
+    content: `<div style="display:flex;flex-direction:row;flex-wrap:wrap;align-items:stretch;gap:24px;padding:24px;">
+  <div style="flex:1 1 240px;min-width:0;min-height:80px;padding:16px;border:1px dashed #cbd5e1;border-radius:8px;">Row item</div>
+  <div style="flex:1 1 240px;min-width:0;min-height:80px;padding:16px;border:1px dashed #cbd5e1;border-radius:8px;">Row item</div>
+</div>`,
+});
+
 bm.add('pb-2cols', {
+    label: '1 Column', category: 'Layout',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="4" width="14" height="16" rx="1.5"/></svg>`,
+    content: `<div style="padding:40px 24px;">
+  <div style="max-width:960px;margin:0 auto;padding:24px;background:#f8fafc;border-radius:10px;"><h3 style="font-weight:600;margin-bottom:8px;">Column</h3><p style="color:#64748b;font-size:15px;line-height:1.6;">Add your content here.</p></div>
+</div>`,
+});
+
+bm.add('pb-3cols', {
     label: '2 Columns', category: 'Layout',
     media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="9" height="16" rx="1.5"/><rect x="13" y="4" width="9" height="16" rx="1.5"/></svg>`,
     content: `<div style="display:flex;flex-wrap:wrap;gap:24px;padding:40px 24px;">
@@ -2068,21 +2676,11 @@ bm.add('pb-2cols', {
 </div>`,
 });
 
-bm.add('pb-3cols', {
-    label: '3 Columns', category: 'Layout',
-    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="6" height="16" rx="1"/><rect x="9" y="4" width="6" height="16" rx="1"/><rect x="17" y="4" width="6" height="16" rx="1"/></svg>`,
-    content: `<div style="display:flex;flex-wrap:wrap;gap:20px;padding:40px 24px;">
-  <div style="flex:1 1 200px;min-width:0;padding:20px;background:#f8fafc;border-radius:10px;text-align:center;"><h3 style="font-weight:600;margin-bottom:8px;">Feature 1</h3><p style="color:#64748b;font-size:14px;line-height:1.6;">Description text.</p></div>
-  <div style="flex:1 1 200px;min-width:0;padding:20px;background:#f8fafc;border-radius:10px;text-align:center;"><h3 style="font-weight:600;margin-bottom:8px;">Feature 2</h3><p style="color:#64748b;font-size:14px;line-height:1.6;">Description text.</p></div>
-  <div style="flex:1 1 200px;min-width:0;padding:20px;background:#f8fafc;border-radius:10px;text-align:center;"><h3 style="font-weight:600;margin-bottom:8px;">Feature 3</h3><p style="color:#64748b;font-size:14px;line-height:1.6;">Description text.</p></div>
-</div>`,
-});
-
 bm.add('pb-card', {
-    label: 'Card', category: 'Layout',
+    label: 'Card', category: 'Elements',
     media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><line x1="3" y1="9" x2="21" y2="9"/></svg>`,
     content: `<div style="background:#fff;border-radius:12px;box-shadow:0 2px 16px rgba(0,0,0,.08);overflow:hidden;max-width:360px;">
-  <div style="height:180px;background:linear-gradient(135deg,#dbeafe,#ede9fe);"></div>
+  <div data-card-media="true" style="height:180px;position:relative;background:linear-gradient(135deg,#dbeafe,#ede9fe);"></div>
   <div style="padding:24px;">
     <h3 style="font-size:18px;font-weight:700;margin-bottom:8px;">Card Title</h3>
     <p style="color:#64748b;font-size:14px;line-height:1.6;margin-bottom:16px;">Card description goes here. Edit this text.</p>
@@ -2808,6 +3406,692 @@ function scheduleAlignmentInjection() {
 editor.on('load', scheduleAlignmentInjection);
 editor.on('component:selected', scheduleAlignmentInjection);
 editor.on('component:styleUpdate', syncAlignmentControls);
+
+function findStyleSectorByTitle(title) {
+    return [...document.querySelectorAll('#styles-wrap .gjs-sm-sector')]
+        .find(sector => sector.querySelector('.gjs-sm-sector-title')?.textContent.trim() === title) || null;
+}
+
+const BORDER_EDGE_LABELS = {
+    all: 'All',
+    top: 'Top',
+    right: 'Right',
+    bottom: 'Bottom',
+    left: 'Left',
+};
+const BORDER_EDGE_ORDER = ['top', 'right', 'bottom', 'left'];
+const BORDER_STYLE_OPTIONS = ['none', 'solid', 'dashed', 'dotted', 'double'];
+const BORDER_EDITOR_HTML = `
+<div class="be-sides">
+  ${Object.entries(BORDER_EDGE_LABELS).map(([edge, label]) => `<button type="button" class="be-side" data-border-edge="${edge}">${label}</button>`).join('')}
+</div>
+<div class="be-preview-row">
+  <div id="be-preview" aria-hidden="true"></div>
+  <div id="be-target-label">All edges</div>
+</div>
+<div class="be-control">
+  <div class="be-control-head">
+    <span class="be-label">Width</span>
+    <input type="range" id="be-width-range" min="0" max="40" step="1" value="0">
+    <input type="number" id="be-width-number" min="0" step="1" value="0">
+  </div>
+</div>
+<div class="be-row">
+  <span class="be-label">Style</span>
+  <select id="be-style">
+    ${BORDER_STYLE_OPTIONS.map(style => `<option value="${style}">${style.charAt(0).toUpperCase()}${style.slice(1)}</option>`).join('')}
+  </select>
+</div>
+<div class="be-row">
+  <span class="be-label">Color</span>
+  <input type="color" id="be-color" value="#000000">
+</div>`;
+
+let borderEditorInjected = false;
+let activeBorderEdge = 'all';
+let syncingBorderEditor = false;
+
+function borderEditorControls() {
+    const wrap = document.getElementById('be-wrap');
+    if (!wrap) return null;
+
+    return {
+        wrap,
+        buttons: [...wrap.querySelectorAll('[data-border-edge]')],
+        widthRange: document.getElementById('be-width-range'),
+        widthNumber: document.getElementById('be-width-number'),
+        style: document.getElementById('be-style'),
+        color: document.getElementById('be-color'),
+        preview: document.getElementById('be-preview'),
+        targetLabel: document.getElementById('be-target-label'),
+        inputs: [...wrap.querySelectorAll('input, select, button')],
+    };
+}
+
+function setBorderEditorDisabled(disabled) {
+    const controls = borderEditorControls();
+    if (!controls) return;
+    controls.wrap.classList.toggle('is-disabled', disabled);
+    controls.inputs.forEach(input => { input.disabled = disabled; });
+}
+
+function cssPropertyValue(styles, property) {
+    const camel = property.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+    return styles[property] ?? styles[camel] ?? '';
+}
+
+function splitCssWhitespace(value) {
+    const tokens = [];
+    let token = '';
+    let depth = 0;
+    let quote = '';
+
+    for (const char of String(value || '').trim()) {
+        if (quote) {
+            token += char;
+            if (char === quote) quote = '';
+            continue;
+        }
+
+        if (char === '"' || char === "'") {
+            quote = char;
+            token += char;
+        } else if (char === '(') {
+            depth++;
+            token += char;
+        } else if (char === ')') {
+            depth = Math.max(0, depth - 1);
+            token += char;
+        } else if (/\s/.test(char) && depth === 0) {
+            if (token) {
+                tokens.push(token);
+                token = '';
+            }
+        } else {
+            token += char;
+        }
+    }
+
+    if (token) tokens.push(token);
+    return tokens;
+}
+
+function cssQuadValue(value, edge) {
+    const tokens = splitCssWhitespace(value);
+    if (!tokens.length || !BORDER_EDGE_ORDER.includes(edge)) return '';
+
+    const index = BORDER_EDGE_ORDER.indexOf(edge);
+    if (tokens.length === 1) return tokens[0];
+    if (tokens.length === 2) return index === 0 || index === 2 ? tokens[0] : tokens[1];
+    if (tokens.length === 3) return index === 0 ? tokens[0] : index === 2 ? tokens[2] : tokens[1];
+    return tokens[index] || '';
+}
+
+function normalizeBorderWidth(value, fallback = 0) {
+    const keywords = { thin: 1, medium: 3, thick: 5 };
+    const text = String(value || '').trim().toLowerCase();
+    if (keywords[text] !== undefined) return keywords[text];
+
+    const parsed = parseFloat(text);
+    return Number.isFinite(parsed) ? Math.max(0, Math.round(parsed)) : fallback;
+}
+
+function normalizeBorderStyle(value, fallback = 'none') {
+    const style = String(value || '').trim().toLowerCase();
+    return BORDER_STYLE_OPTIONS.includes(style) ? style : fallback;
+}
+
+function parseBorderShorthand(value) {
+    const text = String(value || '').trim();
+    if (!text || text === 'none') return {};
+
+    const tokens = splitCssWhitespace(text);
+    const style = tokens.find(token => BORDER_STYLE_OPTIONS.includes(token.toLowerCase())) || '';
+    const width = tokens.find(token => /^(thin|medium|thick|-?[\d.]+(?:px|em|rem|%)?)$/i.test(token)) || '';
+    const color = findCssColor(text);
+
+    return {
+        width: width ? normalizeBorderWidth(width, 0) : undefined,
+        style: style ? normalizeBorderStyle(style, 'solid') : undefined,
+        color: color ? hexFromCssColor(color) : undefined,
+    };
+}
+
+function readComponentBorder(component, edge = activeBorderEdge) {
+    const styles = component?.getStyle?.() || {};
+    const shorthand = parseBorderShorthand(cssPropertyValue(styles, edge === 'all' ? 'border' : `border-${edge}`));
+    const baseShorthand = parseBorderShorthand(cssPropertyValue(styles, 'border'));
+    const edgePrefix = edge === 'all' ? 'border' : `border-${edge}`;
+    const widthValue = cssPropertyValue(styles, `${edgePrefix}-width`)
+        || (edge !== 'all' ? cssQuadValue(cssPropertyValue(styles, 'border-width'), edge) : cssPropertyValue(styles, 'border-width'))
+        || shorthand.width
+        || baseShorthand.width
+        || 0;
+    const styleValue = cssPropertyValue(styles, `${edgePrefix}-style`)
+        || (edge !== 'all' ? cssQuadValue(cssPropertyValue(styles, 'border-style'), edge) : cssPropertyValue(styles, 'border-style'))
+        || shorthand.style
+        || baseShorthand.style
+        || 'none';
+    const colorValue = cssPropertyValue(styles, `${edgePrefix}-color`)
+        || (edge !== 'all' ? cssQuadValue(cssPropertyValue(styles, 'border-color'), edge) : cssPropertyValue(styles, 'border-color'))
+        || shorthand.color
+        || baseShorthand.color
+        || '#000000';
+
+    return {
+        width: normalizeBorderWidth(widthValue, 0),
+        style: normalizeBorderStyle(styleValue, normalizeBorderWidth(widthValue, 0) > 0 ? 'solid' : 'none'),
+        color: hexFromCssColor(colorValue),
+    };
+}
+
+function setBorderWidthControls(value) {
+    const controls = borderEditorControls();
+    if (!controls) return;
+    const width = normalizeBorderWidth(value, 0);
+    controls.widthRange.value = Math.min(parseFloat(controls.widthRange.max), width);
+    controls.widthNumber.value = width;
+}
+
+function readBorderControls() {
+    const controls = borderEditorControls();
+    if (!controls) return { width: 0, style: 'none', color: '#000000' };
+    return {
+        width: normalizeBorderWidth(controls.widthNumber.value, 0),
+        style: normalizeBorderStyle(controls.style.value, 'none'),
+        color: controls.color.value || '#000000',
+    };
+}
+
+function borderCssValue(border) {
+    if (border.style === 'none' || border.width <= 0) return 'none';
+    return `${border.width}px ${border.style} ${border.color}`;
+}
+
+function updateBorderPreview(border = readBorderControls()) {
+    const controls = borderEditorControls();
+    if (!controls) return;
+
+    controls.preview.style.border = '1px solid #334155';
+    BORDER_EDGE_ORDER.forEach(edge => {
+        controls.preview.style[`border${edge.charAt(0).toUpperCase()}${edge.slice(1)}`] = '1px solid #334155';
+    });
+
+    const value = borderCssValue(border);
+    if (activeBorderEdge === 'all') {
+        controls.preview.style.border = value === 'none' ? '1px solid #334155' : value;
+    } else {
+        controls.preview.style[`border${activeBorderEdge.charAt(0).toUpperCase()}${activeBorderEdge.slice(1)}`] = value === 'none' ? '1px solid #334155' : value;
+    }
+}
+
+function syncNativeBorderFields(border) {
+    const widthInput = document.querySelector('#styles-wrap .gjs-sm-property__border-width input');
+    const styleSelect = document.querySelector('#styles-wrap .gjs-sm-property__border-style select');
+    const colorInput = document.querySelector('#styles-wrap .gjs-sm-property__border-color input');
+
+    if (activeBorderEdge === 'all' && widthInput && document.activeElement !== widthInput) widthInput.value = border.width || '';
+    if (activeBorderEdge === 'all' && styleSelect && document.activeElement !== styleSelect) styleSelect.value = border.style;
+    if (activeBorderEdge === 'all' && colorInput && document.activeElement !== colorInput) colorInput.value = border.color;
+}
+
+function syncBorderControls(component = editor.getSelected()) {
+    const controls = borderEditorControls();
+    if (!controls) return;
+
+    setBorderEditorDisabled(!component);
+    syncingBorderEditor = true;
+
+    const border = readComponentBorder(component, activeBorderEdge);
+    controls.buttons.forEach(button => {
+        button.classList.toggle('active', button.dataset.borderEdge === activeBorderEdge);
+    });
+    controls.targetLabel.textContent = activeBorderEdge === 'all' ? 'All edges' : `${BORDER_EDGE_LABELS[activeBorderEdge]} edge`;
+    setBorderWidthControls(border.width);
+    controls.style.value = border.style;
+    controls.color.value = border.color;
+    updateBorderPreview(border);
+    syncNativeBorderFields(border);
+
+    syncingBorderEditor = false;
+}
+
+function applyBorderFromControls(options = {}) {
+    if (syncingBorderEditor) return;
+    const component = editor.getSelected();
+    const controls = borderEditorControls();
+    if (!component || !controls) return;
+
+    if (options.ensureVisible) {
+        if (normalizeBorderWidth(controls.widthNumber.value, 0) <= 0) setBorderWidthControls(1);
+        if (controls.style.value === 'none') controls.style.value = 'solid';
+    }
+
+    const border = readBorderControls();
+    const patch = {};
+
+    if (activeBorderEdge === 'all') {
+        patch['border-width'] = `${border.width}px`;
+        patch['border-style'] = border.style;
+        patch['border-color'] = border.color;
+        BORDER_EDGE_ORDER.forEach(edge => {
+            patch[`border-${edge}-width`] = `${border.width}px`;
+            patch[`border-${edge}-style`] = border.style;
+            patch[`border-${edge}-color`] = border.color;
+        });
+    } else {
+        patch[`border-${activeBorderEdge}-width`] = `${border.width}px`;
+        patch[`border-${activeBorderEdge}-style`] = border.style;
+        patch[`border-${activeBorderEdge}-color`] = border.color;
+    }
+
+    component.addStyle(patch);
+    updateBorderPreview(border);
+    syncNativeBorderFields(border);
+}
+
+function bindBorderEditorEvents(wrap) {
+    wrap.querySelectorAll('[data-border-edge]').forEach(button => {
+        button.addEventListener('click', () => {
+            activeBorderEdge = button.dataset.borderEdge;
+            syncBorderControls();
+        });
+    });
+
+    ['be-width-range', 'be-width-number'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', event => {
+            setBorderWidthControls(event.target.value);
+            applyBorderFromControls({ ensureVisible: normalizeBorderWidth(event.target.value, 0) > 0 });
+        });
+    });
+
+    document.getElementById('be-style')?.addEventListener('change', event => {
+        applyBorderFromControls({ ensureVisible: event.target.value !== 'none' });
+    });
+    document.getElementById('be-color')?.addEventListener('input', () => {
+        applyBorderFromControls({ ensureVisible: true });
+    });
+}
+
+function injectBorderEdgeEditor() {
+    if (borderEditorInjected) {
+        syncBorderControls();
+        return;
+    }
+
+    const borderSector = findStyleSectorByTitle('Border & Shadow');
+    const props = borderSector?.querySelector('.gjs-sm-properties');
+    if (!props) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'be-wrap';
+    wrap.innerHTML = BORDER_EDITOR_HTML;
+
+    const borderProperty = props.querySelector('.gjs-sm-property__border');
+    const shadowProperty = props.querySelector('.gjs-sm-property__box-shadow');
+    if (borderProperty) borderProperty.insertAdjacentElement('afterend', wrap);
+    else if (shadowProperty) shadowProperty.insertAdjacentElement('beforebegin', wrap);
+    else props.appendChild(wrap);
+
+    bindBorderEditorEvents(wrap);
+    if (!props.dataset.borderEdgeEditorNativeSync) {
+        props.dataset.borderEdgeEditorNativeSync = 'true';
+        props.addEventListener('input', event => {
+            if (event.target.closest?.('.gjs-sm-property__border')) {
+                setTimeout(() => syncBorderControls(editor.getSelected()), 0);
+            }
+        });
+        props.addEventListener('change', event => {
+            if (event.target.closest?.('.gjs-sm-property__border')) {
+                setTimeout(() => syncBorderControls(editor.getSelected()), 0);
+            }
+        });
+    }
+
+    borderEditorInjected = true;
+    syncBorderControls();
+}
+
+function scheduleBorderEdgeEditorInjection() {
+    setTimeout(injectBorderEdgeEditor, 0);
+    setTimeout(injectBorderEdgeEditor, 150);
+}
+
+editor.on('load', scheduleBorderEdgeEditorInjection);
+editor.on('component:selected', scheduleBorderEdgeEditorInjection);
+editor.on('component:styleUpdate', syncBorderControls);
+
+const SHADOW_PRESETS = {
+    none:   { label: 'None', enabled: false, inset: false, x: 0,  y: 8,  blur: 24, spread: -8, color: '#000000', opacity: .18 },
+    soft:   { label: 'Soft', enabled: true,  inset: false, x: 0,  y: 6,  blur: 18, spread: -6, color: '#000000', opacity: .16 },
+    card:   { label: 'Card', enabled: true,  inset: false, x: 0,  y: 12, blur: 32, spread: -12, color: '#000000', opacity: .22 },
+    lifted: { label: 'Lift', enabled: true,  inset: false, x: 0,  y: 20, blur: 48, spread: -18, color: '#000000', opacity: .28 },
+    glow:   { label: 'Glow', enabled: true,  inset: false, x: 0,  y: 0,  blur: 28, spread: 0, color: '#6366f1', opacity: .48 },
+    inner:  { label: 'Inner', enabled: true,  inset: true,  x: 0,  y: 2,  blur: 10, spread: 0, color: '#000000', opacity: .20 },
+};
+
+const SHADOW_EDITOR_HTML = `
+<div class="se-presets">
+  ${Object.entries(SHADOW_PRESETS).map(([id, preset]) => `<button type="button" class="se-preset" data-shadow-preset="${id}">${preset.label}</button>`).join('')}
+</div>
+<div class="se-preview-row">
+  <div id="se-preview" aria-hidden="true"></div>
+  <div class="se-toggles">
+    <label class="se-toggle"><input type="checkbox" id="se-enabled"> Enabled</label>
+    <label class="se-toggle"><input type="checkbox" id="se-inset"> Inset</label>
+  </div>
+</div>
+${[
+    ['x', 'X', -80, 80],
+    ['y', 'Y', -80, 80],
+    ['blur', 'Blur', 0, 120],
+    ['spread', 'Spread', -80, 80],
+].map(([name, label, min, max]) => `
+<div class="se-control">
+  <div class="se-control-head">
+    <span class="se-control-label">${label}</span>
+    <input type="range" class="se-range" data-se-name="${name}" min="${min}" max="${max}" step="1">
+    <input type="number" class="se-number" data-se-name="${name}" step="1">
+  </div>
+</div>`).join('')}
+<div class="se-color-row">
+  <span class="se-color-label">Color</span>
+  <input type="color" id="se-color" value="#000000">
+  <input type="range" id="se-opacity" min="0" max="1" step="0.01" value="0.2">
+  <span id="se-opacity-val">20%</span>
+</div>`;
+
+let shadowEditorInjected = false;
+let syncingShadowEditor = false;
+
+function shadowEditorControls() {
+    const wrap = document.getElementById('se-wrap');
+    if (!wrap) return null;
+
+    return {
+        wrap,
+        enabled: document.getElementById('se-enabled'),
+        inset: document.getElementById('se-inset'),
+        color: document.getElementById('se-color'),
+        opacity: document.getElementById('se-opacity'),
+        opacityVal: document.getElementById('se-opacity-val'),
+        preview: document.getElementById('se-preview'),
+        presets: [...wrap.querySelectorAll('[data-shadow-preset]')],
+        inputs: [...wrap.querySelectorAll('input, button')],
+    };
+}
+
+function setShadowEditorDisabled(disabled) {
+    const controls = shadowEditorControls();
+    if (!controls) return;
+    controls.wrap.classList.toggle('is-disabled', disabled);
+    controls.inputs.forEach(input => { input.disabled = disabled; });
+}
+
+function shadowNumber(value, fallback = 0) {
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) ? Math.round(parsed) : fallback;
+}
+
+function setShadowDimension(name, value) {
+    const wrap = document.getElementById('se-wrap');
+    if (!wrap) return;
+
+    const rounded = shadowNumber(value);
+    wrap.querySelectorAll(`[data-se-name="${name}"]`).forEach(input => {
+        if (input.type === 'range') {
+            const min = parseFloat(input.min);
+            const max = parseFloat(input.max);
+            input.value = Math.max(min, Math.min(max, rounded));
+        } else {
+            input.value = rounded;
+        }
+    });
+}
+
+function readShadowDimension(name, fallback = 0) {
+    return shadowNumber(document.querySelector(`#se-wrap .se-number[data-se-name="${name}"]`)?.value, fallback);
+}
+
+function shadowRgba(hex, opacity) {
+    const raw = String(hex || '#000000').replace('#', '');
+    const normalized = raw.length === 3 ? raw.split('').map(char => char + char).join('') : raw.padEnd(6, '0').slice(0, 6);
+    const r = parseInt(normalized.slice(0, 2), 16) || 0;
+    const g = parseInt(normalized.slice(2, 4), 16) || 0;
+    const b = parseInt(normalized.slice(4, 6), 16) || 0;
+    const alpha = Math.round(clampOpacity(opacity) * 100) / 100;
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function buildShadowValue(shadow) {
+    if (!shadow.enabled) return 'none';
+
+    return [
+        shadow.inset ? 'inset' : '',
+        `${shadowNumber(shadow.x)}px`,
+        `${shadowNumber(shadow.y)}px`,
+        `${Math.max(0, shadowNumber(shadow.blur))}px`,
+        `${shadowNumber(shadow.spread)}px`,
+        shadowRgba(shadow.color, shadow.opacity),
+    ].filter(Boolean).join(' ');
+}
+
+function parseBoxShadowValue(value) {
+    const raw = String(value || '').trim();
+    const shadow = { ...SHADOW_PRESETS.none };
+    if (!raw || raw === 'none') return shadow;
+
+    const firstShadow = splitCssList(raw)[0] || raw;
+    const color = findCssColor(firstShadow);
+    const withoutColor = color ? firstShadow.replace(color, ' ') : firstShadow;
+    const withoutInset = withoutColor.replace(/\binset\b/ig, ' ');
+    const lengths = withoutInset.match(/-?[\d.]+(?:px|em|rem|%)?/g) || [];
+    const colorText = color || 'rgba(0,0,0,.2)';
+
+    return {
+        enabled: true,
+        inset: /\binset\b/i.test(firstShadow),
+        x: shadowNumber(lengths[0], 0),
+        y: shadowNumber(lengths[1], 8),
+        blur: Math.max(0, shadowNumber(lengths[2], 24)),
+        spread: shadowNumber(lengths[3], 0),
+        color: hexFromCssColor(colorText),
+        opacity: String(colorText).trim().toLowerCase() === 'transparent' ? 0 : opacityFromCssColor(colorText),
+    };
+}
+
+function readShadowControls(forceEnabled = false) {
+    const controls = shadowEditorControls();
+    if (!controls) return { ...SHADOW_PRESETS.none };
+
+    return {
+        enabled: forceEnabled || controls.enabled.checked,
+        inset: controls.inset.checked,
+        x: readShadowDimension('x', SHADOW_PRESETS.soft.x),
+        y: readShadowDimension('y', SHADOW_PRESETS.soft.y),
+        blur: readShadowDimension('blur', SHADOW_PRESETS.soft.blur),
+        spread: readShadowDimension('spread', SHADOW_PRESETS.soft.spread),
+        color: controls.color.value || '#000000',
+        opacity: clampOpacity(controls.opacity.value),
+    };
+}
+
+function matchingShadowPreset(shadow) {
+    if (!shadow.enabled) return 'none';
+
+    return Object.entries(SHADOW_PRESETS).find(([id, preset]) => {
+        if (id === 'none') return false;
+        return preset.enabled === shadow.enabled
+            && preset.inset === shadow.inset
+            && preset.x === shadow.x
+            && preset.y === shadow.y
+            && preset.blur === shadow.blur
+            && preset.spread === shadow.spread
+            && preset.color.toLowerCase() === shadow.color.toLowerCase()
+            && Math.abs(preset.opacity - shadow.opacity) < .01;
+    })?.[0] || '';
+}
+
+function setActiveShadowPreset(id) {
+    const controls = shadowEditorControls();
+    if (!controls) return;
+    controls.presets.forEach(button => {
+        button.classList.toggle('active', button.dataset.shadowPreset === id);
+    });
+}
+
+function updateShadowPreview(shadow) {
+    const controls = shadowEditorControls();
+    if (!controls) return;
+
+    const shadowValue = buildShadowValue(shadow);
+    controls.preview.style.boxShadow = shadowValue;
+    controls.opacityVal.textContent = `${Math.round(clampOpacity(shadow.opacity) * 100)}%`;
+}
+
+function syncNativeBoxShadowField(value) {
+    const field = document.querySelector('#styles-wrap .gjs-sm-property__box-shadow input, #styles-wrap .gjs-sm-property__box-shadow textarea');
+    if (field && document.activeElement !== field) field.value = value === 'none' ? '' : value;
+}
+
+function applyShadowFromControls(forceEnabled = false) {
+    if (syncingShadowEditor) return;
+    const component = editor.getSelected();
+    if (!component) return;
+
+    const controls = shadowEditorControls();
+    if (!controls) return;
+    if (forceEnabled) controls.enabled.checked = true;
+
+    const shadow = readShadowControls(forceEnabled);
+    const value = buildShadowValue(shadow);
+    component.addStyle({ 'box-shadow': value });
+    updateShadowPreview(shadow);
+    syncNativeBoxShadowField(value);
+    setActiveShadowPreset(matchingShadowPreset(shadow));
+}
+
+function syncShadowControls(component = editor.getSelected()) {
+    const controls = shadowEditorControls();
+    if (!controls) return;
+
+    setShadowEditorDisabled(!component);
+    syncingShadowEditor = true;
+
+    const styles = component?.getStyle?.() || {};
+    const shadow = parseBoxShadowValue(styles['box-shadow'] || styles.boxShadow || '');
+    controls.enabled.checked = shadow.enabled;
+    controls.inset.checked = shadow.inset;
+    setShadowDimension('x', shadow.x);
+    setShadowDimension('y', shadow.y);
+    setShadowDimension('blur', shadow.blur);
+    setShadowDimension('spread', shadow.spread);
+    controls.color.value = shadow.color;
+    controls.opacity.value = clampOpacity(shadow.opacity);
+    updateShadowPreview(shadow);
+    syncNativeBoxShadowField(buildShadowValue(shadow));
+    setActiveShadowPreset(matchingShadowPreset(shadow));
+
+    syncingShadowEditor = false;
+}
+
+function applyShadowPreset(id) {
+    const preset = SHADOW_PRESETS[id];
+    const controls = shadowEditorControls();
+    if (!preset || !controls) return;
+
+    controls.enabled.checked = preset.enabled;
+    controls.inset.checked = preset.inset;
+    setShadowDimension('x', preset.x);
+    setShadowDimension('y', preset.y);
+    setShadowDimension('blur', preset.blur);
+    setShadowDimension('spread', preset.spread);
+    controls.color.value = preset.color;
+    controls.opacity.value = preset.opacity;
+    updateShadowPreview(preset);
+    setActiveShadowPreset(id);
+    applyShadowFromControls(false);
+}
+
+function bindShadowEditorEvents(wrap) {
+    wrap.querySelectorAll('[data-shadow-preset]').forEach(button => {
+        button.addEventListener('click', () => applyShadowPreset(button.dataset.shadowPreset));
+    });
+
+    wrap.querySelectorAll('[data-se-name]').forEach(input => {
+        input.addEventListener('input', () => {
+            setActiveShadowPreset('');
+            setShadowDimension(input.dataset.seName, input.value);
+            applyShadowFromControls(true);
+        });
+        input.addEventListener('change', () => {
+            setShadowDimension(input.dataset.seName, input.value);
+            applyShadowFromControls(true);
+        });
+    });
+
+    ['se-color', 'se-opacity'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', () => {
+            setActiveShadowPreset('');
+            applyShadowFromControls(true);
+        });
+    });
+
+    document.getElementById('se-enabled')?.addEventListener('change', () => {
+        setActiveShadowPreset('');
+        applyShadowFromControls(false);
+    });
+    document.getElementById('se-inset')?.addEventListener('change', () => {
+        setActiveShadowPreset('');
+        applyShadowFromControls(true);
+    });
+}
+
+function injectShadowEditorIntoBorder() {
+    if (shadowEditorInjected) {
+        syncShadowControls();
+        return;
+    }
+
+    const borderSector = findStyleSectorByTitle('Border & Shadow');
+    const props = borderSector?.querySelector('.gjs-sm-properties');
+    if (!props) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'se-wrap';
+    wrap.innerHTML = SHADOW_EDITOR_HTML;
+
+    const shadowProperty = props.querySelector('.gjs-sm-property__box-shadow');
+    if (shadowProperty) shadowProperty.insertAdjacentElement('afterend', wrap);
+    else props.appendChild(wrap);
+
+    bindShadowEditorEvents(wrap);
+    if (!props.dataset.shadowEditorNativeSync) {
+        props.dataset.shadowEditorNativeSync = 'true';
+        props.addEventListener('input', event => {
+            if (event.target.closest?.('.gjs-sm-property__box-shadow')) {
+                setTimeout(() => syncShadowControls(editor.getSelected()), 0);
+            }
+        });
+        props.addEventListener('change', event => {
+            if (event.target.closest?.('.gjs-sm-property__box-shadow')) {
+                setTimeout(() => syncShadowControls(editor.getSelected()), 0);
+            }
+        });
+    }
+
+    shadowEditorInjected = true;
+    syncShadowControls();
+}
+
+function scheduleShadowEditorInjection() {
+    setTimeout(injectShadowEditorIntoBorder, 0);
+    setTimeout(injectShadowEditorIntoBorder, 150);
+}
+
+editor.on('load', scheduleShadowEditorInjection);
+editor.on('component:selected', scheduleShadowEditorInjection);
+editor.on('component:styleUpdate', syncShadowControls);
 
 // ─── Toast helper
 const toast = document.getElementById('toast');
