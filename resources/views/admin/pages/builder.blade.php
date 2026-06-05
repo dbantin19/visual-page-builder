@@ -10,6 +10,7 @@
 
         :root {
             --gjs-primary-color: #000000;
+            --builder-style-properties-bg: #385361;
         }
 
         html, body {
@@ -278,7 +279,11 @@
             text-transform: uppercase !important;
             padding: 9px 12px !important;
         }
-        #styles-wrap .gjs-sm-properties { padding: 8px 10px !important; gap: 6px !important; }
+        #styles-wrap .gjs-sm-properties {
+            background: var(--builder-style-properties-bg) !important;
+            padding: 8px 10px !important;
+            gap: 6px !important;
+        }
         #styles-wrap .gjs-sm-property {
             background: transparent !important;
             min-width: 0 !important;
@@ -339,6 +344,26 @@
             background: transparent !important;
             border: none !important;
             box-shadow: none !important;
+        }
+        .editor-action-button {
+            width: 100%;
+            height: 34px;
+            border: 1px solid #818cf8;
+            border-radius: 6px;
+            background: #4f46e5;
+            color: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            transition: background .15s, border-color .15s;
+        }
+        .editor-action-button:hover {
+            background: #4338ca;
+            border-color: #a5b4fc;
+        }
+        .editor-action-button:disabled {
+            cursor: not-allowed;
+            opacity: .55;
         }
         #styles-wrap .gjs-sm-property__background-image .gjs-field {
             display: flex !important;
@@ -688,6 +713,152 @@
         .gi-opacity-val {
             font-size: 11px; color: #cbd5e1; width: 30px; text-align: right; flex-shrink: 0;
         }
+        #sa-wrap {
+            width: 100%;
+            flex: 1 1 100%;
+            border-top: 1px solid #1e293b;
+            border-bottom: 1px solid #1e293b;
+            margin: 8px 0;
+            padding: 8px 0;
+        }
+        #sa-wrap,
+        #sa-wrap * {
+            box-sizing: border-box;
+        }
+        .sa-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            min-width: 0;
+        }
+        .sa-row + .sa-row {
+            margin-top: 7px;
+        }
+        .sa-label-wrap {
+            width: 84px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            min-width: 0;
+        }
+        .sa-label {
+            min-width: 0;
+            color: #e2e8f0;
+            font-size: 11px;
+        }
+        .sa-clear-btn {
+            width: 16px;
+            height: 16px;
+            flex: 0 0 16px;
+            border: 0;
+            border-radius: 4px;
+            background: transparent;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 16px;
+            opacity: 0;
+            padding: 0;
+            pointer-events: none;
+            transition: background .15s, color .15s, opacity .15s;
+        }
+        .sa-clear-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .sa-clear-btn.visible:hover {
+            background: #1e293b;
+            color: #fff;
+        }
+        .sa-clear-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .sa-control {
+            display: flex;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .sa-control input,
+        .sa-control select {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            font-size: 11px;
+            height: 28px;
+            outline: none;
+        }
+        .sa-control input {
+            width: 0;
+            min-width: 0;
+            flex: 1 1 auto;
+            border-radius: 5px 0 0 5px;
+            padding: 4px 6px;
+        }
+        .sa-control select {
+            width: 56px;
+            flex-shrink: 0;
+            border-left: 0;
+            border-radius: 0 5px 5px 0;
+            padding: 4px 5px;
+        }
+        .sa-control input:focus,
+        .sa-control select:focus {
+            border-color: #818cf8;
+        }
+        .sa-control input:disabled {
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+        #sa-wrap.is-disabled {
+            opacity: .55;
+        }
+        #styles-wrap .gjs-sm-property__margin .gjs-sm-property__margin-top,
+        #styles-wrap .gjs-sm-property__margin .gjs-sm-property__margin-right,
+        #styles-wrap .gjs-sm-property__margin .gjs-sm-property__margin-bottom,
+        #styles-wrap .gjs-sm-property__margin .gjs-sm-property__margin-left {
+            flex: 1 1 100% !important;
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+        #styles-wrap .gjs-sm-property__margin .gjs-sm-property__margin-top > .gjs-fields,
+        #styles-wrap .gjs-sm-property__margin .gjs-sm-property__margin-right > .gjs-fields,
+        #styles-wrap .gjs-sm-property__margin .gjs-sm-property__margin-bottom > .gjs-fields,
+        #styles-wrap .gjs-sm-property__margin .gjs-sm-property__margin-left > .gjs-fields {
+            display: flex !important;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+        #styles-wrap .gjs-sm-property__margin .gjs-field {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        .ma-auto-btn {
+            height: 26px;
+            flex: 0 0 auto;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            background: #1e293b;
+            color: #cbd5e1;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            line-height: 1;
+            padding: 0 7px;
+            text-transform: uppercase;
+            transition: all .15s;
+        }
+        .ma-auto-btn:hover,
+        .ma-auto-btn.active {
+            background: #4f46e5;
+            border-color: #818cf8;
+            color: #fff;
+        }
         #pa-wrap {
             width: 100%;
             flex: 1 1 100%;
@@ -854,6 +1025,72 @@
             border-color: #818cf8;
         }
         #be-wrap.is-disabled {
+            opacity: .55;
+        }
+        #br-wrap {
+            width: 100%;
+            flex: 1 1 100%;
+            border-top: 1px solid #1e293b;
+            border-bottom: 1px solid #1e293b;
+            margin: 8px 0;
+            padding: 8px 0;
+        }
+        #br-wrap,
+        #br-wrap * {
+            box-sizing: border-box;
+        }
+        .br-title {
+            color: #e2e8f0;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+        .br-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 7px;
+        }
+        .br-corner {
+            min-width: 0;
+        }
+        .br-label {
+            display: block;
+            color: #cbd5e1;
+            font-size: 10px;
+            margin-bottom: 3px;
+        }
+        .br-control {
+            display: flex;
+            min-width: 0;
+        }
+        .br-value,
+        .br-unit {
+            height: 26px;
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #f8fafc;
+            font-size: 11px;
+            outline: none;
+        }
+        .br-value {
+            width: 0;
+            min-width: 0;
+            flex: 1 1 auto;
+            border-radius: 5px 0 0 5px;
+            padding: 4px 6px;
+        }
+        .br-unit {
+            width: 46px;
+            flex-shrink: 0;
+            border-left: 0;
+            border-radius: 0 5px 5px 0;
+            padding: 4px;
+        }
+        .br-value:focus,
+        .br-unit:focus {
+            border-color: #818cf8;
+        }
+        #br-wrap.is-disabled {
             opacity: .55;
         }
         #se-wrap {
@@ -1424,6 +1661,10 @@ function escapeHtml(value) {
         .replace(/>/g, '&gt;');
 }
 
+function escapeAttribute(value) {
+    return escapeHtml(value).replace(/"/g, '&quot;');
+}
+
 function childComponents(component) {
     const components = component && component.components ? component.components() : null;
     return components ? components.models : [];
@@ -1506,6 +1747,279 @@ function findWhyChooseParts(component) {
     return { heading, subheading, benefits: benefitCards };
 }
 
+function componentHasAttribute(component, name) {
+    return component?.getAttributes?.()[name] !== undefined;
+}
+
+function findDescendant(component, predicate) {
+    if (!component) return null;
+    if (predicate(component)) return component;
+    return findFirstDescendant(component, predicate);
+}
+
+function cleanServiceAreaName(value) {
+    return String(value || '')
+        .replace(/\u00a0/g, ' ')
+        .replace(/📍/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function phoneHrefFromText(value) {
+    const digits = String(value || '').replace(/\D/g, '');
+    return digits ? `tel:${digits}` : 'tel:8000000000';
+}
+
+function serviceAreaCardMarkup(area = {}) {
+    const name = cleanServiceAreaName(area.name) || 'New Service Area';
+    const description = String(area.description || `Covering all cities in the ${name} area.`).trim();
+    const phone = String(area.phone || '(800) 000-0000').trim();
+    const href = String(area.href || phoneHrefFromText(phone)).trim();
+
+    return `<article data-service-area-card="true" style="background:#f8fafc;border:1px solid rgba(30,58,95,.12);border-radius:10px;padding:14px 12px;min-height:140px;display:flex;flex-direction:column;gap:8px;box-shadow:0 3px 14px rgba(15,23,42,.12);">
+  <h3 data-service-area-name="true" style="color:#1e3a5f;font-size:14px;font-weight:800;line-height:1.25;margin:0;"><span style="color:#d97706;margin-right:4px;">&#128205;</span>${escapeHtml(name)}</h3>
+  <p data-service-area-description="true" style="color:#475569;font-size:12px;line-height:1.45;margin:0;flex:1 1 auto;">${escapeHtml(description)}</p>
+  <a data-service-area-phone="true" href="${escapeAttribute(href)}" style="color:#1d6b3a;font-size:13px;font-weight:800;text-decoration:none;">${escapeHtml(phone)}</a>
+</article>`;
+}
+
+function serviceAreasGridStyle() {
+    return 'display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:12px;align-items:stretch;';
+}
+
+function serviceAreasSectionInnerHtml(heading, subheading, areas) {
+    const cards = (areas.length ? areas : [
+        { name: 'North County' },
+        { name: 'South District' },
+        { name: 'East Valley' },
+    ]).map(serviceAreaCardMarkup).join('\n');
+
+    return `<div data-service-areas-inner="true" style="max-width:1140px;margin:0 auto;">
+  <h2 data-service-area-heading="true" style="color:#fff;font-size:24px;font-weight:700;margin:0 0 6px;text-align:center;">${escapeHtml(heading || 'Service Areas')}</h2>
+  <p data-service-area-subheading="true" style="color:rgba(255,255,255,.65);text-align:center;margin:0 0 24px;font-size:14px;">${escapeHtml(subheading || 'Click a region to see coverage and contact info')}</p>
+  <div data-service-area-grid="true" style="${serviceAreasGridStyle()}">
+    ${cards}
+  </div>
+</div>`;
+}
+
+function findServiceAreasGrid(component) {
+    return findDescendant(component, child => componentHasAttribute(child, 'data-service-area-grid'));
+}
+
+function findServiceAreaCards(component) {
+    const grid = findServiceAreasGrid(component);
+    const cards = [];
+    if (!grid) return cards;
+
+    childComponents(grid).forEach(child => {
+        if (componentHasAttribute(child, 'data-service-area-card')) cards.push(child);
+    });
+
+    return cards;
+}
+
+function serviceAreaCardParts(card) {
+    if (!card) return null;
+
+    const name = findDescendant(card, child => componentHasAttribute(child, 'data-service-area-name'));
+    const description = findDescendant(card, child => componentHasAttribute(child, 'data-service-area-description'));
+    const phone = findDescendant(card, child => componentHasAttribute(child, 'data-service-area-phone'));
+
+    return { name, description, phone };
+}
+
+function serviceAreaCardData(card) {
+    const parts = serviceAreaCardParts(card);
+    const phone = parts?.phone ? getComponentText(parts.phone) : '(800) 000-0000';
+
+    return {
+        name: parts?.name ? cleanServiceAreaName(getComponentText(parts.name)) : 'New Service Area',
+        description: parts?.description ? getComponentText(parts.description) : '',
+        phone,
+        href: parts?.phone ? getEditableAttributeValue(parts.phone, 'href') : phoneHrefFromText(phone),
+    };
+}
+
+function collectAccordionServiceAreas(component) {
+    const areas = [];
+
+    walkComponents(component, child => {
+        if (getTagName(child) !== 'button') return;
+
+        const parent = child.parent?.();
+        const siblings = childComponents(parent);
+        const body = siblings.find(sibling => sibling !== child && (
+            componentHasAttribute(sibling, 'class') || getTagName(sibling) === 'div'
+        ));
+        const description = body ? findDescendant(body, descendant => getTagName(descendant) === 'p') : null;
+        const phone = body ? findDescendant(body, descendant => getTagName(descendant) === 'a') : null;
+        const name = cleanServiceAreaName(getComponentText(child));
+
+        if (!name || name.toLowerCase().includes('save') || name.length > 80) return;
+
+        areas.push({
+            name,
+            description: description ? getComponentText(description) : `Covering all cities in the ${name} area.`,
+            phone: phone ? getComponentText(phone) : '(800) 000-0000',
+            href: phone ? getEditableAttributeValue(phone, 'href') : '',
+        });
+    });
+
+    return areas;
+}
+
+function findServiceAreasParts(component) {
+    if (!component) return null;
+
+    const tag = getTagName(component);
+    const isExplicitServiceAreasWidget = componentHasAttribute(component, 'data-service-areas-widget');
+    if (!isExplicitServiceAreasWidget && tag !== 'section') return null;
+
+    const heading = findDescendant(component, child => {
+        const childTag = getTagName(child);
+        return /^h[1-6]$/.test(childTag) && getComponentText(child).toLowerCase().includes('service areas');
+    }) || findDescendant(component, child => /^h[1-6]$/.test(getTagName(child)));
+    const headingText = heading ? getComponentText(heading).toLowerCase() : '';
+    const grid = findServiceAreasGrid(component);
+    const cards = findServiceAreaCards(component);
+    const accordionAreas = grid ? [] : collectAccordionServiceAreas(component);
+    const hasServiceAreasHeading = headingText.includes('service areas');
+    const hasServiceAreaAccordion = accordionAreas.length >= 2;
+
+    if (!grid && !hasServiceAreaAccordion && !isExplicitServiceAreasWidget) return null;
+    if (!hasServiceAreasHeading && !hasServiceAreaAccordion && !isExplicitServiceAreasWidget) return null;
+
+    const subheading = findDescendant(component, child => {
+        if (getTagName(child) !== 'p') return false;
+        const text = getComponentText(child).toLowerCase();
+        return text.includes('region') || text.includes('coverage') || text.includes('contact');
+    }) || findDescendant(component, child => getTagName(child) === 'p');
+
+    return {
+        heading,
+        subheading,
+        grid,
+        cards,
+        accordionAreas,
+    };
+}
+
+function normalizeServiceAreaCards(component) {
+    const grid = findServiceAreasGrid(component);
+    if (!grid) return;
+
+    grid.addStyle({
+        display: 'grid',
+        'grid-template-columns': 'repeat(auto-fit,minmax(132px,1fr))',
+        gap: '12px',
+        'align-items': 'stretch',
+    });
+}
+
+function normalizeServiceAreasWidget(component) {
+    const parts = findServiceAreasParts(component);
+    if (!parts) return false;
+
+    const wasExplicitServiceAreasWidget = componentHasAttribute(component, 'data-service-areas-widget');
+    component.addAttributes({ 'data-service-areas-widget': 'true' });
+
+    if (parts.grid) {
+        normalizeServiceAreaCards(component);
+        return false;
+    }
+
+    const hasServiceAreasHeading = getComponentText(parts.heading).toLowerCase().includes('service areas');
+    const canUseExistingIntroCopy = hasServiceAreasHeading || wasExplicitServiceAreasWidget;
+    const heading = canUseExistingIntroCopy ? (getComponentText(parts.heading) || 'Service Areas') : 'Service Areas';
+    const subheading = canUseExistingIntroCopy
+        ? (getComponentText(parts.subheading) || 'Click a region to see coverage and contact info')
+        : 'Click a region to see coverage and contact info';
+    component.components(serviceAreasSectionInnerHtml(heading, subheading, parts.accordionAreas));
+    component.view?.render?.();
+    return true;
+}
+
+function addServiceAreaCard(component) {
+    if (!component) return;
+
+    normalizeServiceAreasWidget(component);
+    const grid = findServiceAreasGrid(component);
+    if (!grid) return;
+
+    const nextIndex = findServiceAreaCards(component).length + 1;
+    grid.append(serviceAreaCardMarkup({
+        name: `Service Area ${nextIndex}`,
+        description: `Covering all cities in Service Area ${nextIndex}.`,
+        phone: '(800) 000-0000',
+    }));
+    normalizeServiceAreaCards(component);
+    component.view?.render?.();
+}
+
+function serviceAreaCardAt(component, index) {
+    return findServiceAreaCards(component)[index] || null;
+}
+
+function getServiceAreaFieldValue(component, field) {
+    const parts = findServiceAreasParts(component);
+    if (!parts) return '';
+
+    if (field.kind === 'service-area-heading') return getComponentText(parts.heading);
+    if (field.kind === 'service-area-subheading') return getComponentText(parts.subheading);
+
+    const card = serviceAreaCardAt(component, field.index);
+    const cardParts = serviceAreaCardParts(card);
+    if (!cardParts) return '';
+
+    if (field.kind === 'service-area-name') return cleanServiceAreaName(getComponentText(cardParts.name));
+    if (field.kind === 'service-area-description') return getComponentText(cardParts.description);
+    if (field.kind === 'service-area-phone') return getComponentText(cardParts.phone);
+    if (field.kind === 'service-area-phone-href') return getEditableAttributeValue(cardParts.phone, 'href');
+
+    return '';
+}
+
+function updateServiceAreaField(component, field, value) {
+    const parts = findServiceAreasParts(component);
+    if (!parts) return;
+
+    if (field.kind === 'service-area-heading') {
+        setComponentText(parts.heading, value);
+        return;
+    }
+
+    if (field.kind === 'service-area-subheading') {
+        setComponentText(parts.subheading, value);
+        return;
+    }
+
+    const card = serviceAreaCardAt(component, field.index);
+    const cardParts = serviceAreaCardParts(card);
+    if (!cardParts) return;
+
+    if (field.kind === 'service-area-name') {
+        setComponentText(cardParts.name, value);
+        return;
+    }
+
+    if (field.kind === 'service-area-description') {
+        setComponentText(cardParts.description, value);
+        return;
+    }
+
+    if (field.kind === 'service-area-phone') {
+        setComponentText(cardParts.phone, value);
+        if (!getEditableAttributeValue(cardParts.phone, 'href')?.trim().startsWith('tel:')) return;
+        updateEditableAttribute(cardParts.phone, 'href', phoneHrefFromText(value));
+        return;
+    }
+
+    if (field.kind === 'service-area-phone-href') {
+        updateEditableAttribute(cardParts.phone, 'href', value);
+    }
+}
+
 function getEditableAttributeValue(component, name) {
     const attributeValue = component?.getAttributes?.()[name];
     if (attributeValue !== undefined && attributeValue !== null && attributeValue !== '') {
@@ -1536,16 +2050,49 @@ function updateEditableAttribute(component, name, value) {
     component.view?.render?.();
 }
 
+function getEditableFieldTarget(component, field) {
+    if (!field) return { component: null, field: null };
+
+    if (!Array.isArray(field.targetPath) || !field.field) {
+        return { component, field };
+    }
+
+    let target = component;
+    for (const index of field.targetPath) {
+        target = childComponents(target)[index] || null;
+        if (!target) break;
+    }
+
+    return { component: target, field: field.field };
+}
+
+function editorFieldKey(field) {
+    const targetPath = Array.isArray(field?.targetPath) ? field.targetPath : [];
+    const editableField = field?.field || field || {};
+
+    return JSON.stringify({
+        targetPath,
+        kind: editableField.kind || '',
+        name: editableField.name || '',
+        index: editableField.index ?? '',
+    });
+}
+
 function markEditorFieldInput(input, field) {
-    input.dataset.editorFieldKind = field?.kind || '';
-    input.dataset.editorFieldName = field?.name || '';
+    const editableField = field?.field || field || {};
+
+    input.dataset.editorFieldKey = editorFieldKey(field);
+    input.dataset.editorFieldKind = editableField.kind || '';
+    input.dataset.editorFieldName = editableField.name || '';
 }
 
 function syncEditorFieldInputs(field, value) {
-    if (!field?.kind) return;
+    if (!(field?.kind || field?.field?.kind)) return;
+
+    const key = editorFieldKey(field);
 
     document.querySelectorAll('#traits-wrap .editor-content-field').forEach(input => {
-        if (input.dataset.editorFieldKind !== field.kind || input.dataset.editorFieldName !== (field.name || '')) return;
+        if (input.dataset.editorFieldKey !== key) return;
         if (input.classList.contains('upload-picker-field')) {
             updateUploadPickerTrigger(input, value, input.dataset.uploadKind || 'image');
         } else if (input.tagName?.toLowerCase() === 'select') {
@@ -1559,8 +2106,15 @@ function syncEditorFieldInputs(field, value) {
 function getEditableFieldValue(component, field) {
     if (!component || !field) return '';
 
+    ({ component, field } = getEditableFieldTarget(component, field));
+    if (!component || !field) return '';
+
     if (field.kind === 'text') return getComponentText(component);
     if (field.kind === 'attr') return getEditableAttributeValue(component, field.name);
+
+    if (String(field.kind || '').startsWith('service-area-')) {
+        return getServiceAreaFieldValue(component, field);
+    }
 
     if (field.kind === 'benefit-icon' || field.kind === 'benefit-text') {
         const parts = findBenefitParts(component);
@@ -1587,6 +2141,9 @@ function getEditableFieldValue(component, field) {
 function updateEditableField(component, field, value) {
     if (!component || !field) return;
 
+    ({ component, field } = getEditableFieldTarget(component, field));
+    if (!component || !field) return;
+
     if (field.kind === 'text') {
         setComponentText(component, value);
         return;
@@ -1594,6 +2151,12 @@ function updateEditableField(component, field, value) {
 
     if (field.kind === 'attr') {
         updateEditableAttribute(component, field.name, value);
+        syncEditorFieldInputs(field, value);
+        return;
+    }
+
+    if (String(field.kind || '').startsWith('service-area-')) {
+        updateServiceAreaField(component, field, value);
         syncEditorFieldInputs(field, value);
         return;
     }
@@ -1641,6 +2204,32 @@ function registerContentTrait(type, tagName) {
 
 registerContentTrait('editor-content-input', 'input');
 registerContentTrait('editor-content-textarea', 'textarea');
+
+editor.TraitManager.addType('editor-action-button', {
+    createInput({ trait }) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'editor-action-button';
+        button.textContent = trait.get('buttonLabel') || 'Add';
+        button.addEventListener('click', event => {
+            event.preventDefault();
+
+            const component = editor.getSelected();
+            if (!component) return;
+
+            if (trait.get('action') === 'add-service-area-card') {
+                addServiceAreaCard(component);
+                const contentTraits = buildContentTraits(component);
+                setComponentTraits(component, [...getSerializableTraits(component), ...contentTraits]);
+                showRightPane('traits');
+            }
+        });
+        return button;
+    },
+    onUpdate({ elInput, component }) {
+        elInput.disabled = !component;
+    },
+});
 
 function uploadedMediaForKind(kind) {
     return UPLOADED_MEDIA.filter(item => item.type === kind);
@@ -2310,6 +2899,16 @@ function contentTrait(name, label, field, options = {}) {
     };
 }
 
+function actionTrait(name, label, action, buttonLabel) {
+    return {
+        type: 'editor-action-button',
+        name: CONTENT_TRAIT_PREFIX + name,
+        label,
+        action,
+        buttonLabel,
+    };
+}
+
 function getSerializableTraits(component) {
     const traits = typeof component.getTraits === 'function'
         ? component.getTraits()
@@ -2330,14 +2929,70 @@ function setComponentTraits(component, traits) {
     }
 }
 
-function buildContentTraits(component) {
+function buildOwnContentTraits(component, options = {}) {
     const tag = getTagName(component);
     const traits = [];
-    const existingTraitNames = new Set(getSerializableTraits(component).map(trait => trait.name));
+    const existingTraitNames = options.ignoreExistingTraitNames
+        ? new Set()
+        : new Set(getSerializableTraits(component).map(trait => trait.name));
     const whyChoose = findWhyChooseParts(component);
     const benefitParts = findBenefitParts(component);
     const isTextElement = TEXT_SETTING_TAGS.has(tag) || component.get?.('type') === 'text';
     const hasTrait = name => existingTraitNames.has(name);
+    const serviceAreas = findServiceAreasParts(component);
+
+    if (serviceAreas) {
+        normalizeServiceAreasWidget(component);
+        const normalizedServiceAreas = findServiceAreasParts(component) || serviceAreas;
+        const serviceAreaCards = findServiceAreaCards(component);
+
+        traits.push(actionTrait('service_area_add_card', 'Cards', 'add-service-area-card', 'Add service area card'));
+
+        if (normalizedServiceAreas.heading) {
+            traits.push(contentTrait('service_area_heading', 'Heading', { kind: 'service-area-heading' }, {
+                type: 'editor-content-textarea',
+                placeholder: 'Service areas heading',
+            }));
+        }
+
+        if (normalizedServiceAreas.subheading) {
+            traits.push(contentTrait('service_area_subheading', 'Subheading', { kind: 'service-area-subheading' }, {
+                type: 'editor-content-textarea',
+                placeholder: 'Service areas intro',
+            }));
+        }
+
+        serviceAreaCards.forEach((card, index) => {
+            traits.push(contentTrait(`service_area_${index}_name`, `Area ${index + 1} Name`, {
+                kind: 'service-area-name',
+                index,
+            }, {
+                type: 'editor-content-textarea',
+                placeholder: 'Service area name',
+            }));
+            traits.push(contentTrait(`service_area_${index}_description`, `Area ${index + 1} Coverage`, {
+                kind: 'service-area-description',
+                index,
+            }, {
+                type: 'editor-content-textarea',
+                placeholder: 'Coverage details',
+            }));
+            traits.push(contentTrait(`service_area_${index}_phone`, `Area ${index + 1} Phone`, {
+                kind: 'service-area-phone',
+                index,
+            }, {
+                placeholder: '(800) 000-0000',
+            }));
+            traits.push(contentTrait(`service_area_${index}_phone_href`, `Area ${index + 1} Phone Link`, {
+                kind: 'service-area-phone-href',
+                index,
+            }, {
+                placeholder: 'tel:8000000000',
+            }));
+        });
+
+        return traits;
+    }
 
     if (whyChoose) {
         if (whyChoose.heading) {
@@ -2418,6 +3073,99 @@ function buildContentTraits(component) {
     }
 
     return traits;
+}
+
+function childComponentLabel(component) {
+    const tag = getTagName(component) || component?.get?.('type') || 'element';
+
+    if (/^h[1-6]$/.test(tag)) return 'Heading';
+    if (tag === 'p') return 'Paragraph';
+    if (tag === 'a') return 'Link';
+    if (tag === 'img') return 'Image';
+    if (tag === 'video') return 'Video';
+    if (tag === 'button') return 'Button';
+    if (tag === 'input') return 'Input';
+    if (tag === 'textarea') return 'Textarea';
+    if (tag === 'span' || component?.get?.('type') === 'text') return 'Text';
+
+    return tag.toUpperCase();
+}
+
+function childTraitLabel(component, trait, sequence) {
+    return `${childComponentLabel(component)} ${sequence} - ${trait.label}`;
+}
+
+function shouldStopAfterChildTraits(component) {
+    const tag = getTagName(component);
+
+    return TEXT_SETTING_TAGS.has(tag)
+        || ['img', 'video', 'input', 'textarea'].includes(tag)
+        || component.get?.('type') === 'text'
+        || component.get?.('type') === 'image'
+        || component.get?.('type') === 'video'
+        || Boolean(findBenefitParts(component))
+        || Boolean(findWhyChooseParts(component))
+        || Boolean(findServiceAreasParts(component));
+}
+
+function wrapChildContentTrait(component, trait, targetPath, sequence) {
+    const baseName = String(trait.name || '').replace(CONTENT_TRAIT_PREFIX, '');
+
+    return {
+        ...trait,
+        name: `${CONTENT_TRAIT_PREFIX}child_${targetPath.join('_')}_${baseName}`,
+        label: childTraitLabel(component, trait, sequence),
+        editorField: {
+            targetPath,
+            field: trait.editorField,
+        },
+    };
+}
+
+function buildChildContentTraits(component) {
+    const traits = [];
+    const maxChildTraits = 40;
+    const labelCounts = new Map();
+
+    const collect = (child, targetPath) => {
+        if (traits.length >= maxChildTraits) return;
+
+        const childTraits = buildOwnContentTraits(child, { ignoreExistingTraitNames: true });
+        if (childTraits.length) {
+            const label = childComponentLabel(child);
+            const sequence = (labelCounts.get(label) || 0) + 1;
+            labelCounts.set(label, sequence);
+
+            childTraits.forEach(trait => {
+                if (traits.length < maxChildTraits) {
+                    traits.push(wrapChildContentTrait(child, trait, targetPath, sequence));
+                }
+            });
+
+            if (shouldStopAfterChildTraits(child)) return;
+        }
+
+        childComponents(child).forEach((grandchild, index) => collect(grandchild, [...targetPath, index]));
+    };
+
+    childComponents(component).forEach((child, index) => collect(child, [index]));
+
+    return traits;
+}
+
+function buildContentTraits(component) {
+    const ownTraits = buildOwnContentTraits(component);
+    const tag = getTagName(component);
+    const isServiceAreasWidget = Boolean(findServiceAreasParts(component));
+    const isLeafEditable = TEXT_SETTING_TAGS.has(tag)
+        || component.get?.('type') === 'text'
+        || ['img', 'video', 'input', 'textarea'].includes(tag);
+
+    if (isServiceAreasWidget || isLeafEditable || !childComponents(component).length) {
+        return ownTraits;
+    }
+
+    return [...ownTraits, ...buildChildContentTraits(component)];
 }
 
 function showRightPane(panelName) {
@@ -2614,10 +3362,28 @@ function syncBackgroundShorthandToLonghands(component) {
     }
 }
 
+function normalizeAllServiceAreasWidgets(root = editor.getWrapper?.()) {
+    if (!root) return;
+
+    normalizeServiceAreasWidget(root);
+    walkComponents(root, child => normalizeServiceAreasWidget(child));
+}
+
+function scheduleServiceAreasWidgetNormalization(root = null) {
+    setTimeout(() => normalizeAllServiceAreasWidgets(root || editor.getWrapper?.()), 0);
+    setTimeout(() => normalizeAllServiceAreasWidgets(root || editor.getWrapper?.()), 250);
+}
+
+editor.on('load', () => scheduleServiceAreasWidgetNormalization());
+editor.on('canvas:frame:load', () => scheduleServiceAreasWidgetNormalization());
+editor.on('component:add', component => scheduleServiceAreasWidgetNormalization(component));
+scheduleServiceAreasWidgetNormalization();
+
 editor.on('component:selected', component => {
     if (!component) return;
 
     syncBackgroundShorthandToLonghands(component);
+    normalizeServiceAreasWidget(component);
 
     const contentTraits = buildContentTraits(component);
     setComponentTraits(component, [...getSerializableTraits(component), ...contentTraits]);
@@ -2687,6 +3453,12 @@ bm.add('pb-card', {
     <a href="#" style="display:inline-block;padding:8px 20px;background:#4f46e5;color:#fff;border-radius:7px;font-size:13px;font-weight:600;text-decoration:none;">Learn More</a>
   </div>
 </div>`,
+});
+
+bm.add('pb-div', {
+    label: 'Div', category: 'Elements',
+    media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M8 9h8M8 13h5"/></svg>`,
+    content: '<div style="min-height:80px;padding:24px;border:1px dashed #cbd5e1;border-radius:8px;color:#475569;">Div content</div>',
 });
 
 bm.add('pb-h1', {
@@ -2815,36 +3587,15 @@ bm.add('pb-service-cards', {
 });
 
 bm.add('pb-accordion', {
-    label: 'Accordion', category: 'Service Sections',
+    label: 'Service Areas', category: 'Service Sections',
     media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="5" rx="1.5"/><rect x="2" y="10" width="20" height="5" rx="1.5"/><rect x="2" y="16" width="20" height="5" rx="1.5"/></svg>`,
-    content: `<section style="background:#1e3a5f;padding:40px 24px;">
-  <div style="max-width:960px;margin:0 auto;">
-    <h2 style="color:#fff;font-size:24px;font-weight:700;margin:0 0 6px;text-align:center;">Service Areas</h2>
-    <p style="color:rgba(255,255,255,.6);text-align:center;margin:0 0 24px;font-size:14px;">Click a region to see coverage and contact info</p>
-    <div style="border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.3);">
-      <div style="border-bottom:1px solid #e5e7eb;">
-        <button onclick="(function(btn){var body=btn.nextElementSibling,ch=btn.querySelector('.acc-ch'),open=body.style.display==='block';document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none';});document.querySelectorAll('.acc-ch').forEach(function(c){c.style.transform='';});if(!open){body.style.display='block';ch.style.transform='rotate(180deg)';};})(this)" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border:none;cursor:pointer;font-size:16px;font-weight:600;color:#1e3a5f;text-align:left;">
-          <span>Region One</span>
-          <svg class="acc-ch" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform .2s;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </button>
-        <div class="acc-body" style="display:none;padding:16px 20px 24px;background:#f9fafb;"><p style="margin:0 0 8px;color:#374151;">Covering all cities in this region.</p><a href="tel:8000000000" style="color:#1d6b3a;font-weight:700;font-size:18px;">(800) 000-0000</a></div>
-      </div>
-      <div style="border-bottom:1px solid #e5e7eb;">
-        <button onclick="(function(btn){var body=btn.nextElementSibling,ch=btn.querySelector('.acc-ch'),open=body.style.display==='block';document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none';});document.querySelectorAll('.acc-ch').forEach(function(c){c.style.transform='';});if(!open){body.style.display='block';ch.style.transform='rotate(180deg)';};})(this)" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border:none;cursor:pointer;font-size:16px;font-weight:600;color:#1e3a5f;text-align:left;">
-          <span>Region Two</span>
-          <svg class="acc-ch" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform .2s;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </button>
-        <div class="acc-body" style="display:none;padding:16px 20px 24px;background:#f9fafb;"><p style="margin:0 0 8px;color:#374151;">Covering all cities in this region.</p><a href="tel:8000000000" style="color:#1d6b3a;font-weight:700;font-size:18px;">(800) 000-0000</a></div>
-      </div>
-      <div>
-        <button onclick="(function(btn){var body=btn.nextElementSibling,ch=btn.querySelector('.acc-ch'),open=body.style.display==='block';document.querySelectorAll('.acc-body').forEach(function(b){b.style.display='none';});document.querySelectorAll('.acc-ch').forEach(function(c){c.style.transform='';});if(!open){body.style.display='block';ch.style.transform='rotate(180deg)';};})(this)" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:16px 20px;background:#fff;border:none;cursor:pointer;font-size:16px;font-weight:600;color:#1e3a5f;text-align:left;">
-          <span>Region Three</span>
-          <svg class="acc-ch" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition:transform .2s;flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-        </button>
-        <div class="acc-body" style="display:none;padding:16px 20px 24px;background:#f9fafb;"><p style="margin:0 0 8px;color:#374151;">Covering all cities in this region.</p><a href="tel:8000000000" style="color:#1d6b3a;font-weight:700;font-size:18px;">(800) 000-0000</a></div>
-      </div>
-    </div>
-  </div>
+    content: `<section data-service-areas-widget="true" style="background:#1e3a5f;padding:40px 24px;">
+  ${serviceAreasSectionInnerHtml('Service Areas', 'Click a region to see coverage and contact info', [
+    { name: 'North County', description: 'Coverage for homes and businesses across North County.', phone: '(800) 000-0000', href: 'tel:8000000000' },
+    { name: 'South District', description: 'Fast local help throughout the South District.', phone: '(800) 000-0000', href: 'tel:8000000000' },
+    { name: 'East Valley', description: 'Same-day service across East Valley neighborhoods.', phone: '(800) 000-0000', href: 'tel:8000000000' },
+    { name: 'West Side', description: 'Reliable coverage for the West Side service area.', phone: '(800) 000-0000', href: 'tel:8000000000' },
+  ])}
 </section>`,
 });
 
@@ -3411,6 +4162,693 @@ function findStyleSectorByTitle(title) {
     return [...document.querySelectorAll('#styles-wrap .gjs-sm-sector')]
         .find(sector => sector.querySelector('.gjs-sm-sector-title')?.textContent.trim() === title) || null;
 }
+
+const SPACING_SIDE_ORDER = ['top', 'right', 'bottom', 'left'];
+const SPACING_UNITS = {
+    margin: ['px', '%', 'em', 'rem', 'auto'],
+    padding: ['px', '%', 'em', 'rem'],
+};
+const SPACING_ALL_HTML = `
+<div class="sa-row">
+  <div class="sa-label-wrap">
+    <label class="sa-label" for="sa-margin-value">Margin all</label>
+    <button type="button" class="sa-clear-btn" data-spacing-clear="margin" title="Clear margin all" aria-label="Clear margin all">x</button>
+  </div>
+  <div class="sa-control">
+    <input type="number" id="sa-margin-value" step="1" placeholder="mixed">
+    <select id="sa-margin-unit">
+      ${SPACING_UNITS.margin.map(unit => `<option value="${unit}">${unit}</option>`).join('')}
+    </select>
+  </div>
+</div>
+<div class="sa-row">
+  <div class="sa-label-wrap">
+    <label class="sa-label" for="sa-padding-value">Padding all</label>
+    <button type="button" class="sa-clear-btn" data-spacing-clear="padding" title="Clear padding all" aria-label="Clear padding all">x</button>
+  </div>
+  <div class="sa-control">
+    <input type="number" id="sa-padding-value" step="1" placeholder="mixed">
+    <select id="sa-padding-unit">
+      ${SPACING_UNITS.padding.map(unit => `<option value="${unit}">${unit}</option>`).join('')}
+    </select>
+  </div>
+</div>`;
+
+let syncingSpacingAllEditor = false;
+
+function spacingAllControls() {
+    const wrap = document.getElementById('sa-wrap');
+    if (!wrap) return null;
+
+    return {
+        wrap,
+        marginValue: document.getElementById('sa-margin-value'),
+        marginUnit: document.getElementById('sa-margin-unit'),
+        marginClear: wrap.querySelector('[data-spacing-clear="margin"]'),
+        paddingValue: document.getElementById('sa-padding-value'),
+        paddingUnit: document.getElementById('sa-padding-unit'),
+        paddingClear: wrap.querySelector('[data-spacing-clear="padding"]'),
+        inputs: [...wrap.querySelectorAll('input, select, button')],
+    };
+}
+
+function spacingPropertyName(kind, side) {
+    return `${kind}-${side}`;
+}
+
+function camelStyleProperty(property) {
+    return property.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
+}
+
+function spacingValueFromStyle(styles, property) {
+    return styles[property] ?? styles[camelStyleProperty(property)] ?? '';
+}
+
+function splitSpacingShorthand(value) {
+    const parts = String(value || '').trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return null;
+    if (parts.length === 1) return [parts[0], parts[0], parts[0], parts[0]];
+    if (parts.length === 2) return [parts[0], parts[1], parts[0], parts[1]];
+    if (parts.length === 3) return [parts[0], parts[1], parts[2], parts[1]];
+    return [parts[0], parts[1], parts[2], parts[3]];
+}
+
+function componentSpacingValues(component, kind) {
+    if (!component) return SPACING_SIDE_ORDER.map(() => '');
+
+    const styles = component.getStyle?.() || {};
+    const shorthand = splitSpacingShorthand(spacingValueFromStyle(styles, kind));
+
+    return SPACING_SIDE_ORDER.map((side, index) => {
+        const explicit = spacingValueFromStyle(styles, spacingPropertyName(kind, side));
+        if (explicit !== '' && explicit !== undefined && explicit !== null) return String(explicit).trim();
+        return shorthand?.[index] || '';
+    });
+}
+
+function parseSpacingValue(value, fallbackUnit = 'px') {
+    const text = String(value || '').trim().toLowerCase();
+    if (!text) return { number: '', unit: fallbackUnit, css: '' };
+    if (text === 'auto') return { number: '', unit: 'auto', css: 'auto' };
+
+    const match = text.match(/^(-?\d*\.?\d+)(px|%|em|rem)?$/);
+    if (!match) return { number: '', unit: fallbackUnit, css: text };
+
+    const unit = match[2] || fallbackUnit;
+    return {
+        number: match[1],
+        unit,
+        css: `${match[1]}${unit}`,
+    };
+}
+
+function commonSpacingValue(component, kind) {
+    const values = componentSpacingValues(component, kind).filter(value => value !== '');
+    if (values.length !== SPACING_SIDE_ORDER.length) return null;
+
+    const first = values[0].toLowerCase();
+    return values.every(value => value.toLowerCase() === first) ? values[0] : null;
+}
+
+function setSpacingControlKind(kind, component = editor.getSelected()) {
+    const controls = spacingAllControls();
+    if (!controls) return;
+
+    const valueInput = controls[`${kind}Value`];
+    const unitSelect = controls[`${kind}Unit`];
+    const common = commonSpacingValue(component, kind);
+
+    valueInput.disabled = !component;
+    unitSelect.disabled = !component;
+
+    if (!component) {
+        valueInput.value = '';
+        valueInput.placeholder = '';
+        unitSelect.value = SPACING_UNITS[kind][0];
+        return;
+    }
+
+    if (!common) {
+        if (unitSelect.value === 'auto') unitSelect.value = SPACING_UNITS[kind][0];
+        if (document.activeElement !== valueInput) valueInput.value = '';
+        valueInput.placeholder = 'mixed';
+        valueInput.disabled = false;
+        return;
+    }
+
+    const parsed = parseSpacingValue(common, unitSelect.value);
+    if (SPACING_UNITS[kind].includes(parsed.unit)) unitSelect.value = parsed.unit;
+
+    if (parsed.unit === 'auto') {
+        valueInput.value = '';
+        valueInput.placeholder = 'auto';
+        valueInput.disabled = true;
+        return;
+    }
+
+    if (document.activeElement !== valueInput) valueInput.value = parsed.number;
+    valueInput.placeholder = '';
+    valueInput.disabled = false;
+}
+
+function setSpacingAllDisabled(disabled) {
+    const controls = spacingAllControls();
+    if (!controls) return;
+    controls.wrap.classList.toggle('is-disabled', disabled);
+    controls.inputs.forEach(input => { input.disabled = disabled; });
+}
+
+function spacingKindHasAnyValue(component, kind) {
+    if (!component) return false;
+
+    return componentSpacingValues(component, kind)
+        .some(value => String(value || '').trim() !== '');
+}
+
+function syncSpacingClearButtons(component = editor.getSelected()) {
+    const controls = spacingAllControls();
+    if (!controls) return;
+
+    ['margin', 'padding'].forEach(kind => {
+        const button = controls[`${kind}Clear`];
+        if (!button) return;
+
+        const hasValue = spacingKindHasAnyValue(component, kind);
+        button.classList.toggle('visible', hasValue);
+        button.disabled = !hasValue;
+    });
+}
+
+function selectedSpacingCssValue(kind) {
+    const controls = spacingAllControls();
+    if (!controls) return '';
+
+    const valueInput = controls[`${kind}Value`];
+    const unitSelect = controls[`${kind}Unit`];
+    const unit = unitSelect.value;
+
+    if (unit === 'auto') return 'auto';
+
+    const rawValue = String(valueInput.value || '').trim();
+    if (rawValue === '') return '';
+
+    return `${rawValue}${unit}`;
+}
+
+function syncNativeSpacingFields(kind, cssValue) {
+    const parsed = parseSpacingValue(cssValue);
+
+    SPACING_SIDE_ORDER.forEach(side => {
+        const property = document.querySelector(`#styles-wrap .gjs-sm-property__${kind}-${side}`);
+        if (!property) return;
+
+        const input = property.querySelector('input');
+        const select = property.querySelector('select');
+
+        if (input && document.activeElement !== input) {
+            input.value = parsed.unit === 'auto' ? '' : parsed.number;
+        }
+
+        if (select && SPACING_UNITS[kind].includes(parsed.unit) && document.activeElement !== select) {
+            select.value = parsed.unit;
+        }
+    });
+}
+
+function marginSideProperty(side) {
+    return document.querySelector(`#styles-wrap .gjs-sm-property__margin-${side}`);
+}
+
+function setNativeMarginSideField(side, cssValue) {
+    const property = marginSideProperty(side);
+    if (!property) return;
+
+    const parsed = parseSpacingValue(cssValue);
+    const input = property.querySelector('input');
+    const select = property.querySelector('select');
+
+    if (input && document.activeElement !== input) {
+        input.value = parsed.unit === 'auto' ? '' : parsed.number;
+        input.placeholder = parsed.unit === 'auto' ? 'auto' : '';
+    }
+
+    if (select && SPACING_UNITS.margin.includes(parsed.unit) && document.activeElement !== select) {
+        select.value = parsed.unit;
+    }
+}
+
+function clearComponentStyleProperty(component, property) {
+    if (!component || !property) return;
+
+    const styles = { ...(component.getStyle?.() || {}) };
+    delete styles[property];
+    delete styles[camelStyleProperty(property)];
+
+    if (typeof component.setStyle === 'function') {
+        component.setStyle(styles);
+    } else {
+        component.addStyle({ [property]: '' });
+    }
+}
+
+function syncMarginAutoButtons(component = editor.getSelected()) {
+    const values = componentSpacingValues(component, 'margin');
+
+    SPACING_SIDE_ORDER.forEach((side, index) => {
+        const value = String(values[index] || '').trim().toLowerCase();
+        const isAuto = value === 'auto';
+        const property = marginSideProperty(side);
+        const button = property?.querySelector('.ma-auto-btn');
+
+        if (button) {
+            button.classList.toggle('active', isAuto);
+            button.disabled = !component;
+        }
+
+        if (isAuto) {
+            setNativeMarginSideField(side, 'auto');
+        } else {
+            const input = property?.querySelector('input');
+            if (input && document.activeElement !== input && input.placeholder === 'auto') {
+                input.placeholder = '';
+            }
+        }
+    });
+}
+
+function syncSpacingAllControls(component = editor.getSelected()) {
+    const controls = spacingAllControls();
+    if (!controls) return;
+
+    syncingSpacingAllEditor = true;
+    setSpacingAllDisabled(!component);
+    setSpacingControlKind('margin', component);
+    setSpacingControlKind('padding', component);
+    syncSpacingClearButtons(component);
+    syncMarginAutoButtons(component);
+    syncingSpacingAllEditor = false;
+}
+
+function applySpacingAll(kind) {
+    if (syncingSpacingAllEditor) return;
+
+    const component = editor.getSelected();
+    if (!component) return;
+
+    const cssValue = selectedSpacingCssValue(kind);
+    if (cssValue === '') {
+        syncSpacingAllControls(component);
+        return;
+    }
+
+    const patch = {};
+    SPACING_SIDE_ORDER.forEach(side => {
+        patch[spacingPropertyName(kind, side)] = cssValue;
+    });
+
+    component.addStyle(patch);
+    syncNativeSpacingFields(kind, cssValue);
+    syncSpacingAllControls(component);
+}
+
+function clearSpacingAll(kind) {
+    const component = editor.getSelected();
+    if (!component || !['margin', 'padding'].includes(kind)) return;
+
+    clearComponentStyleProperty(component, kind);
+    SPACING_SIDE_ORDER.forEach(side => clearComponentStyleProperty(component, spacingPropertyName(kind, side)));
+    syncNativeSpacingFields(kind, '');
+
+    if (kind === 'margin') {
+        SPACING_SIDE_ORDER.forEach(side => setNativeMarginSideField(side, ''));
+    }
+
+    syncSpacingAllControls(component);
+}
+
+function bindSpacingAllEvents(wrap) {
+    ['margin', 'padding'].forEach(kind => {
+        const valueInput = wrap.querySelector(`#sa-${kind}-value`);
+        const unitSelect = wrap.querySelector(`#sa-${kind}-unit`);
+        const clearButton = wrap.querySelector(`[data-spacing-clear="${kind}"]`);
+
+        valueInput?.addEventListener('input', () => applySpacingAll(kind));
+        valueInput?.addEventListener('change', () => applySpacingAll(kind));
+        unitSelect?.addEventListener('change', () => {
+            const isAuto = unitSelect.value === 'auto';
+            if (valueInput) {
+                valueInput.disabled = isAuto;
+                valueInput.placeholder = isAuto ? 'auto' : '';
+            }
+            applySpacingAll(kind);
+        });
+        clearButton?.addEventListener('click', event => {
+            event.preventDefault();
+            clearSpacingAll(kind);
+        });
+    });
+}
+
+function toggleMarginSideAuto(side) {
+    const component = editor.getSelected();
+    if (!component || !SPACING_SIDE_ORDER.includes(side)) return;
+
+    const property = spacingPropertyName('margin', side);
+    const values = componentSpacingValues(component, 'margin');
+    const sideIndex = SPACING_SIDE_ORDER.indexOf(side);
+    const isAuto = String(values[sideIndex] || '').trim().toLowerCase() === 'auto';
+
+    if (isAuto) {
+        clearComponentStyleProperty(component, property);
+        setNativeMarginSideField(side, '');
+    } else {
+        component.addStyle({ [property]: 'auto' });
+        setNativeMarginSideField(side, 'auto');
+    }
+
+    syncMarginAutoButtons(component);
+    syncSpacingAllControls(component);
+}
+
+function injectMarginAutoButtons() {
+    SPACING_SIDE_ORDER.forEach(side => {
+        const property = marginSideProperty(side);
+        if (!property || property.querySelector('.ma-auto-btn')) return;
+
+        const fields = property.querySelector(':scope > .gjs-fields');
+        if (!fields) return;
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'ma-auto-btn';
+        button.dataset.marginAutoSide = side;
+        button.textContent = 'auto';
+        button.title = `Toggle margin ${side} auto`;
+        button.addEventListener('click', event => {
+            event.preventDefault();
+            toggleMarginSideAuto(side);
+        });
+
+        fields.appendChild(button);
+    });
+
+    syncMarginAutoButtons();
+}
+
+function injectSpacingAllEditor() {
+    const existing = document.getElementById('sa-wrap');
+    if (existing) {
+        injectMarginAutoButtons();
+        syncSpacingAllControls();
+        return;
+    }
+
+    const dimensionSector = findStyleSectorByTitle('Dimension');
+    const props = dimensionSector?.querySelector('.gjs-sm-properties');
+    if (!props) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'sa-wrap';
+    wrap.innerHTML = SPACING_ALL_HTML;
+
+    const marginProperty = props.querySelector('.gjs-sm-property__margin');
+    if (marginProperty) {
+        props.insertBefore(wrap, marginProperty);
+    } else {
+        props.appendChild(wrap);
+    }
+
+    bindSpacingAllEvents(wrap);
+    injectMarginAutoButtons();
+
+    props.addEventListener('input', event => {
+        if (event.target.closest?.('.gjs-sm-property__margin, .gjs-sm-property__padding')) {
+            setTimeout(() => {
+                syncSpacingAllControls(editor.getSelected());
+                syncMarginAutoButtons(editor.getSelected());
+            }, 0);
+        }
+    });
+    props.addEventListener('change', event => {
+        if (event.target.closest?.('.gjs-sm-property__margin, .gjs-sm-property__padding')) {
+            setTimeout(() => {
+                syncSpacingAllControls(editor.getSelected());
+                syncMarginAutoButtons(editor.getSelected());
+            }, 0);
+        }
+    });
+
+    syncSpacingAllControls();
+}
+
+function scheduleSpacingAllInjection() {
+    setTimeout(injectSpacingAllEditor, 0);
+    setTimeout(injectSpacingAllEditor, 150);
+}
+
+editor.on('load', scheduleSpacingAllInjection);
+editor.on('component:selected', scheduleSpacingAllInjection);
+editor.on('component:styleUpdate', syncSpacingAllControls);
+editor.on('component:styleUpdate', syncMarginAutoButtons);
+
+const BORDER_RADIUS_CSS_CORNERS = [
+    ['top-left', 'Top left'],
+    ['top-right', 'Top right'],
+    ['bottom-right', 'Bottom right'],
+    ['bottom-left', 'Bottom left'],
+];
+const BORDER_RADIUS_CORNERS = [
+    ['top-left', 'Top left'],
+    ['top-right', 'Top right'],
+    ['bottom-left', 'Bottom left'],
+    ['bottom-right', 'Bottom right'],
+];
+const BORDER_RADIUS_SHORTHAND_INDEX = new Map(
+    BORDER_RADIUS_CSS_CORNERS.map(([corner], index) => [corner, index])
+);
+const BORDER_RADIUS_UNITS = ['px', '%'];
+const BORDER_RADIUS_HTML = `
+<div class="br-title">Corner radius</div>
+<div class="br-grid">
+  ${BORDER_RADIUS_CORNERS.map(([corner, label]) => `
+  <label class="br-corner">
+    <span class="br-label">${label}</span>
+    <span class="br-control">
+      <input type="number" class="br-value" data-radius-corner="${corner}" step="1" min="0">
+      <select class="br-unit" data-radius-unit="${corner}">
+        ${BORDER_RADIUS_UNITS.map(unit => `<option value="${unit}">${unit}</option>`).join('')}
+      </select>
+    </span>
+  </label>`).join('')}
+</div>`;
+
+let borderRadiusEditorInjected = false;
+let syncingBorderRadiusEditor = false;
+
+function radiusCornerProperty(corner) {
+    return `border-${corner}-radius`;
+}
+
+function parseRadiusValue(value, fallbackUnit = 'px') {
+    const text = String(value || '').trim().toLowerCase();
+    if (!text) return { number: '', unit: fallbackUnit, css: '' };
+
+    const match = text.match(/^(-?\d*\.?\d+)(px|%)?$/);
+    if (!match) return { number: '', unit: fallbackUnit, css: text };
+
+    const number = Math.max(0, parseFloat(match[1]));
+    const cleanNumber = Number.isInteger(number) ? String(number) : String(number);
+    const unit = match[2] || fallbackUnit;
+
+    return {
+        number: cleanNumber,
+        unit,
+        css: `${cleanNumber}${unit}`,
+    };
+}
+
+function splitRadiusShorthand(value) {
+    const mainRadius = String(value || '').split('/')[0].trim();
+    const tokens = splitCssWhitespace(mainRadius);
+
+    if (!tokens.length) return null;
+    if (tokens.length === 1) return [tokens[0], tokens[0], tokens[0], tokens[0]];
+    if (tokens.length === 2) return [tokens[0], tokens[1], tokens[0], tokens[1]];
+    if (tokens.length === 3) return [tokens[0], tokens[1], tokens[2], tokens[1]];
+    return [tokens[0], tokens[1], tokens[2], tokens[3]];
+}
+
+function componentRadiusValues(component) {
+    if (!component) return BORDER_RADIUS_CORNERS.map(() => '');
+
+    const styles = component.getStyle?.() || {};
+    const shorthand = splitRadiusShorthand(cssPropertyValue(styles, 'border-radius'));
+
+    return BORDER_RADIUS_CORNERS.map(([corner]) => {
+        const explicit = cssPropertyValue(styles, radiusCornerProperty(corner));
+        if (explicit !== '' && explicit !== undefined && explicit !== null) return String(explicit).trim();
+        return shorthand?.[BORDER_RADIUS_SHORTHAND_INDEX.get(corner)] || '';
+    });
+}
+
+function borderRadiusControls() {
+    const wrap = document.getElementById('br-wrap');
+    if (!wrap) return null;
+
+    return {
+        wrap,
+        inputs: [...wrap.querySelectorAll('input, select')],
+    };
+}
+
+function setBorderRadiusEditorDisabled(disabled) {
+    const controls = borderRadiusControls();
+    if (!controls) return;
+
+    controls.wrap.classList.toggle('is-disabled', disabled);
+    controls.inputs.forEach(input => { input.disabled = disabled; });
+}
+
+function syncNativeBorderRadiusField(component = editor.getSelected()) {
+    const values = componentRadiusValues(component).filter(value => value !== '');
+    const input = document.querySelector('#styles-wrap .gjs-sm-property__border-radius input');
+    const select = document.querySelector('#styles-wrap .gjs-sm-property__border-radius select');
+    if (!input || !select) return;
+
+    if (!component || values.length !== BORDER_RADIUS_CORNERS.length) {
+        if (document.activeElement !== input) input.value = '';
+        input.placeholder = component ? 'mixed' : '';
+        if (BORDER_RADIUS_UNITS.includes(select.value) === false) select.value = 'px';
+        return;
+    }
+
+    const first = values[0].toLowerCase();
+    if (!values.every(value => value.toLowerCase() === first)) {
+        if (document.activeElement !== input) input.value = '';
+        input.placeholder = 'mixed';
+        return;
+    }
+
+    const parsed = parseRadiusValue(values[0], select.value);
+    if (BORDER_RADIUS_UNITS.includes(parsed.unit) && document.activeElement !== select) select.value = parsed.unit;
+    if (document.activeElement !== input) input.value = parsed.number;
+    input.placeholder = '';
+}
+
+function syncBorderRadiusControls(component = editor.getSelected()) {
+    const controls = borderRadiusControls();
+    if (!controls) return;
+
+    setBorderRadiusEditorDisabled(!component);
+    syncingBorderRadiusEditor = true;
+
+    const values = componentRadiusValues(component);
+    BORDER_RADIUS_CORNERS.forEach(([corner], index) => {
+        const input = controls.wrap.querySelector(`[data-radius-corner="${corner}"]`);
+        const select = controls.wrap.querySelector(`[data-radius-unit="${corner}"]`);
+        if (!input || !select) return;
+
+        if (!component) {
+            input.value = '';
+            input.placeholder = '';
+            select.value = 'px';
+            return;
+        }
+
+        const parsed = parseRadiusValue(values[index], select.value || 'px');
+        if (BORDER_RADIUS_UNITS.includes(parsed.unit) && document.activeElement !== select) select.value = parsed.unit;
+        if (document.activeElement !== input) input.value = parsed.number;
+        input.placeholder = parsed.css && !parsed.number ? parsed.css : '';
+    });
+
+    syncNativeBorderRadiusField(component);
+    syncingBorderRadiusEditor = false;
+}
+
+function readRadiusCornerControl(corner) {
+    const input = document.querySelector(`[data-radius-corner="${corner}"]`);
+    const select = document.querySelector(`[data-radius-unit="${corner}"]`);
+    if (!input || !select) return '';
+
+    const value = String(input.value || '').trim();
+    if (value === '') return '';
+
+    return parseRadiusValue(`${value}${select.value || 'px'}`).css;
+}
+
+function applyRadiusCorner(corner) {
+    if (syncingBorderRadiusEditor) return;
+
+    const component = editor.getSelected();
+    if (!component) return;
+
+    const property = radiusCornerProperty(corner);
+    const cssValue = readRadiusCornerControl(corner);
+
+    if (cssValue) {
+        component.addStyle({ [property]: cssValue });
+    } else {
+        clearComponentStyleProperty(component, property);
+    }
+
+    syncBorderRadiusControls(component);
+}
+
+function bindBorderRadiusEvents(wrap) {
+    BORDER_RADIUS_CORNERS.forEach(([corner]) => {
+        wrap.querySelector(`[data-radius-corner="${corner}"]`)?.addEventListener('input', () => applyRadiusCorner(corner));
+        wrap.querySelector(`[data-radius-corner="${corner}"]`)?.addEventListener('change', () => applyRadiusCorner(corner));
+        wrap.querySelector(`[data-radius-unit="${corner}"]`)?.addEventListener('change', () => applyRadiusCorner(corner));
+    });
+}
+
+function injectBorderRadiusEditor() {
+    if (borderRadiusEditorInjected) {
+        syncBorderRadiusControls();
+        return;
+    }
+
+    const borderSector = findStyleSectorByTitle('Border & Shadow');
+    const props = borderSector?.querySelector('.gjs-sm-properties');
+    if (!props) return;
+
+    const wrap = document.createElement('div');
+    wrap.id = 'br-wrap';
+    wrap.innerHTML = BORDER_RADIUS_HTML;
+
+    const radiusProperty = props.querySelector('.gjs-sm-property__border-radius');
+    const borderProperty = props.querySelector('.gjs-sm-property__border');
+    if (radiusProperty) radiusProperty.insertAdjacentElement('afterend', wrap);
+    else if (borderProperty) borderProperty.insertAdjacentElement('beforebegin', wrap);
+    else props.appendChild(wrap);
+
+    bindBorderRadiusEvents(wrap);
+    if (!props.dataset.borderRadiusEditorNativeSync) {
+        props.dataset.borderRadiusEditorNativeSync = 'true';
+        props.addEventListener('input', event => {
+            if (event.target.closest?.('.gjs-sm-property__border-radius')) {
+                setTimeout(() => syncBorderRadiusControls(editor.getSelected()), 0);
+            }
+        });
+        props.addEventListener('change', event => {
+            if (event.target.closest?.('.gjs-sm-property__border-radius')) {
+                setTimeout(() => syncBorderRadiusControls(editor.getSelected()), 0);
+            }
+        });
+    }
+
+    borderRadiusEditorInjected = true;
+    syncBorderRadiusControls();
+}
+
+function scheduleBorderRadiusEditorInjection() {
+    setTimeout(injectBorderRadiusEditor, 0);
+    setTimeout(injectBorderRadiusEditor, 150);
+}
+
+editor.on('load', scheduleBorderRadiusEditorInjection);
+editor.on('component:selected', scheduleBorderRadiusEditorInjection);
+editor.on('component:styleUpdate', syncBorderRadiusControls);
 
 const BORDER_EDGE_LABELS = {
     all: 'All',
