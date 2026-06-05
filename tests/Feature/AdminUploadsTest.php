@@ -18,17 +18,35 @@ class AdminUploadsTest extends TestCase
             'username' => 'admin',
             'password' => 'password',
         ]);
+        $filenames = [
+            'codex-render-filter-test.jpg',
+            'codex-render-filter-test.webp',
+            'codex-render-filter-test.mp4',
+        ];
 
-        $this->actingAs($user)
-            ->get(route('admin.uploads.index'))
-            ->assertOk()
-            ->assertSee('Uploads')
-            ->assertSee('Content Media')
-            ->assertSee('/uploads/content/')
-            ->assertSee('Hide')
-            ->assertSee('WebP')
-            ->assertSee('MP4')
-            ->assertSee('Delete selected');
+        File::ensureDirectoryExists(public_path('uploads/content'));
+        foreach ($filenames as $filename) {
+            File::put(public_path('uploads/content/'.$filename), 'test media');
+        }
+
+        try {
+            $this->actingAs($user)
+                ->get(route('admin.uploads.index'))
+                ->assertOk()
+                ->assertSee('Uploads')
+                ->assertSee('Content Media')
+                ->assertSee('/uploads/content/')
+                ->assertSee('Search uploads...')
+                ->assertSee('Hide')
+                ->assertSee('WebP')
+                ->assertSee('MP4')
+                ->assertSee('value="webp" checked', false)
+                ->assertSee('Delete selected');
+        } finally {
+            foreach ($filenames as $filename) {
+                File::delete(public_path('uploads/content/'.$filename));
+            }
+        }
     }
 
     public function test_admin_can_upload_multiple_content_media_files(): void

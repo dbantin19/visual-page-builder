@@ -8,6 +8,10 @@
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+        :root {
+            --gjs-primary-color: #000000;
+        }
+
         html, body {
             height: 100%;
             overflow: hidden;

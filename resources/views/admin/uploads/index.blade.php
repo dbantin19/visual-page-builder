@@ -4,7 +4,25 @@
 @section('heading', 'Uploads')
 
 @section('content')
-    <div class="max-w-6xl space-y-6">
+    @php
+        $extensionLabels = [
+            'jpg' => 'JPG',
+            'jpeg' => 'JPEG',
+            'png' => 'PNG',
+            'gif' => 'GIF',
+            'webp' => 'WebP',
+            'avif' => 'AVIF',
+            'mp4' => 'MP4',
+            'webm' => 'WebM',
+            'mov' => 'MOV',
+            'm4v' => 'M4V',
+            'ogg' => 'OGG',
+            'ogv' => 'OGV',
+        ];
+        $availableExtensions = $uploads->pluck('extension')->unique()->sort()->values();
+    @endphp
+
+    <div class="w-full space-y-6">
         <div class="bg-white rounded-xl border border-gray-200 p-6">
             <form id="upload-form" action="{{ route('admin.uploads.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -31,38 +49,29 @@
 
         <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div class="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 px-6 py-4">
-                <div>
+                <div class="min-w-64">
                     <h2 class="text-sm font-semibold text-gray-800">Content Media</h2>
                     <p class="mt-1 text-xs text-gray-500">Use these URLs inside page content, builder images, videos, and custom sections.</p>
                 </div>
-                <div class="flex flex-wrap items-center justify-end gap-3">
+                <div class="flex flex-1 flex-wrap items-center justify-end gap-3">
+                    <label class="relative min-w-64 flex-1 sm:max-w-xs">
+                        <span class="sr-only">Search content media</span>
+                        <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                  d="M21 21l-4.35-4.35m1.35-5.15a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+                        </svg>
+                        <input id="media-search" type="search" autocomplete="off" placeholder="Search uploads..."
+                               class="w-full rounded-lg border border-gray-200 bg-white py-2 pl-9 pr-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-100">
+                    </label>
                     <span id="upload-count" class="text-xs font-medium text-gray-400">{{ $uploads->count() }} files</span>
-                    <div id="extension-filters" class="{{ $uploads->isEmpty() ? 'hidden' : '' }} flex flex-wrap items-center gap-2 border-r border-gray-200 pr-3">
+                    <div id="extension-filters" class="{{ $availableExtensions->isEmpty() ? 'hidden' : '' }} flex flex-wrap items-center gap-2 border-r border-gray-200 pr-3">
                         <span class="text-xs font-semibold text-gray-400">Hide</span>
-                        <label class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
-                            <input type="checkbox" value="jpg" class="hide-extension-checkbox rounded border-gray-300 text-blue-700 focus:ring-blue-500">
-                            JPG
-                        </label>
-                        <label class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
-                            <input type="checkbox" value="png" class="hide-extension-checkbox rounded border-gray-300 text-blue-700 focus:ring-blue-500">
-                            PNG
-                        </label>
-                        <label class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
-                            <input type="checkbox" value="webp" class="hide-extension-checkbox rounded border-gray-300 text-blue-700 focus:ring-blue-500">
-                            WebP
-                        </label>
-                        <label class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
-                            <input type="checkbox" value="mp4" class="hide-extension-checkbox rounded border-gray-300 text-blue-700 focus:ring-blue-500">
-                            MP4
-                        </label>
-                        <label class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
-                            <input type="checkbox" value="webm" class="hide-extension-checkbox rounded border-gray-300 text-blue-700 focus:ring-blue-500">
-                            WebM
-                        </label>
-                        <label class="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
-                            <input type="checkbox" value="mov" class="hide-extension-checkbox rounded border-gray-300 text-blue-700 focus:ring-blue-500">
-                            MOV
-                        </label>
+                        @foreach($availableExtensions as $extension)
+                            <label class="extension-filter-option inline-flex items-center gap-1.5 text-xs font-medium text-gray-500" data-extension="{{ $extension }}">
+                                <input type="checkbox" value="{{ $extension }}" @checked($extension === 'webp') class="hide-extension-checkbox rounded border-gray-300 text-blue-700 focus:ring-blue-500">
+                                {{ $extensionLabels[$extension] ?? strtoupper($extension) }}
+                            </label>
+                        @endforeach
                     </div>
                     <label id="select-all-wrap" class="{{ $uploads->isEmpty() ? 'hidden' : '' }} inline-flex items-center gap-2 text-xs font-medium text-gray-500">
                         <input id="select-all-uploads" type="checkbox" class="rounded border-gray-300 text-blue-700 focus:ring-blue-500">
@@ -115,6 +124,14 @@
                 @endforeach
             </div>
 
+            <div id="filtered-empty-state" class="hidden p-12 text-center">
+                <svg class="mx-auto mb-3 h-10 w-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M21 21l-4.35-4.35m1.35-5.15a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z"/>
+                </svg>
+                <p class="text-sm text-gray-500">No media match the current search or filters.</p>
+            </div>
+
             <div id="empty-state" class="{{ $uploads->isEmpty() ? '' : 'hidden' }} p-12 text-center">
                 <svg class="mx-auto mb-3 h-10 w-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -134,6 +151,8 @@
         const errorBox = document.getElementById('upload-errors');
         const gallery = document.getElementById('gallery');
         const emptyState = document.getElementById('empty-state');
+        const filteredEmptyState = document.getElementById('filtered-empty-state');
+        const mediaSearch = document.getElementById('media-search');
         const uploadCount = document.getElementById('upload-count');
         const extensionFilters = document.getElementById('extension-filters');
         const selectAllWrap = document.getElementById('select-all-wrap');
@@ -142,7 +161,10 @@
         const deleteSelectedLabel = document.getElementById('delete-selected-label');
         const uploadConfig = @json($uploadConfig);
         const destroyManyUrl = @json(route('admin.uploads.destroy-many'));
+        const extensionLabels = @json($extensionLabels);
+        const defaultHiddenExtensions = new Set(['webp']);
         let fileCount = {{ $uploads->count() }};
+        let extensionFiltersInitialized = false;
 
         function showMessage(el, message) {
             el.textContent = message;
@@ -184,6 +206,10 @@
             return new Set(Array.from(document.querySelectorAll('.hide-extension-checkbox:checked')).map(checkbox => checkbox.value));
         }
 
+        function getSearchTerm() {
+            return String(mediaSearch.value || '').trim().toLowerCase();
+        }
+
         function extensionFromName(filename) {
             const parts = String(filename || '').toLowerCase().split('.');
             return parts.length > 1 ? parts.pop() : '';
@@ -193,6 +219,15 @@
             return ['mp4', 'webm', 'mov', 'm4v', 'ogg', 'ogv'].includes(extensionFromName(filename)) ? 'video' : 'image';
         }
 
+        function searchableTextForCard(card) {
+            return [
+                card.dataset.filename,
+                card.dataset.extension,
+                card.dataset.type,
+                card.querySelector('input[readonly]')?.value,
+            ].join(' ').toLowerCase();
+        }
+
         function isAllowedMediaFile(file) {
             const extension = extensionFromName(file.name);
             const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'mp4', 'webm', 'mov', 'm4v', 'ogg', 'ogv'];
@@ -200,11 +235,48 @@
             return file.type.startsWith('image/') || file.type.startsWith('video/') || allowedExtensions.includes(extension);
         }
 
+        function renderExtensionFilters() {
+            const cards = Array.from(gallery.querySelectorAll('.upload-card'));
+            const existingSelections = getHiddenExtensions();
+            const extensions = Array.from(new Set(cards.map(card => card.dataset.extension).filter(Boolean))).sort();
+            const label = extensionFilters.querySelector('span');
+
+            extensionFilters.innerHTML = '';
+            if (label) {
+                extensionFilters.appendChild(label);
+            } else {
+                extensionFilters.insertAdjacentHTML('beforeend', '<span class="text-xs font-semibold text-gray-400">Hide</span>');
+            }
+
+            extensions.forEach(extension => {
+                const option = document.createElement('label');
+                option.className = 'extension-filter-option inline-flex items-center gap-1.5 text-xs font-medium text-gray-500';
+                option.dataset.extension = extension;
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.value = extension;
+                checkbox.className = 'hide-extension-checkbox rounded border-gray-300 text-blue-700 focus:ring-blue-500';
+                checkbox.checked = existingSelections.has(extension) || (!extensionFiltersInitialized && defaultHiddenExtensions.has(extension));
+                checkbox.addEventListener('change', updateGalleryState);
+
+                option.appendChild(checkbox);
+                option.append(document.createTextNode(` ${extensionLabels[extension] || extension.toUpperCase()}`));
+                extensionFilters.appendChild(option);
+            });
+
+            extensionFilters.classList.toggle('hidden', extensions.length === 0);
+            extensionFiltersInitialized = true;
+        }
+
         function updateGalleryState() {
             const cards = Array.from(gallery.querySelectorAll('.upload-card'));
             const hiddenExtensions = getHiddenExtensions();
+            const searchTerm = getSearchTerm();
             cards.forEach(card => {
-                const isHidden = hiddenExtensions.has(card.dataset.extension);
+                const isHiddenByExtension = hiddenExtensions.has(card.dataset.extension);
+                const isHiddenBySearch = searchTerm !== '' && !searchableTextForCard(card).includes(searchTerm);
+                const isHidden = isHiddenByExtension || isHiddenBySearch;
                 card.classList.toggle('hidden', isHidden);
                 if (isHidden) {
                     const checkbox = card.querySelector('.upload-checkbox');
@@ -218,12 +290,14 @@
 
             fileCount = cards.length;
             const visibleCount = visibleCards.length;
-            uploadCount.textContent = hiddenExtensions.size
+            const isFiltered = hiddenExtensions.size || searchTerm !== '';
+            uploadCount.textContent = isFiltered
                 ? `${visibleCount} of ${fileCount} file${fileCount === 1 ? '' : 's'}`
                 : `${fileCount} file${fileCount === 1 ? '' : 's'}`;
             gallery.classList.toggle('hidden', fileCount === 0);
-            emptyState.classList.toggle('hidden', fileCount !== 0);
-            extensionFilters.classList.toggle('hidden', fileCount === 0);
+            emptyState.classList.toggle('hidden', fileCount !== 0 || isFiltered);
+            filteredEmptyState.classList.toggle('hidden', fileCount === 0 || visibleCount !== 0 || !isFiltered);
+            extensionFilters.classList.toggle('hidden', extensionFilters.querySelectorAll('.hide-extension-checkbox').length === 0);
             selectAllWrap.classList.toggle('hidden', fileCount === 0);
             deleteSelectedBtn.classList.toggle('hidden', fileCount === 0);
             deleteSelectedBtn.disabled = checked.length === 0;
@@ -265,6 +339,7 @@
                     </div>
                 </article>
             `);
+            renderExtensionFilters();
             updateGalleryState();
         }
 
@@ -426,6 +501,7 @@
                     gallery.querySelector(`.upload-card[data-filename="${CSS.escape(filename)}"]`)?.remove();
                 });
 
+                renderExtensionFilters();
                 updateGalleryState();
                 showMessage(statusBox, `Deleted ${result.deleted.length} file${result.deleted.length === 1 ? '' : 's'}.`);
             } catch (error) {
@@ -446,9 +522,8 @@
             deleteUploads(selected);
         });
 
-        document.querySelectorAll('.hide-extension-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', updateGalleryState);
-        });
+        mediaSearch.addEventListener('input', updateGalleryState);
+        renderExtensionFilters();
 
         gallery.addEventListener('change', event => {
             if (event.target.matches('.upload-checkbox')) updateGalleryState();
