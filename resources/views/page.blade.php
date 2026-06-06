@@ -51,9 +51,26 @@
 
 @php
     $navSetting  = \App\Models\NavSetting::get();
+    $footerSetting = \App\Models\FooterSetting::get();
     $alignClass  = ['left' => 'justify-start', 'center' => 'justify-center', 'right' => 'justify-end'][$navSetting->alignment] ?? 'justify-start';
     $logoPos     = $navSetting->logo_position ?? 'left';
     $isCenterStacked = $logoPos === 'center' && $alignClass === 'justify-center';
+    $navPadding  = $navSetting->vertical_padding ?? 'standard';
+    $navPaddingClasses = [
+        'compact' => [
+            'desktop' => $isCenterStacked ? 'py-1' : 'h-12',
+            'mobile' => 'h-12',
+        ],
+        'standard' => [
+            'desktop' => $isCenterStacked ? 'py-2' : 'h-14',
+            'mobile' => 'h-14',
+        ],
+        'thick' => [
+            'desktop' => $isCenterStacked ? 'py-4' : 'py-4',
+            'mobile' => 'py-4',
+        ],
+    ];
+    $navPaddingClass = $navPaddingClasses[$navPadding] ?? $navPaddingClasses['standard'];
     $navItems   = \App\Models\NavMenuItem::with([
         'page',
         'children' => fn($q) => $q->orderBy('sort_order')->with([
@@ -67,6 +84,44 @@
     ->whereNull('parent_id')
     ->orderBy('sort_order')
     ->get();
+    $footerCoupons = $footerSetting->coupons_enabled
+        ? \App\Models\FooterCoupon::ordered()->get()
+        : collect();
+    $footerOfficeLocations = \App\Models\FooterOfficeLocation::ordered()->get();
+    $hasFooterLocation = $footerSetting->hasLocationAddress();
+    $hasFooterCoupons = $footerCoupons->isNotEmpty();
+    $hasFooterOfficeLocations = $footerOfficeLocations->isNotEmpty();
+    $footerSectionOrder = $footerSetting->normalizedSectionOrder();
+    $footerSectionAlignments = $footerSetting->normalizedSectionAlignments();
+    $footerSectionContentAlignments = $footerSetting->normalizedSectionContentAlignments();
+    $footerAlignmentClasses = [
+        'left' => [
+            'block' => 'max-w-xl',
+            'group' => 'justify-start',
+        ],
+        'center' => [
+            'block' => 'max-w-xl mx-auto',
+            'group' => 'justify-center',
+        ],
+        'right' => [
+            'block' => 'max-w-xl ml-auto',
+            'group' => 'justify-end',
+        ],
+    ];
+    $footerContentAlignmentClasses = [
+        'left' => [
+            'text' => 'text-left',
+            'items' => 'items-start',
+        ],
+        'center' => [
+            'text' => 'text-center',
+            'items' => 'items-center',
+        ],
+        'right' => [
+            'text' => 'text-right',
+            'items' => 'items-end',
+        ],
+    ];
 @endphp
 
 @if($navItems->isNotEmpty())
@@ -74,7 +129,7 @@
 
     {{-- ── Desktop top bar ────────────────────────────────────────────── --}}
     {{-- Logo center uses absolute positioning so items loop only appears once --}}
-    <div class="hidden md:flex items-center px-6 {{ $isCenterStacked ? 'flex-col py-2 gap-1' : 'h-14 relative' }}">
+    <div class="hidden md:flex items-center px-6 {{ $isCenterStacked ? 'flex-col gap-1 '.$navPaddingClass['desktop'] : 'relative '.$navPaddingClass['desktop'] }}">
 
         @if($logoPos === 'left')
             <a href="/" class="flex items-center gap-2 shrink-0 {{ $alignClass === 'justify-end' ? 'mr-auto' : 'mr-5' }}">
@@ -194,7 +249,7 @@
     </div>{{-- end desktop bar --}}
 
     {{-- ── Mobile top bar (logo always left regardless of position setting) --}}
-    <div class="flex md:hidden items-center px-6 h-14">
+    <div class="flex md:hidden items-center px-6 {{ $navPaddingClass['mobile'] }}">
         <a href="/" class="flex items-center gap-2 shrink-0 mr-auto">
             <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
                 <path d="M8 4 C8 4,6 8,6 11 C6 13.5,7.5 15,9 15 L9 27" stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -294,6 +349,130 @@
 
 {!! $page->content !!}
 {!! $page->body_section !!}
+
+@if($hasFooterLocation || $hasFooterOfficeLocations || $hasFooterCoupons)
+<footer class="bg-gray-900 text-white">
+    <div class="w-full px-6 py-12 space-y-10">
+        @foreach($footerSectionOrder as $footerSection)
+            @php
+                $footerAlignment = $footerSectionAlignments[$footerSection] ?? 'left';
+                $footerAlignmentClass = $footerAlignmentClasses[$footerAlignment] ?? $footerAlignmentClasses['left'];
+                $footerContentAlignment = $footerSectionContentAlignments[$footerSection] ?? 'left';
+                $footerContentAlignmentClass = $footerContentAlignmentClasses[$footerContentAlignment] ?? $footerContentAlignmentClasses['left'];
+            @endphp
+
+            @if($footerSection === 'main_location' && $hasFooterLocation)
+                <section>
+                    <div class="{{ $footerAlignmentClass['block'] }} {{ $footerContentAlignmentClass['text'] }}">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-blue-300 mb-2">Main location</p>
+                        @if($footerSetting->location_name)
+                            <h2 class="text-2xl font-bold">{{ $footerSetting->location_name }}</h2>
+                        @else
+                            <h2 class="text-2xl font-bold">Main location</h2>
+                        @endif
+                        <address class="mt-3 not-italic text-sm leading-6 text-gray-300">
+                            <span class="block">{{ $footerSetting->location_address_line_1 }}</span>
+                            @if($footerSetting->location_address_line_2)
+                                <span class="block">{{ $footerSetting->location_address_line_2 }}</span>
+                            @endif
+                            @if($footerSetting->locationCityLine())
+                                <span class="block">{{ $footerSetting->locationCityLine() }}</span>
+                            @endif
+                        </address>
+                        @if($footerSetting->locationPhoneHref())
+                            <a href="{{ $footerSetting->locationPhoneHref() }}"
+                               class="mt-2 inline-block text-sm font-semibold text-blue-200 hover:text-white">
+                                {{ $footerSetting->location_phone }}
+                            </a>
+                        @endif
+                    </div>
+                </section>
+            @elseif($footerSection === 'office_locations' && $hasFooterOfficeLocations)
+                <section class="{{ $footerContentAlignmentClass['text'] }}">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-blue-300 mb-4">Office locations</p>
+                    <div class="flex flex-wrap gap-4 {{ $footerAlignmentClass['group'] }}">
+                        @foreach($footerOfficeLocations as $officeLocation)
+                            @php
+                                $officeLinkHref = $officeLocation->linkHref();
+                                $officeCardClasses = 'block w-full max-w-sm rounded-lg border border-white/10 bg-white/5 p-5 transition-colors hover:bg-white/10 '.$footerContentAlignmentClass['text'];
+                            @endphp
+
+                            @if($officeLinkHref)
+                                <a href="{{ $officeLinkHref }}" class="{{ $officeCardClasses }}">
+                            @else
+                                <div class="{{ $officeCardClasses }}">
+                            @endif
+                                @if($officeLocation->name)
+                                    <p class="text-sm font-semibold text-blue-200">{{ $officeLocation->name }}</p>
+                                @endif
+                                <address class="{{ $officeLocation->name ? 'mt-3' : '' }} not-italic text-sm leading-6 text-gray-300">
+                                    <span class="block">{{ $officeLocation->address_line_1 }}</span>
+                                    @if($officeLocation->address_line_2)
+                                        <span class="block">{{ $officeLocation->address_line_2 }}</span>
+                                    @endif
+                                    @if($officeLocation->cityLine())
+                                        <span class="block">{{ $officeLocation->cityLine() }}</span>
+                                    @endif
+                                </address>
+                                @if($officeLocation->phoneHref())
+                                    @if($officeLinkHref)
+                                        <span class="mt-3 inline-block text-sm font-semibold text-blue-200">
+                                            {{ $officeLocation->phone }}
+                                        </span>
+                                    @else
+                                        <a href="{{ $officeLocation->phoneHref() }}"
+                                           class="mt-3 inline-block text-sm font-semibold text-blue-200 hover:text-white">
+                                            {{ $officeLocation->phone }}
+                                        </a>
+                                    @endif
+                                @endif
+                            @if($officeLinkHref)
+                                </a>
+                            @else
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </section>
+            @elseif($footerSection === 'coupons' && $hasFooterCoupons)
+                <section class="{{ $footerContentAlignmentClass['text'] }}">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-blue-300 mb-4">Printable offers</p>
+
+                    <div class="flex flex-wrap gap-4 {{ $footerAlignmentClass['group'] }}">
+                        @foreach($footerCoupons as $coupon)
+                            @php $expiryLabel = $coupon->resolvedExpiryLabel(); @endphp
+                            <a href="{{ route('coupons.print', $coupon) }}" target="_blank" rel="noopener"
+                               class="group block w-full max-w-sm bg-white/5 border border-white/10 rounded-xl p-3 transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                                <div class="h-full border-2 border-dashed border-white/25 rounded-lg p-5 flex flex-col {{ $footerContentAlignmentClass['items'] }} justify-center {{ $footerContentAlignmentClass['text'] }}">
+                                    @if($coupon->kicker)
+                                        <p class="text-xs font-semibold uppercase tracking-wider text-blue-200 mb-2">{{ $coupon->kicker }}</p>
+                                    @endif
+                                    <p class="text-2xl font-black leading-tight">{{ $coupon->headline }}</p>
+                                    @if($coupon->description)
+                                        <p class="mt-3 text-sm text-gray-300">{{ $coupon->description }}</p>
+                                    @endif
+                                    @if($expiryLabel)
+                                        <p class="mt-3 text-xs font-semibold uppercase tracking-wider text-amber-200">Expires {{ $expiryLabel }}</p>
+                                    @endif
+                                    @if($coupon->fine_print)
+                                        <p class="mt-4 pt-4 w-full border-t border-dashed border-white/20 text-xs text-gray-500">{{ $coupon->fine_print }}</p>
+                                    @endif
+                                    <span class="mt-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-200 group-hover:text-white">
+                                        Print coupon
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M7 17L17 7M17 7H8M17 7v9"/>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+        @endforeach
+    </div>
+</footer>
+@endif
 
 <script>
 // ── Desktop dropdowns ────────────────────────────────────────────────────

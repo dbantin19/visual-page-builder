@@ -92,84 +92,118 @@
 
     {{-- ── Current menu structure ──────────────────────────────────────── --}}
     <div id="nav-drop-zone" class="bg-white rounded-xl border border-gray-200 overflow-hidden transition-shadow">
-        <div class="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
-            <h2 class="text-sm font-semibold text-gray-700 shrink-0 mr-auto">Current Navigation</h2>
+        <div class="px-6 py-4 border-b border-gray-100 space-y-3">
+            <div class="flex items-center gap-3">
+                <h2 class="text-sm font-semibold text-gray-700 shrink-0">Current Navigation</h2>
 
-            {{-- Logo position toggle --}}
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-500 shrink-0">Logo</span>
-                @php
-                    $logoPositions = [
-                        'left'   => 'Logo left',
-                        'center' => 'Logo center',
-                        'right'  => 'Logo right',
-                    ];
-                @endphp
-                <div class="flex rounded-lg border border-gray-200 overflow-hidden">
-                    @foreach($logoPositions as $value => $title)
-                        <button type="button"
-                                data-logo-pos="{{ $value }}"
-                                onclick="setLogoPosition('{{ $value }}')"
-                                title="{{ $title }}"
-                                class="px-2.5 py-1.5 transition-colors
-                                       {{ ($navSetting->logo_position ?? 'left') === $value
-                                           ? 'bg-blue-700 text-white'
-                                           : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-800' }}
-                                       {{ !$loop->last ? 'border-r border-gray-200' : '' }}">
-                            <svg class="w-4 h-3.5" viewBox="0 0 24 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                @if($value === 'left')
-                                    <rect x="1" y="4" width="7" height="8" rx="1.5"/>
-                                    <rect x="11" y="5" width="12" height="2" rx="1" opacity=".5"/>
-                                    <rect x="11" y="9" width="8"  height="2" rx="1" opacity=".5"/>
-                                @elseif($value === 'center')
-                                    <rect x="8.5" y="4" width="7" height="8" rx="1.5"/>
-                                    <rect x="1"   y="5" width="5" height="2" rx="1" opacity=".5"/>
-                                    <rect x="18"  y="5" width="5" height="2" rx="1" opacity=".5"/>
-                                    <rect x="1"   y="9" width="4" height="2" rx="1" opacity=".5"/>
-                                    <rect x="19"  y="9" width="4" height="2" rx="1" opacity=".5"/>
-                                @else
-                                    <rect x="16" y="4" width="7" height="8" rx="1.5"/>
-                                    <rect x="1"  y="5" width="12" height="2" rx="1" opacity=".5"/>
-                                    <rect x="1"  y="9" width="8"  height="2" rx="1" opacity=".5"/>
-                                @endif
-                            </svg>
-                        </button>
-                    @endforeach
-                </div>
+                @if($items->isNotEmpty())
+                    <span class="text-xs text-gray-400 shrink-0">Drag to reorder</span>
+                @endif
             </div>
 
-            {{-- Items alignment toggle --}}
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-500 shrink-0">Items</span>
-                <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                {{-- Logo position toggle --}}
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-500 shrink-0">Logo</span>
                     @php
-                        $aligns = [
-                            'left'   => ['title' => 'Left',   'icon' => 'M3 6h18M3 11h12M3 16h15'],
-                            'center' => ['title' => 'Center', 'icon' => 'M3 6h18M6 11h12M4.5 16h15'],
-                            'right'  => ['title' => 'Right',  'icon' => 'M3 6h18M9 11h12M6 16h15'],
+                        $logoPositions = [
+                            'left'   => 'Logo left',
+                            'center' => 'Logo center',
+                            'right'  => 'Logo right',
                         ];
                     @endphp
-                    @foreach($aligns as $value => $opt)
-                        <button type="button"
-                                data-align="{{ $value }}"
-                                onclick="setAlignment('{{ $value }}')"
-                                title="{{ $opt['title'] }} align"
-                                class="px-2.5 py-1.5 transition-colors
-                                       {{ $navSetting->alignment === $value
-                                           ? 'bg-blue-700 text-white'
-                                           : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-800' }}
-                                       {{ !$loop->last ? 'border-r border-gray-200' : '' }}">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $opt['icon'] }}"/>
-                            </svg>
-                        </button>
-                    @endforeach
+                    <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+                        @foreach($logoPositions as $value => $title)
+                            <button type="button"
+                                    data-logo-pos="{{ $value }}"
+                                    onclick="setLogoPosition('{{ $value }}')"
+                                    title="{{ $title }}"
+                                    class="px-2.5 py-1.5 transition-colors
+                                           {{ ($navSetting->logo_position ?? 'left') === $value
+                                               ? 'bg-blue-700 text-white'
+                                               : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-800' }}
+                                           {{ !$loop->last ? 'border-r border-gray-200' : '' }}">
+                                <svg class="w-4 h-3.5" viewBox="0 0 24 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    @if($value === 'left')
+                                        <rect x="1" y="4" width="7" height="8" rx="1.5"/>
+                                        <rect x="11" y="5" width="12" height="2" rx="1" opacity=".5"/>
+                                        <rect x="11" y="9" width="8"  height="2" rx="1" opacity=".5"/>
+                                    @elseif($value === 'center')
+                                        <rect x="8.5" y="4" width="7" height="8" rx="1.5"/>
+                                        <rect x="1"   y="5" width="5" height="2" rx="1" opacity=".5"/>
+                                        <rect x="18"  y="5" width="5" height="2" rx="1" opacity=".5"/>
+                                        <rect x="1"   y="9" width="4" height="2" rx="1" opacity=".5"/>
+                                        <rect x="19"  y="9" width="4" height="2" rx="1" opacity=".5"/>
+                                    @else
+                                        <rect x="16" y="4" width="7" height="8" rx="1.5"/>
+                                        <rect x="1"  y="5" width="12" height="2" rx="1" opacity=".5"/>
+                                        <rect x="1"  y="9" width="8"  height="2" rx="1" opacity=".5"/>
+                                    @endif
+                                </svg>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Items alignment toggle --}}
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-500 shrink-0">Items</span>
+                    <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+                        @php
+                            $aligns = [
+                                'left'   => ['title' => 'Left',   'icon' => 'M3 6h18M3 11h12M3 16h15'],
+                                'center' => ['title' => 'Center', 'icon' => 'M3 6h18M6 11h12M4.5 16h15'],
+                                'right'  => ['title' => 'Right',  'icon' => 'M3 6h18M9 11h12M6 16h15'],
+                            ];
+                        @endphp
+                        @foreach($aligns as $value => $opt)
+                            <button type="button"
+                                    data-align="{{ $value }}"
+                                    onclick="setAlignment('{{ $value }}')"
+                                    title="{{ $opt['title'] }} align"
+                                    class="px-2.5 py-1.5 transition-colors
+                                           {{ $navSetting->alignment === $value
+                                               ? 'bg-blue-700 text-white'
+                                               : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-800' }}
+                                           {{ !$loop->last ? 'border-r border-gray-200' : '' }}">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $opt['icon'] }}"/>
+                                </svg>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Vertical padding toggle --}}
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-500 shrink-0">Padding</span>
+                    @php
+                        $paddingOptions = [
+                            'compact'  => ['title' => 'Compact padding', 'bar' => 5],
+                            'standard' => ['title' => 'Standard padding', 'bar' => 8],
+                            'thick'    => ['title' => 'Thick padding', 'bar' => 11],
+                        ];
+                    @endphp
+                    <div class="flex rounded-lg border border-gray-200 overflow-hidden">
+                        @foreach($paddingOptions as $value => $opt)
+                            <button type="button"
+                                    data-padding="{{ $value }}"
+                                    onclick="setVerticalPadding('{{ $value }}')"
+                                    title="{{ $opt['title'] }}"
+                                    class="px-2.5 py-1.5 transition-colors
+                                           {{ ($navSetting->vertical_padding ?? 'standard') === $value
+                                               ? 'bg-blue-700 text-white'
+                                               : 'bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-800' }}
+                                           {{ !$loop->last ? 'border-r border-gray-200' : '' }}">
+                                <svg class="w-4 h-3.5" viewBox="0 0 24 16" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="3" y="{{ 8 - ($opt['bar'] / 2) }}" width="18" height="{{ $opt['bar'] }}" rx="2" fill="currentColor" opacity=".25"/>
+                                    <path d="M5 8h14" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
             </div>
-
-            @if($items->isNotEmpty())
-                <span class="text-xs text-gray-400 shrink-0">Drag to reorder</span>
-            @endif
         </div>
 
         <div id="nav-empty-state" class="{{ $items->isEmpty() ? '' : 'hidden' }} p-12 text-center">
@@ -193,7 +227,11 @@
 
     {{-- ── Live preview ────────────────────────────────────────────────── --}}
     @if($items->isNotEmpty())
-    @php $previewAlign = ['left'=>'justify-start','center'=>'justify-center','right'=>'justify-end'][$navSetting->alignment] ?? 'justify-start'; @endphp
+    @php
+        $previewAlign = ['left'=>'justify-start','center'=>'justify-center','right'=>'justify-end'][$navSetting->alignment] ?? 'justify-start';
+        $previewPadding = $navSetting->vertical_padding ?? 'standard';
+        $previewNavHeights = ['compact' => '44px', 'standard' => '52px', 'thick' => '68px'];
+    @endphp
 
     <style>
         /* Preview-scoped dropdown styles (pnav-*) */
@@ -227,7 +265,7 @@
                 @php $logoPos = $navSetting->logo_position ?? 'left'; @endphp
                 <nav id="preview-desktop-nav" data-align="{{ $navSetting->alignment }}"
                      class="bg-gray-900 px-6 rounded-xl {{ $logoPos === 'center' ? 'grid items-center' : 'flex items-center gap-1' }}"
-                     style="height:52px;position:relative;z-index:10;{{ $logoPos === 'center' ? 'grid-template-columns:1fr auto 1fr;' : '' }}">
+                     style="min-height:{{ $previewNavHeights[$previewPadding] ?? $previewNavHeights['standard'] }};position:relative;z-index:10;{{ $logoPos === 'center' ? 'grid-template-columns:1fr auto 1fr;' : '' }}">
 
                     {{-- Shared logo element (JS moves it between zones) --}}
                     @php $logoEl = '<a href="#" id="preview-logo" class="flex items-center gap-2 shrink-0">
@@ -327,7 +365,7 @@
         <div id="preview-mobile" class="hidden">
             <div class="rounded-xl border border-gray-200 overflow-hidden shadow-sm mx-auto" style="max-width:390px;">
                 <nav class="bg-gray-900">
-                    <div class="flex items-center px-4 h-14">
+                    <div id="preview-mobile-topbar" class="flex items-center px-4" style="min-height:{{ $previewNavHeights[$previewPadding] ?? $previewNavHeights['standard'] }};">
                         <a href="#" class="flex items-center gap-2 shrink-0 mr-auto">
                             <svg width="22" height="22" viewBox="0 0 32 32" fill="none">
                                 <path d="M8 4 C8 4,6 8,6 11 C6 13.5,7.5 15,9 15 L9 27"  stroke="#60a5fa" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -641,6 +679,31 @@ function setAlignment(val) {
     markDirty();
 }
 
+// ── Vertical padding (JS-only until Save) ────────────────────────────────
+var currentVerticalPadding = '{{ $navSetting->vertical_padding ?? 'standard' }}';
+var PREVIEW_NAV_HEIGHT = { compact: '44px', standard: '52px', thick: '68px' };
+
+function setVerticalPadding(val) {
+    currentVerticalPadding = val;
+    document.querySelectorAll('[data-padding]').forEach(function(btn) {
+        var active = btn.dataset.padding === val;
+        btn.classList.toggle('bg-blue-700', active);
+        btn.classList.toggle('text-white', active);
+        btn.classList.toggle('bg-white', !active);
+        btn.classList.toggle('text-gray-500', !active);
+    });
+    updatePreviewVerticalPadding(val);
+    markDirty();
+}
+
+function updatePreviewVerticalPadding(val) {
+    var height = PREVIEW_NAV_HEIGHT[val] || PREVIEW_NAV_HEIGHT.standard;
+    var desktopNav = document.getElementById('preview-desktop-nav');
+    var mobileTopbar = document.getElementById('preview-mobile-topbar');
+    if (desktopNav) desktopNav.style.minHeight = height;
+    if (mobileTopbar) mobileTopbar.style.minHeight = height;
+}
+
 // ── Preview mode toggle ───────────────────────────────────────────────────
 function setPreviewMode(mode) {
     var isDesktop = mode === 'desktop';
@@ -911,7 +974,12 @@ function readNavState() {
         });
     }
     if (list) walk(list, null);
-    return { alignment: currentAlignment, logoPosition: currentLogoPosition, items: items };
+    return {
+        alignment: currentAlignment,
+        logoPosition: currentLogoPosition,
+        verticalPadding: currentVerticalPadding,
+        items: items
+    };
 }
 
 function saveNav() {
@@ -929,6 +997,7 @@ function saveNav() {
     hidden('_token', '{{ csrf_token() }}');
     hidden('alignment', state.alignment);
     hidden('logo_position', state.logoPosition);
+    hidden('vertical_padding', state.verticalPadding);
     state.items.forEach(function(item, idx) {
         hidden('items[' + idx + '][id]',         item.id);
         hidden('items[' + idx + '][parent_id]',  item.parent_id);

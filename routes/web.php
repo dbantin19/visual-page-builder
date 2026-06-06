@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\FooterController;
 use App\Http\Controllers\Admin\NavMenuController;
 use App\Http\Controllers\Admin\PagesController;
 use App\Http\Controllers\Admin\TemplatesController;
 use App\Http\Controllers\Admin\UploadsController;
+use App\Http\Controllers\CouponPrintController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => redirect()->route('admin.pages.index'));
@@ -23,7 +25,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Authenticated routes
     Route::middleware('auth')->group(function () {
         Route::get('/', fn() => redirect()->route('admin.navigation.index'));
-        Route::view('footer', 'admin.footer.index')->name('footer.index');
+        Route::get('footer', [FooterController::class, 'index'])->name('footer.index');
+        Route::post('footer', [FooterController::class, 'save'])->name('footer.save');
         Route::resource('pages', PagesController::class);
         Route::get('pages/{page}/builder', [PagesController::class, 'builder'])->name('pages.builder');
         Route::post('pages/{page}/builder', [PagesController::class, 'saveBuilder'])->name('pages.builder.save');
@@ -49,4 +52,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
+Route::get('/coupons/{footerCoupon}/print', CouponPrintController::class)->name('coupons.print');
 Route::get('/{slug}', [PagesController::class, 'show'])->name('pages.show')->where('slug', '[a-z0-9-]+');

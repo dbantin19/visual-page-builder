@@ -50,6 +50,7 @@ class NavMenuController extends Controller
         $request->validate([
             'alignment'              => 'required|in:left,center,right',
             'logo_position'          => 'required|in:left,center,right',
+            'vertical_padding'       => 'required|in:compact,standard,thick',
             'items'                  => 'present|array',
             'items.*.id'             => 'nullable|integer|exists:nav_menu_items,id',
             'items.*.parent_id'      => 'nullable|integer|exists:nav_menu_items,id',
@@ -77,8 +78,9 @@ class NavMenuController extends Controller
 
         DB::transaction(function () use ($request) {
             NavSetting::get()->update([
-                'alignment'     => $request->input('alignment'),
-                'logo_position' => $request->input('logo_position'),
+                'alignment'        => $request->input('alignment'),
+                'logo_position'    => $request->input('logo_position'),
+                'vertical_padding' => $request->input('vertical_padding'),
             ]);
 
             foreach ($request->input('items') as $row) {

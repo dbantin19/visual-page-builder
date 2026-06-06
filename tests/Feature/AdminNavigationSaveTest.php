@@ -22,6 +22,7 @@ class AdminNavigationSaveTest extends TestCase
         $response = $this->actingAs($user)->post(route('admin.navigation.save-all'), [
             'alignment' => 'center',
             'logo_position' => 'right',
+            'vertical_padding' => 'thick',
         ]);
 
         $response->assertRedirect(route('admin.navigation.index'));
@@ -29,6 +30,7 @@ class AdminNavigationSaveTest extends TestCase
         $this->assertDatabaseHas('nav_settings', [
             'alignment' => 'center',
             'logo_position' => 'right',
+            'vertical_padding' => 'thick',
         ]);
     }
 
@@ -48,6 +50,7 @@ class AdminNavigationSaveTest extends TestCase
         $response = $this->actingAs($user)->post(route('admin.navigation.save-all'), [
             'alignment' => 'left',
             'logo_position' => 'left',
+            'vertical_padding' => 'standard',
             'items' => [
                 [
                     'id' => '',
@@ -94,6 +97,7 @@ class AdminNavigationSaveTest extends TestCase
         $response = $this->actingAs($user)->post(route('admin.navigation.save-all'), [
             'alignment' => 'center',
             'logo_position' => 'right',
+            'vertical_padding' => 'standard',
             'items' => [
                 [
                     'id' => '',
