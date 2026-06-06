@@ -44,6 +44,14 @@
         /* Mobile accordion chevron rotation */
         .mob-chevron { transition: transform .2s; }
         .mob-chevron.open { transform: rotate(180deg); }
+
+        @media (max-width: 767px) {
+            .mobile-hide { display: none !important; }
+        }
+
+        @media (min-width: 768px) {
+            .mobile-show { display: none !important; }
+        }
     </style>
     {!! $page->head_section !!}
 </head>

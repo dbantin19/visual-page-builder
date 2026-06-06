@@ -339,6 +339,71 @@
             border-color: #818cf8 !important;
             outline: none !important;
         }
+        .responsive-visibility-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+            min-height: 34px;
+            padding: 7px 8px;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            background: #1e293b;
+            color: #cbd5e1;
+            font-size: 12px;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: background .15s, border-color .15s, color .15s;
+        }
+        .responsive-visibility-checkbox:hover {
+            border-color: #64748b;
+        }
+        #traits-wrap .responsive-visibility-checkbox input {
+            width: 16px !important;
+            height: 16px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            accent-color: #64748b;
+            cursor: pointer;
+        }
+        .responsive-visibility-state {
+            margin-left: auto;
+            min-width: 34px;
+            padding: 3px 7px;
+            border-radius: 999px;
+            background: #0f172a;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .responsive-visibility-checkbox.is-active[data-visibility-class="mobile-hide"] {
+            background: rgba(239, 68, 68, .18);
+            border-color: #f87171;
+            color: #fee2e2;
+        }
+        .responsive-visibility-checkbox.is-active[data-visibility-class="mobile-hide"] input {
+            accent-color: #ef4444;
+        }
+        .responsive-visibility-checkbox.is-active[data-visibility-class="mobile-hide"] .responsive-visibility-state {
+            background: #ef4444;
+            color: #ffffff;
+        }
+        .responsive-visibility-checkbox.is-active[data-visibility-class="mobile-show"] {
+            background: rgba(59, 130, 246, .2);
+            border-color: #60a5fa;
+            color: #dbeafe;
+        }
+        .responsive-visibility-checkbox.is-active[data-visibility-class="mobile-show"] input {
+            accent-color: #3b82f6;
+        }
+        .responsive-visibility-checkbox.is-active[data-visibility-class="mobile-show"] .responsive-visibility-state {
+            background: #3b82f6;
+            color: #ffffff;
+        }
         #traits-wrap .gjs-trt-trait--editor-upload-picker .gjs-field,
         #traits-wrap .gjs-trt-trait--editor-upload-picker .gjs-field-wrp {
             background: transparent !important;
@@ -1356,7 +1421,7 @@
 
     <div class="tb-sep"></div>
 
-    <a href="{{ route('pages.show', $page->slug) }}" target="_blank" id="view-btn"
+    <a href="{{ route('pages.show', $page->slug) }}" target="_blank" rel="noopener noreferrer" id="view-btn"
        style="display:flex;align-items:center;gap:6px;background:transparent;color:#94a3b8;border:1px solid #1e293b;padding:6px 14px;border-radius:7px;font-size:13px;font-weight:500;text-decoration:none;transition:all .15s;"
        onmouseover="this.style.borderColor='#334155';this.style.color='#f1f5f9'"
        onmouseout="this.style.borderColor='#1e293b';this.style.color='#94a3b8'">
@@ -3708,6 +3773,181 @@ editor.TraitManager.addType('editor-upload-picker', {
     },
 });
 
+const RESPONSIVE_VISIBILITY_CSS = `
+@media (max-width: 767px) {
+    .mobile-hide { display: none !important; }
+}
+.mobile-show {
+    box-shadow: inset 0 0 0 2px rgba(59, 130, 246, .45) !important;
+}`;
+const RESPONSIVE_VISIBILITY_TRAITS = [
+    {
+        name: 'responsive_visibility_mobile_hide',
+        label: 'Mobile hide',
+        className: 'mobile-hide',
+        oppositeClass: 'mobile-show',
+    },
+    {
+        name: 'responsive_visibility_mobile_show',
+        label: 'Mobile show',
+        className: 'mobile-show',
+        oppositeClass: 'mobile-hide',
+    },
+];
+const RESPONSIVE_VISIBILITY_TRAIT_NAMES = new Set(RESPONSIVE_VISIBILITY_TRAITS.map(trait => trait.name));
+
+function componentClassNames(component) {
+    const classNames = new Set();
+    const classes = typeof component?.getClasses === 'function' ? component.getClasses() : [];
+    if (Array.isArray(classes)) {
+        classes.forEach(className => {
+            const value = typeof className === 'string'
+                ? className
+                : (className?.get?.('name') || className?.name || className?.id || '');
+            if (value) classNames.add(String(value));
+        });
+    }
+
+    String(component?.getAttributes?.()?.class || '')
+        .split(/\s+/)
+        .filter(Boolean)
+        .forEach(className => classNames.add(className));
+
+    return classNames;
+}
+
+function componentHasClass(component, className) {
+    return componentClassNames(component).has(className);
+}
+
+function addComponentClass(component, className) {
+    if (!component || !className || componentHasClass(component, className)) return;
+
+    if (typeof component.addClass === 'function') {
+        component.addClass(className);
+        return;
+    }
+
+    const classNames = componentClassNames(component);
+    classNames.add(className);
+    component.addAttributes?.({ class: [...classNames].join(' ') });
+}
+
+function removeComponentClass(component, className) {
+    if (!component || !className || !componentHasClass(component, className)) return;
+
+    if (typeof component.removeClass === 'function') {
+        component.removeClass(className);
+        return;
+    }
+
+    const classNames = componentClassNames(component);
+    classNames.delete(className);
+    component.addAttributes?.({ class: [...classNames].join(' ') });
+}
+
+function setResponsiveVisibilityClass(component, trait, enabled) {
+    if (!component || !trait?.className) return;
+
+    if (enabled) {
+        addComponentClass(component, trait.className);
+        removeComponentClass(component, trait.oppositeClass);
+    } else {
+        removeComponentClass(component, trait.className);
+    }
+
+    component.view?.render?.();
+}
+
+function responsiveVisibilityTrait(name, label, className, oppositeClass) {
+    return {
+        type: 'editor-responsive-visibility',
+        name,
+        label,
+        visibilityClass: className,
+        oppositeClass,
+    };
+}
+
+function buildResponsiveVisibilityTraits() {
+    return RESPONSIVE_VISIBILITY_TRAITS.map(trait => responsiveVisibilityTrait(
+        trait.name,
+        trait.label,
+        trait.className,
+        trait.oppositeClass
+    ));
+}
+
+function syncResponsiveVisibilityTraitInputs(component = editor.getSelected()) {
+    document.querySelectorAll('#traits-wrap .responsive-visibility-checkbox input').forEach(input => {
+        setResponsiveVisibilityInputState(input, componentHasClass(component, input.dataset.visibilityClass));
+    });
+}
+
+function setResponsiveVisibilityInputState(input, checked) {
+    if (!input) return;
+
+    input.checked = checked;
+    const label = input.closest('.responsive-visibility-checkbox');
+    const state = label?.querySelector('.responsive-visibility-state');
+
+    label?.classList.toggle('is-active', checked);
+    if (state) state.textContent = checked ? 'ON' : 'OFF';
+}
+
+function ensureResponsiveVisibilityCanvasStyles() {
+    const canvasDocument = editor.Canvas.getDocument();
+    if (!canvasDocument || canvasDocument.getElementById('poseidon-responsive-visibility-style')) return;
+
+    const style = canvasDocument.createElement('style');
+    style.id = 'poseidon-responsive-visibility-style';
+    style.textContent = RESPONSIVE_VISIBILITY_CSS;
+    canvasDocument.head.appendChild(style);
+}
+
+editor.TraitManager.addType('editor-responsive-visibility', {
+    createInput({ trait }) {
+        const label = document.createElement('label');
+        label.className = 'responsive-visibility-checkbox';
+        label.dataset.visibilityClass = trait.get('visibilityClass');
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.dataset.visibilityClass = trait.get('visibilityClass');
+
+        const text = document.createElement('span');
+        text.textContent = 'Enable';
+
+        const state = document.createElement('span');
+        state.className = 'responsive-visibility-state';
+        state.textContent = 'OFF';
+
+        label.append(checkbox, text, state);
+        checkbox.addEventListener('change', () => {
+            const component = editor.getSelected();
+            const traitData = {
+                className: trait.get('visibilityClass'),
+                oppositeClass: trait.get('oppositeClass'),
+            };
+
+            setResponsiveVisibilityClass(component, traitData, checkbox.checked);
+            syncResponsiveVisibilityTraitInputs(component);
+        });
+
+        return label;
+    },
+    onUpdate({ elInput, component, trait }) {
+        const checkbox = elInput.querySelector('input');
+        if (!checkbox) return;
+
+        setResponsiveVisibilityInputState(checkbox, componentHasClass(component, trait.get('visibilityClass')));
+    },
+});
+
+editor.on('load', ensureResponsiveVisibilityCanvasStyles);
+editor.on('canvas:frame:load', ensureResponsiveVisibilityCanvasStyles);
+editor.on('component:selected', component => setTimeout(() => syncResponsiveVisibilityTraitInputs(component), 0));
+
 function contentTrait(name, label, field, options = {}) {
     return {
         type: options.type || 'editor-content-input',
@@ -3736,7 +3976,11 @@ function getSerializableTraits(component) {
 
     return traits
         .map(trait => ({ ...(trait.attributes || trait) }))
-        .filter(trait => !String(trait.name || '').startsWith(CONTENT_TRAIT_PREFIX));
+        .filter(trait => {
+            const name = String(trait.name || '');
+            return !name.startsWith(CONTENT_TRAIT_PREFIX)
+                && !RESPONSIVE_VISIBILITY_TRAIT_NAMES.has(name);
+        });
 }
 
 function setComponentTraits(component, traits) {
@@ -4212,7 +4456,11 @@ editor.on('component:selected', component => {
     normalizeServiceAreasWidget(component);
 
     const contentTraits = buildContentTraits(component);
-    setComponentTraits(component, [...getSerializableTraits(component), ...contentTraits]);
+    setComponentTraits(component, [
+        ...getSerializableTraits(component),
+        ...buildResponsiveVisibilityTraits(),
+        ...contentTraits,
+    ]);
 
     if (contentTraits.length && !multiStyleSelection.components.size) {
         showRightPane('traits');
@@ -5346,7 +5594,12 @@ function toggleMarginSideAuto(side) {
 
     if (isAuto) {
         clearComponentStyleProperty(component, property);
-        setNativeMarginSideField(side, '');
+        const nextValues = componentSpacingValues(component, 'margin');
+        const stillAuto = String(nextValues[sideIndex] || '').trim().toLowerCase() === 'auto';
+        const nextValue = stillAuto ? '0px' : '';
+
+        if (stillAuto) component.addStyle({ [property]: nextValue });
+        setNativeMarginSideField(side, nextValue);
     } else {
         component.addStyle({ [property]: 'auto' });
         setNativeMarginSideField(side, 'auto');
