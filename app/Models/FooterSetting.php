@@ -9,6 +9,7 @@ class FooterSetting extends Model
     public const DEFAULT_SECTION_ORDER = [
         'main_location',
         'office_locations',
+        'affiliations',
         'coupons',
     ];
 
@@ -21,18 +22,21 @@ class FooterSetting extends Model
     public const DEFAULT_SECTION_ALIGNMENTS = [
         'main_location' => 'left',
         'office_locations' => 'left',
+        'affiliations' => 'left',
         'coupons' => 'left',
     ];
 
     public const DEFAULT_SECTION_CONTENT_ALIGNMENTS = [
         'main_location' => 'left',
         'office_locations' => 'left',
+        'affiliations' => 'left',
         'coupons' => 'left',
     ];
 
     protected $fillable = [
         'coupons_enabled',
         'location_enabled',
+        'affiliations_enabled',
         'location_name',
         'location_address_line_1',
         'location_address_line_2',
@@ -40,6 +44,9 @@ class FooterSetting extends Model
         'location_region',
         'location_postal_code',
         'location_phone',
+        'affiliation_badge_path',
+        'affiliation_badge_alt',
+        'affiliation_link_url',
         'section_order',
         'section_alignments',
         'section_content_alignments',
@@ -50,6 +57,7 @@ class FooterSetting extends Model
         return [
             'coupons_enabled' => 'boolean',
             'location_enabled' => 'boolean',
+            'affiliations_enabled' => 'boolean',
             'section_order' => 'array',
             'section_alignments' => 'array',
             'section_content_alignments' => 'array',
@@ -61,6 +69,7 @@ class FooterSetting extends Model
         return static::firstOrCreate([], [
             'coupons_enabled' => false,
             'location_enabled' => false,
+            'affiliations_enabled' => false,
             'section_order' => self::DEFAULT_SECTION_ORDER,
             'section_alignments' => self::DEFAULT_SECTION_ALIGNMENTS,
             'section_content_alignments' => self::DEFAULT_SECTION_CONTENT_ALIGNMENTS,
@@ -130,6 +139,30 @@ class FooterSetting extends Model
     public function locationPhoneHref(): ?string
     {
         return self::phoneHref($this->location_phone);
+    }
+
+    public function hasAffiliationBadge(): bool
+    {
+        return $this->affiliations_enabled && filled($this->affiliation_badge_path);
+    }
+
+    public function affiliationBadgeUrl(): ?string
+    {
+        return filled($this->affiliation_badge_path)
+            ? asset('uploads/content/'.$this->affiliation_badge_path)
+            : null;
+    }
+
+    public function affiliationBadgeAlt(): string
+    {
+        return trim($this->affiliation_badge_alt ?? '') ?: 'Affiliation badge';
+    }
+
+    public function affiliationLinkHref(): ?string
+    {
+        $link = trim($this->affiliation_link_url ?? '');
+
+        return $link !== '' && ! preg_match('/^\s*javascript:/i', $link) ? $link : null;
     }
 
     public static function phoneHref(?string $phone): ?string

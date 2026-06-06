@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FooterCoupon;
 use App\Models\FooterOfficeLocation;
 use App\Models\FooterSetting;
+use App\Support\ContentUploads;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -26,6 +27,7 @@ class FooterController extends Controller
         $request->validate([
             'coupons_enabled' => 'nullable|boolean',
             'location_enabled' => 'nullable|boolean',
+            'affiliations_enabled' => 'nullable|boolean',
             'location_name' => 'nullable|string|max:120',
             'location_address_line_1' => 'nullable|string|max:160',
             'location_address_line_2' => 'nullable|string|max:160',
@@ -33,6 +35,11 @@ class FooterController extends Controller
             'location_region' => 'nullable|string|max:80',
             'location_postal_code' => 'nullable|string|max:30',
             'location_phone' => 'nullable|string|max:40',
+            'affiliation_badge' => 'nullable|file|mimes:jpg,jpeg,png,gif,webp,avif|max:4096',
+            'affiliation_badge_path' => 'nullable|string|max:255',
+            'affiliation_badge_alt' => 'nullable|string|max:120',
+            'affiliation_link_url' => 'nullable|string|max:2048|not_regex:/^\s*javascript:/i',
+            'affiliation_badge_remove' => 'nullable|boolean',
             'coupons' => 'nullable|array',
             'coupons.*' => 'array',
             'coupons.*.kicker' => 'nullable|string|max:80',
@@ -53,7 +60,7 @@ class FooterController extends Controller
             'office_locations.*.phone' => 'nullable|string|max:40',
             'office_locations.*.link_url' => 'nullable|string|max:2048|not_regex:/^\s*javascript:/i',
             'section_order' => 'nullable|array',
-            'section_order.*' => 'string|in:main_location,office_locations,coupons',
+            'section_order.*' => 'string|in:main_location,office_locations,affiliations,coupons',
             'section_alignments' => 'nullable|array',
             'section_alignments.*' => 'string|in:left,center,right',
             'section_content_alignments' => 'nullable|array',
@@ -62,7 +69,9 @@ class FooterController extends Controller
 
         $couponsEnabled = $request->boolean('coupons_enabled');
         $locationEnabled = $request->boolean('location_enabled');
+        $affiliationsEnabled = $request->boolean('affiliations_enabled');
         $locationData = $this->cleanLocationData($request);
+        $affiliationData = $this->cleanAffiliationData($request);
         $couponRows = $this->cleanCouponRows($request->input('coupons', []));
         $officeLocationRows = $this->cleanOfficeLocationRows($request->input('office_locations', []));
         $sectionOrder = $this->cleanSectionOrder($request->input('section_order', []));
@@ -78,6 +87,12 @@ class FooterController extends Controller
         if ($locationEnabled && blank($locationData['location_address_line_1'])) {
             throw ValidationException::withMessages([
                 'location_address_line_1' => 'Add a street address before enabling the footer location.',
+            ]);
+        }
+
+        if ($affiliationsEnabled && blank($affiliationData['affiliation_badge_path'])) {
+            throw ValidationException::withMessages([
+                'affiliation_badge' => 'Upload an affiliation badge before enabling affiliations in the footer.',
             ]);
         }
 
@@ -103,14 +118,16 @@ class FooterController extends Controller
             }
         });
 
-        DB::transaction(function () use ($couponsEnabled, $locationEnabled, $locationData, $couponRows, $officeLocationRows, $sectionOrder, $sectionAlignments, $sectionContentAlignments) {
+        DB::transaction(function () use ($couponsEnabled, $locationEnabled, $affiliationsEnabled, $locationData, $affiliationData, $couponRows, $officeLocationRows, $sectionOrder, $sectionAlignments, $sectionContentAlignments) {
             FooterSetting::get()->update([
                 'coupons_enabled' => $couponsEnabled,
                 'location_enabled' => $locationEnabled,
+                'affiliations_enabled' => $affiliationsEnabled,
                 'section_order' => $sectionOrder,
                 'section_alignments' => $sectionAlignments,
                 'section_content_alignments' => $sectionContentAlignments,
                 ...$locationData,
+                ...$affiliationData,
             ]);
 
             FooterCoupon::query()->delete();
@@ -160,6 +177,24 @@ class FooterController extends Controller
         ];
     }
 
+    private function cleanAffiliationData(Request $request): array
+    {
+        $badgePath = $request->boolean('affiliation_badge_remove')
+            ? ''
+            : $this->cleanBadgePath($request->input('affiliation_badge_path', ''));
+
+        if ($request->hasFile('affiliation_badge')) {
+            $upload = ContentUploads::store($request->file('affiliation_badge'));
+            $badgePath = $upload['name'];
+        }
+
+        return [
+            'affiliation_badge_path' => $badgePath ?: null,
+            'affiliation_badge_alt' => trim($request->input('affiliation_badge_alt', '')),
+            'affiliation_link_url' => trim($request->input('affiliation_link_url', '')),
+        ];
+    }
+
     private function cleanCouponRows(array $rows)
     {
         return collect($rows)
@@ -203,6 +238,17 @@ class FooterController extends Controller
             ])
             ->filter(fn(array $row) => collect($row)->contains(fn(string $value) => $value !== ''))
             ->values();
+    }
+
+    private function cleanBadgePath(?string $path): string
+    {
+        $path = trim((string) $path);
+        $safeName = basename(str_replace('\\', '/', $path));
+        $extension = strtolower(pathinfo($safeName, PATHINFO_EXTENSION));
+
+        return $safeName === $path && in_array($extension, ContentUploads::IMAGE_EXTENSIONS, true)
+            ? $safeName
+            : '';
     }
 
     private function cleanSectionOrder(array $sectionOrder): array

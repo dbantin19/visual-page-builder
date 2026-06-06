@@ -91,6 +91,7 @@
     $hasFooterLocation = $footerSetting->hasLocationAddress();
     $hasFooterCoupons = $footerCoupons->isNotEmpty();
     $hasFooterOfficeLocations = $footerOfficeLocations->isNotEmpty();
+    $hasFooterAffiliations = $footerSetting->hasAffiliationBadge();
     $footerSectionOrder = $footerSetting->normalizedSectionOrder();
     $footerSectionAlignments = $footerSetting->normalizedSectionAlignments();
     $footerSectionContentAlignments = $footerSetting->normalizedSectionContentAlignments();
@@ -350,7 +351,7 @@
 {!! $page->content !!}
 {!! $page->body_section !!}
 
-@if($hasFooterLocation || $hasFooterOfficeLocations || $hasFooterCoupons)
+@if($hasFooterLocation || $hasFooterOfficeLocations || $hasFooterAffiliations || $hasFooterCoupons)
 <footer class="bg-gray-900 text-white">
     <div class="w-full px-6 py-12 space-y-10">
         @foreach($footerSectionOrder as $footerSection)
@@ -432,6 +433,31 @@
                                 </div>
                             @endif
                         @endforeach
+                    </div>
+                </section>
+            @elseif($footerSection === 'affiliations' && $hasFooterAffiliations)
+                <section class="{{ $footerContentAlignmentClass['text'] }}">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-blue-300 mb-4">Affiliations</p>
+                    <div class="flex {{ $footerAlignmentClass['group'] }}">
+                        @php
+                            $affiliationBadgeUrl = $footerSetting->affiliationBadgeUrl();
+                            $affiliationLinkHref = $footerSetting->affiliationLinkHref();
+                            $affiliationBadgeClasses = 'inline-flex max-w-xs items-center justify-center rounded-lg border border-white/10 bg-white p-3 transition-colors hover:bg-gray-100';
+                        @endphp
+
+                        @if($affiliationLinkHref)
+                            <a href="{{ $affiliationLinkHref }}" class="{{ $affiliationBadgeClasses }}">
+                        @else
+                            <div class="{{ $affiliationBadgeClasses }}">
+                        @endif
+                            <img src="{{ $affiliationBadgeUrl }}"
+                                 alt="{{ $footerSetting->affiliationBadgeAlt() }}"
+                                 class="max-h-16 w-auto max-w-[12rem] object-contain">
+                        @if($affiliationLinkHref)
+                            </a>
+                        @else
+                            </div>
+                        @endif
                     </div>
                 </section>
             @elseif($footerSection === 'coupons' && $hasFooterCoupons)

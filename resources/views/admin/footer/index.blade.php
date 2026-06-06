@@ -34,6 +34,9 @@
 
     $couponsEnabled = filter_var(old('coupons_enabled', $footerSetting->coupons_enabled), FILTER_VALIDATE_BOOLEAN);
     $locationEnabled = filter_var(old('location_enabled', $footerSetting->location_enabled), FILTER_VALIDATE_BOOLEAN);
+    $affiliationsEnabled = filter_var(old('affiliations_enabled', $footerSetting->affiliations_enabled), FILTER_VALIDATE_BOOLEAN);
+    $affiliationBadgePath = old('affiliation_badge_path', $footerSetting->affiliation_badge_path);
+    $affiliationBadgeUrl = filled($affiliationBadgePath) ? asset('uploads/content/'.$affiliationBadgePath) : null;
     $currentMonthEndLabel = now()->endOfMonth()->format('F j, Y');
     $oldSectionOrder = old('section_order');
     $sectionOrderSource = is_array($oldSectionOrder) ? $oldSectionOrder : $footerSetting->normalizedSectionOrder();
@@ -75,6 +78,10 @@
             'title' => 'Office locations',
             'description' => 'Additional addresses for multiple offices',
         ],
+        'affiliations' => [
+            'title' => 'Affiliations',
+            'description' => 'Small badge or partner logo shown in the footer',
+        ],
         'coupons' => [
             'title' => 'Coupons',
             'description' => 'Printable offers in the public footer',
@@ -85,9 +92,12 @@
     $hasCouponErrors = collect($errorKeys)->contains(fn(string $key) => str_starts_with($key, 'coupons'));
     $hasLocationErrors = collect($errorKeys)->contains(fn(string $key) => str_starts_with($key, 'location_'));
     $hasOfficeErrors = collect($errorKeys)->contains(fn(string $key) => str_starts_with($key, 'office_locations'));
+    $hasAffiliationErrors = collect($errorKeys)->contains(fn(string $key) => str_starts_with($key, 'affiliation_'));
 
     $initialSection = 'coupons';
-    if ($hasOfficeErrors) {
+    if ($hasAffiliationErrors) {
+        $initialSection = 'affiliations';
+    } elseif ($hasOfficeErrors) {
         $initialSection = 'office_locations';
     } elseif ($hasLocationErrors) {
         $initialSection = 'main_location';
@@ -95,10 +105,12 @@
         $initialSection = 'main_location';
     } elseif (! $couponsEnabled && ! $locationEnabled && count($officeLocationRows) > 0) {
         $initialSection = 'office_locations';
+    } elseif (! $couponsEnabled && ! $locationEnabled && $affiliationsEnabled) {
+        $initialSection = 'affiliations';
     }
 @endphp
 
-<form method="POST" action="{{ route('admin.footer.save') }}" class="max-w-6xl space-y-6">
+<form method="POST" action="{{ route('admin.footer.save') }}" enctype="multipart/form-data" class="max-w-6xl space-y-6">
     @csrf
 
     @if($errors->any())
@@ -114,20 +126,20 @@
 
             <div id="footer_section_order" class="mt-5 space-y-3">
                 @foreach($sectionOrder as $section)
-                    <div data-footer-section-item data-section="{{ $section }}" class="flex items-stretch gap-2">
+                    <div data-footer-section-item data-section="{{ $section }}" class="grid grid-cols-[minmax(0,1fr)_2.5rem] sm:grid-cols-[2.5rem_minmax(0,1fr)_2.5rem] items-stretch gap-2">
                         <input type="hidden" data-section-order-input name="section_order[]" value="{{ $section }}">
 
                         <button type="button" data-footer-drag-handle draggable="true"
                                 title="Drag {{ $sectionMeta[$section]['title'] }}" aria-label="Drag {{ $sectionMeta[$section]['title'] }}"
-                                class="hidden sm:inline-flex w-10 shrink-0 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-400 cursor-grab active:cursor-grabbing">
+                                class="hidden sm:inline-flex h-full min-h-[72px] w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-400 cursor-grab active:cursor-grabbing">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h.01M8 12h.01M8 17h.01M16 7h.01M16 12h.01M16 17h.01"/>
                             </svg>
                         </button>
 
                         <button type="button" data-footer-section-button="{{ $section }}" onclick="setActiveFooterSection('{{ $section }}')">
-                            <span class="flex items-start justify-between gap-4">
-                                <span>
+                            <span class="flex min-h-full items-center justify-between gap-4">
+                                <span class="min-w-0">
                                     <span class="block text-sm font-semibold text-gray-800">{{ $sectionMeta[$section]['title'] }}</span>
                                     <span class="mt-1 block text-xs text-gray-500">{{ $sectionMeta[$section]['description'] }}</span>
                                 </span>
@@ -135,15 +147,15 @@
                             </span>
                         </button>
 
-                        <div class="flex shrink-0 flex-col gap-2">
+                        <div class="flex h-full min-h-[72px] flex-col gap-1">
                             <button type="button" data-move-direction="-1" title="Move {{ $sectionMeta[$section]['title'] }} up" aria-label="Move {{ $sectionMeta[$section]['title'] }} up"
-                                    class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:text-blue-700 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300">
+                                    class="inline-flex h-[34px] w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:text-blue-700 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/>
                                 </svg>
                             </button>
                             <button type="button" data-move-direction="1" title="Move {{ $sectionMeta[$section]['title'] }} down" aria-label="Move {{ $sectionMeta[$section]['title'] }} down"
-                                    class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:text-blue-700 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300">
+                                    class="inline-flex h-[34px] w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:border-blue-200 hover:text-blue-700 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-300">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
                                 </svg>
@@ -542,9 +554,120 @@
                 <p class="text-sm text-gray-500">No office locations yet.</p>
             </div>
         </div>
+
+        <div data-footer-section-panel="affiliations">
+            <div class="px-6 py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Affiliations</p>
+                    <p class="mt-1 text-sm text-gray-500">Upload a small affiliation badge or partner logo.</p>
+                </div>
+
+                <input type="hidden" name="affiliations_enabled" value="0">
+                <div class="flex flex-wrap items-center gap-4">
+                    <div>
+                        <p class="mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Block position</p>
+                        <div class="inline-flex rounded-lg border border-gray-200 bg-white p-1">
+                            @foreach($alignmentOptions as $value => $label)
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="section_alignments[affiliations]" value="{{ $value }}"
+                                           data-alignment-field="affiliations" class="sr-only peer" @checked($sectionAlignments['affiliations'] === $value)>
+                                    <span class="block rounded-md px-3 py-1.5 text-xs font-semibold text-gray-500 transition-colors peer-checked:bg-blue-700 peer-checked:text-white">
+                                        {{ $label }}
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="mb-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">Content alignment</p>
+                        <div class="inline-flex rounded-lg border border-gray-200 bg-white p-1">
+                            @foreach($alignmentOptions as $value => $label)
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="section_content_alignments[affiliations]" value="{{ $value }}"
+                                           data-content-alignment-field="affiliations" class="sr-only peer" @checked($sectionContentAlignments['affiliations'] === $value)>
+                                    <span class="block rounded-md px-3 py-1.5 text-xs font-semibold text-gray-500 transition-colors peer-checked:bg-blue-700 peer-checked:text-white">
+                                        {{ $label }}
+                                    </span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <label for="affiliations_enabled" class="inline-flex items-center gap-3 cursor-pointer select-none">
+                        <input id="affiliations_enabled" type="checkbox" name="affiliations_enabled" value="1"
+                               class="sr-only" onchange="toggleAffiliations()" @checked($affiliationsEnabled)>
+                        <span id="affiliations_check_button"
+                              class="w-9 h-9 rounded-lg border flex items-center justify-center transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </span>
+                        <span>
+                            <span class="block text-sm font-semibold text-gray-800">Show affiliations</span>
+                            <span class="block text-xs text-gray-500">Visible on published pages</span>
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="px-6 py-5">
+                <input type="hidden" id="affiliation_badge_path" name="affiliation_badge_path" value="{{ $affiliationBadgePath }}">
+                <input type="hidden" id="affiliation_badge_remove" name="affiliation_badge_remove" value="0">
+
+                <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_14rem] gap-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Affiliation badge</label>
+                            <input type="file" id="affiliation_badge" name="affiliation_badge"
+                                   data-affiliation-field accept="image/jpeg,image/png,image/gif,image/webp,image/avif"
+                                   onchange="handleAffiliationBadgeChange()"
+                                   class="block w-full text-sm text-gray-600 file:mr-3 file:rounded-lg file:border-0 file:bg-blue-700 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-blue-800">
+                            <p class="mt-2 text-xs text-gray-500">Use a compact badge image. JPG, PNG, GIF, WebP, or AVIF up to 4 MB.</p>
+                            @error('affiliation_badge')
+                                <p class="mt-2 text-xs text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Alt text</label>
+                            <input type="text" data-affiliation-field name="affiliation_badge_alt"
+                                   value="{{ old('affiliation_badge_alt', $footerSetting->affiliation_badge_alt) }}"
+                                   placeholder="IDA member badge"
+                                   class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Badge link</label>
+                            <input type="text" data-affiliation-field name="affiliation_link_url"
+                                   value="{{ old('affiliation_link_url', $footerSetting->affiliation_link_url) }}"
+                                   placeholder="https://www.example.com/affiliations"
+                                   class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="mt-2 text-xs text-gray-500">Optional. Leave blank if the badge should not link anywhere.</p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                        <p class="mb-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Badge preview</p>
+                        <div id="affiliation_badge_editor_empty" class="flex h-24 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white text-center text-xs text-gray-500">
+                            No badge selected
+                        </div>
+                        <div id="affiliation_badge_editor_preview" class="hidden">
+                            <div class="flex h-24 items-center justify-center rounded-lg border border-gray-200 bg-white p-3">
+                                <img id="affiliation_badge_editor_image" src="" alt="" class="max-h-16 w-auto max-w-full object-contain">
+                            </div>
+                            <button type="button" onclick="removeAffiliationBadge()"
+                                    class="mt-3 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-semibold text-gray-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700">
+                                Remove badge
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="footer_preview" class="{{ $couponsEnabled || $locationEnabled || count($officeLocationRows) > 0 ? '' : 'hidden' }}">
+    <div id="footer_preview" class="{{ $couponsEnabled || $locationEnabled || count($officeLocationRows) > 0 || ($affiliationsEnabled && filled($affiliationBadgePath)) ? '' : 'hidden' }}">
         <div class="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
             <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <h2 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Footer preview</h2>
@@ -553,6 +676,7 @@
             <div id="footer_preview_sections" class="px-6 py-8 space-y-8">
                 <div id="preview_location" data-preview-section="main_location"></div>
                 <div id="preview_office_locations" data-preview-section="office_locations"></div>
+                <div id="preview_affiliations" data-preview-section="affiliations"></div>
                 <div id="preview_coupons" data-preview-section="coupons"></div>
             </div>
         </div>
@@ -698,6 +822,8 @@
 
 <script>
 var initialFooterSection = @json($initialSection);
+var initialAffiliationBadgeUrl = @json($affiliationBadgeUrl);
+var affiliationBadgeObjectUrl = '';
 
 function couponRows() {
     return Array.from(document.querySelectorAll('[data-coupon-row]'));
@@ -719,7 +845,7 @@ function setActiveFooterSection(section) {
     document.querySelectorAll('[data-footer-section-button]').forEach(function(button) {
         var active = button.dataset.footerSectionButton === section;
         button.setAttribute('aria-pressed', active ? 'true' : 'false');
-        button.className = 'group flex-1 w-full h-full text-left rounded-lg border p-4 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
+        button.className = 'group flex min-h-[72px] w-full items-center text-left rounded-lg border px-4 py-3 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ' +
             (active
                 ? 'border-blue-700 bg-blue-50 shadow-sm'
                 : 'border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/40');
@@ -820,9 +946,24 @@ function locationHasContent() {
     });
 }
 
+function readAffiliationValue(name) {
+    var field = document.querySelector('[name="' + name + '"]');
+    return field ? field.value.trim() : '';
+}
+
+function affiliationBadgeUrl() {
+    if (affiliationBadgeObjectUrl) return affiliationBadgeObjectUrl;
+    return initialAffiliationBadgeUrl || '';
+}
+
+function affiliationHasBadge() {
+    return affiliationBadgeUrl() !== '';
+}
+
 function footerPreviewEnabled() {
     return document.getElementById('location_enabled').checked ||
         document.getElementById('coupons_enabled').checked ||
+        document.getElementById('affiliations_enabled').checked ||
         officeLocationRows().some(officeLocationHasContent);
 }
 
@@ -844,6 +985,14 @@ function syncSectionStatuses() {
         officeCount === 0 ? 'Empty' : officeCount + (officeCount === 1 ? ' office' : ' offices'),
         officeCount > 0
     );
+
+    var affiliationsEnabled = document.getElementById('affiliations_enabled').checked;
+    var hasAffiliationBadge = affiliationHasBadge();
+    updateStatusChip(
+        'affiliations_card_status',
+        hasAffiliationBadge ? (affiliationsEnabled ? 'Visible' : 'Hidden') : 'Empty',
+        hasAffiliationBadge && affiliationsEnabled
+    );
 }
 
 function toggleLocation() {
@@ -864,6 +1013,70 @@ function toggleCoupons() {
     }
 
     syncCouponState();
+}
+
+function toggleAffiliations() {
+    var enabled = document.getElementById('affiliations_enabled').checked;
+    setCheckButtonState('affiliations_check_button', enabled);
+    syncSectionStatuses();
+    syncFooterPreviewVisibility();
+    updateFooterPreview();
+}
+
+function handleAffiliationBadgeChange() {
+    var input = document.getElementById('affiliation_badge');
+    var file = input && input.files && input.files[0] ? input.files[0] : null;
+
+    if (affiliationBadgeObjectUrl) {
+        URL.revokeObjectURL(affiliationBadgeObjectUrl);
+        affiliationBadgeObjectUrl = '';
+    }
+
+    if (file) {
+        affiliationBadgeObjectUrl = URL.createObjectURL(file);
+        document.getElementById('affiliation_badge_remove').value = '0';
+        document.getElementById('affiliation_badge_path').value = '';
+        initialAffiliationBadgeUrl = '';
+    }
+
+    updateAffiliationEditorPreview();
+    toggleAffiliations();
+}
+
+function removeAffiliationBadge() {
+    var input = document.getElementById('affiliation_badge');
+    if (input) input.value = '';
+
+    if (affiliationBadgeObjectUrl) {
+        URL.revokeObjectURL(affiliationBadgeObjectUrl);
+        affiliationBadgeObjectUrl = '';
+    }
+
+    initialAffiliationBadgeUrl = '';
+    document.getElementById('affiliation_badge_path').value = '';
+    document.getElementById('affiliation_badge_remove').value = '1';
+    updateAffiliationEditorPreview();
+    toggleAffiliations();
+}
+
+function updateAffiliationEditorPreview() {
+    var image = document.getElementById('affiliation_badge_editor_image');
+    var preview = document.getElementById('affiliation_badge_editor_preview');
+    var empty = document.getElementById('affiliation_badge_editor_empty');
+    var url = affiliationBadgeUrl();
+
+    if (!image || !preview || !empty) return;
+
+    if (url) {
+        image.src = url;
+        image.alt = readAffiliationValue('affiliation_badge_alt') || 'Affiliation badge';
+        preview.classList.remove('hidden');
+        empty.classList.add('hidden');
+    } else {
+        image.removeAttribute('src');
+        preview.classList.add('hidden');
+        empty.classList.remove('hidden');
+    }
 }
 
 function addCoupon() {
@@ -1155,6 +1368,39 @@ function updateOfficeLocationsPreview() {
         '</div>';
 }
 
+function updateAffiliationsPreview() {
+    var preview = document.getElementById('preview_affiliations');
+    var blockAlignment = previewBlockAlignmentClasses('affiliations');
+    var contentAlignment = previewContentAlignmentClasses('affiliations');
+    var enabled = document.getElementById('affiliations_enabled').checked;
+    var badgeUrl = affiliationBadgeUrl();
+
+    if (!enabled) {
+        preview.innerHTML = '';
+        return;
+    }
+
+    if (!badgeUrl) {
+        preview.innerHTML = '<div class="text-center text-sm text-gray-500 py-6">Upload an affiliation badge to preview the footer.</div>';
+        return;
+    }
+
+    var alt = readAffiliationValue('affiliation_badge_alt') || 'Affiliation badge';
+    var link = officeLinkHref(readAffiliationValue('affiliation_link_url'));
+    var badgeTag = link ? 'a' : 'div';
+    var hrefAttribute = link ? ' href="' + escapeFooterText(link) + '"' : '';
+
+    preview.innerHTML =
+        '<div class="' + contentAlignment.text + '">' +
+            '<p class="text-xs font-semibold uppercase tracking-wider text-blue-300 mb-4">Affiliations</p>' +
+            '<div class="flex ' + blockAlignment.group + '">' +
+                '<' + badgeTag + hrefAttribute + ' class="inline-flex max-w-xs items-center justify-center rounded-lg border border-white/10 bg-white p-3 transition-colors hover:bg-gray-100">' +
+                    '<img src="' + escapeFooterText(badgeUrl) + '" alt="' + escapeFooterText(alt) + '" class="max-h-16 w-auto max-w-[12rem] object-contain">' +
+                '</' + badgeTag + '>' +
+            '</div>' +
+        '</div>';
+}
+
 function updateCouponsPreview() {
     var preview = document.getElementById('preview_coupons');
     var blockAlignment = previewBlockAlignmentClasses('coupons');
@@ -1207,11 +1453,16 @@ function updateCouponsPreview() {
 function updateFooterPreview() {
     updateLocationPreview();
     updateOfficeLocationsPreview();
+    updateAffiliationsPreview();
     updateCouponsPreview();
 }
 
 document.addEventListener('input', function(event) {
-    if (event.target.matches('[data-field], [data-location-field], [data-office-field], [data-alignment-field], [data-content-alignment-field]')) {
+    if (event.target.matches('[data-field], [data-location-field], [data-office-field], [data-affiliation-field], [data-alignment-field], [data-content-alignment-field]')) {
+        if (event.target.matches('[data-affiliation-field]')) {
+            updateAffiliationEditorPreview();
+        }
+
         syncSectionStatuses();
         syncFooterPreviewVisibility();
         updateFooterPreview();
@@ -1229,6 +1480,11 @@ document.addEventListener('change', function(event) {
 
     if (event.target.matches('[data-office-field]')) {
         syncOfficeLocationState();
+    }
+
+    if (event.target.matches('[data-affiliation-field]')) {
+        updateAffiliationEditorPreview();
+        toggleAffiliations();
     }
 
     if (event.target.matches('[data-alignment-field], [data-content-alignment-field]')) {
@@ -1312,6 +1568,8 @@ reindexCoupons();
 reindexOfficeLocations();
 toggleLocation();
 toggleCoupons();
+updateAffiliationEditorPreview();
+toggleAffiliations();
 syncOfficeLocationState();
 </script>
 @endsection

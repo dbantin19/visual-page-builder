@@ -2740,6 +2740,711 @@ function componentByCanvasElement(element) {
     return found;
 }
 
+const MULTI_STYLE_SELECTION_CLASS = 'gjs-multi-style-selected';
+const MULTI_STYLE_PRIMARY_CLASS = 'gjs-multi-style-primary';
+const MULTI_STYLE_EXPAND_CLICK_MS = 650;
+const MULTI_STYLE_DUPLICATE_EVENT_MS = 50;
+const multiStyleSelection = {
+    components: new Set(),
+    primary: null,
+    applying: false,
+    selectingPrimary: false,
+    shiftPressed: false,
+    lastComponent: null,
+    lastToggleAt: 0,
+    lastToggleComponent: null,
+    lastShiftClickAt: 0,
+    lastShiftClickComponent: null,
+    lastShiftHandledAt: 0,
+    lastShiftHandledComponent: null,
+};
+
+function resetMultiStyleShiftClick() {
+    multiStyleSelection.lastShiftClickAt = 0;
+    multiStyleSelection.lastShiftClickComponent = null;
+}
+
+function componentIsConnected(component) {
+    const el = component?.getEl?.();
+    return Boolean(el && el.isConnected);
+}
+
+function pruneMultiStyleSelection() {
+    [...multiStyleSelection.components].forEach(component => {
+        if (!componentIsConnected(component)) multiStyleSelection.components.delete(component);
+    });
+
+    if (!multiStyleSelection.components.has(multiStyleSelection.primary)) {
+        multiStyleSelection.primary = multiStyleSelection.components.values().next().value || null;
+    }
+}
+
+function ensureMultiStyleSelectionCanvasStyles() {
+    const canvasDocument = editor.Canvas.getDocument();
+    if (!canvasDocument || canvasDocument.getElementById('poseidon-multi-style-selection-style')) return;
+
+    const style = canvasDocument.createElement('style');
+    style.id = 'poseidon-multi-style-selection-style';
+    style.textContent = `
+        .${MULTI_STYLE_SELECTION_CLASS} {
+            outline: 2px dashed #16a34a !important;
+            outline-offset: 3px !important;
+        }
+
+        .${MULTI_STYLE_SELECTION_CLASS}.${MULTI_STYLE_PRIMARY_CLASS} {
+            outline: 2px solid #16a34a !important;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, .18) !important;
+        }
+    `;
+    canvasDocument.head.appendChild(style);
+}
+
+function refreshMultiStyleSelectionMarkers() {
+    pruneMultiStyleSelection();
+    ensureMultiStyleSelectionCanvasStyles();
+
+    const canvasDocument = editor.Canvas.getDocument();
+    if (!canvasDocument) return;
+
+    canvasDocument
+        .querySelectorAll(`.${MULTI_STYLE_SELECTION_CLASS}, .${MULTI_STYLE_PRIMARY_CLASS}`)
+        .forEach(el => {
+            el.classList.remove(MULTI_STYLE_SELECTION_CLASS);
+            el.classList.remove(MULTI_STYLE_PRIMARY_CLASS);
+        });
+
+    multiStyleSelection.components.forEach(component => {
+        const el = component.getEl?.();
+        if (!el) return;
+        el.classList.add(MULTI_STYLE_SELECTION_CLASS);
+        el.classList.toggle(MULTI_STYLE_PRIMARY_CLASS, component === multiStyleSelection.primary);
+    });
+}
+
+function clearMultiStyleSelection() {
+    if (!multiStyleSelection.components.size) return;
+
+    multiStyleSelection.components.clear();
+    multiStyleSelection.primary = null;
+    refreshMultiStyleSelectionMarkers();
+}
+
+function multiStyleComponentSignature(component) {
+    const tag = getTagName(component) || component?.get?.('type') || 'component';
+    const attrs = component?.getAttributes?.() || {};
+    const dataRole = Object.keys(attrs)
+        .filter(name => name.startsWith('data-') && attrs[name] === 'true')
+        .sort()
+        .slice(0, 4)
+        .join(',');
+    const childSignature = childComponents(component)
+        .slice(0, 8)
+        .map(child => {
+            const childAttrs = child.getAttributes?.() || {};
+            const childDataRole = Object.keys(childAttrs)
+                .filter(name => name.startsWith('data-') && childAttrs[name] === 'true')
+                .sort()
+                .slice(0, 2)
+                .join(',');
+
+            return `${getTagName(child) || child.get?.('type') || 'component'}${childDataRole ? `[${childDataRole}]` : ''}`;
+        })
+        .join('>');
+
+    return `${tag}${dataRole ? `[${dataRole}]` : ''}:${childSignature}`;
+}
+
+function benefitPartRole(component) {
+    let current = component;
+
+    while (current) {
+        const parent = current.parent?.();
+        const parts = findBenefitParts(parent);
+
+        if (parts?.icon === current) return 'benefit-icon';
+        if (parts?.text === current) return 'benefit-text';
+
+        current = parent;
+    }
+
+    return '';
+}
+
+function serviceAreaPartRole(component) {
+    if (componentHasAttribute(component, 'data-service-area-name')) return 'service-area-name';
+    if (componentHasAttribute(component, 'data-service-area-description')) return 'service-area-description';
+    if (componentHasAttribute(component, 'data-service-area-phone')) return 'service-area-phone';
+
+    return '';
+}
+
+function multiStyleComponentGroupKey(component) {
+    if (!component) return '';
+
+    const tag = getTagName(component);
+    const type = component.get?.('type') || '';
+    const attrs = component.getAttributes?.() || {};
+    const benefitRole = benefitPartRole(component);
+    const serviceAreaRole = serviceAreaPartRole(component);
+
+    if (benefitRole) return benefitRole;
+    if (serviceAreaRole) return serviceAreaRole;
+    if (findBenefitParts(component)) return 'benefit-card';
+    if (componentHasAttribute(component, 'data-service-area-card')) return 'service-area-card';
+    if (attrs['data-card-media'] === 'true') return 'card-media';
+    if (/^h[1-6]$/.test(tag)) return `heading:${tag}`;
+    if (['p', 'span', 'cite', 'li', 'label'].includes(tag) || type === 'text') return `text:${tag || type}`;
+    if (['a', 'button'].includes(tag)) return `action:${tag}`;
+    if (['img', 'video', 'iframe'].includes(tag) || ['image', 'video'].includes(type)) return `media:${tag || type}`;
+    if (tag === 'section') return 'section';
+    if (tag === 'article') return `article:${multiStyleComponentSignature(component)}`;
+    if (tag === 'div') return `div:${multiStyleComponentSignature(component)}`;
+
+    return `${tag || type}:${multiStyleComponentSignature(component)}`;
+}
+
+function isMultiStyleSelectableComponent(component) {
+    if (!component) return false;
+    if (component === editor.getWrapper?.()) return false;
+
+    const tag = getTagName(component);
+    const type = component.get?.('type') || '';
+    if (type === 'textnode') return false;
+    if (['html', 'body'].includes(tag)) return false;
+
+    return Boolean(tag || type);
+}
+
+function componentsShareMultiStyleGroup(a, b) {
+    return Boolean(a && b && multiStyleComponentGroupKey(a) === multiStyleComponentGroupKey(b));
+}
+
+function componentContains(ancestor, component) {
+    let current = component;
+    while (ancestor && current) {
+        if (current === ancestor) return true;
+        current = current.parent?.();
+    }
+
+    return false;
+}
+
+function componentsShareMultiStyleTree(a, b) {
+    return Boolean(a && b && (a === b || componentContains(a, b) || componentContains(b, a)));
+}
+
+function moreSpecificMultiStyleTarget(target, previousTarget) {
+    if (componentContains(target, previousTarget)) return previousTarget;
+    return target;
+}
+
+function isMultiStyleScopeComponent(component) {
+    if (!component) return false;
+
+    const tag = getTagName(component);
+    const attrs = component.getAttributes?.() || {};
+
+    return tag === 'section'
+        || attrs['data-service-areas-widget'] === 'true'
+        || Boolean(findWhyChooseParts(component))
+        || Boolean(findServiceAreasParts(component));
+}
+
+function multiStyleScopeRoot(component) {
+    let current = component?.parent?.();
+
+    while (current) {
+        if (isMultiStyleScopeComponent(current)) return current;
+        current = current.parent?.();
+    }
+
+    return component?.parent?.() || editor.getWrapper?.() || null;
+}
+
+function collectMultiStyleScopeMatches(scope, reference) {
+    const matches = [];
+    if (!scope || !reference) return matches;
+
+    const maybeAdd = component => {
+        if (
+            component
+            && component !== scope
+            && isMultiStyleSelectableComponent(component)
+            && componentsShareMultiStyleGroup(reference, component)
+        ) {
+            matches.push(component);
+        }
+    };
+
+    maybeAdd(scope);
+    walkComponents(scope, maybeAdd);
+
+    return [...new Set(matches)];
+}
+
+function repeatedDescendantGroupWeight(key) {
+    if (key === 'benefit-card') return 100;
+    if (key === 'service-area-card') return 95;
+    if (key === 'service-area-name') return 72;
+    if (key === 'service-area-description') return 68;
+    if (key === 'service-area-phone') return 62;
+    if (key === 'benefit-text') return 65;
+    if (key === 'benefit-icon') return 55;
+    if (key.startsWith('article:')) return 80;
+    if (key.startsWith('div:')) return 75;
+    if (key.startsWith('heading:')) return 60;
+    if (key.startsWith('text:')) return 50;
+    if (key.startsWith('action:')) return 45;
+    if (key.startsWith('media:')) return 40;
+    return 10;
+}
+
+function collectBestRepeatedDescendantGroup(component) {
+    if (!component) return [];
+
+    const groups = new Map();
+    walkComponents(component, child => {
+        if (!isMultiStyleSelectableComponent(child)) return;
+
+        const key = multiStyleComponentGroupKey(child);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(child);
+    });
+
+    return [...groups.entries()]
+        .filter(([, matches]) => matches.length > 1)
+        .sort(([keyA, matchesA], [keyB, matchesB]) => {
+            const weightDelta = repeatedDescendantGroupWeight(keyB) - repeatedDescendantGroupWeight(keyA);
+            return weightDelta || matchesB.length - matchesA.length;
+        })[0]?.[1] || [];
+}
+
+function isMultiStyleTextComponent(component) {
+    const tag = getTagName(component);
+    const type = component?.get?.('type') || '';
+
+    return /^h[1-6]$/.test(tag)
+        || ['p', 'span', 'cite', 'li', 'label'].includes(tag)
+        || type === 'text';
+}
+
+function componentHasBenefitAncestor(component) {
+    let current = component;
+    while (current) {
+        if (findBenefitParts(current)) return true;
+        current = current.parent?.();
+    }
+    return false;
+}
+
+function nearestBenefitCardComponent(component) {
+    let current = component;
+    while (current) {
+        if (findBenefitParts(current)) return current;
+        current = current.parent?.();
+    }
+    return null;
+}
+
+function nearestServiceAreaCardComponent(component) {
+    let current = component;
+    while (current) {
+        if (componentHasAttribute(current, 'data-service-area-card')) return current;
+        current = current.parent?.();
+    }
+    return null;
+}
+
+function componentContainsPoint(component, point) {
+    const rect = component?.getEl?.()?.getBoundingClientRect?.();
+    if (!rect || !point) return false;
+
+    return point.x >= rect.left
+        && point.x <= rect.right
+        && point.y >= rect.top
+        && point.y <= rect.bottom;
+}
+
+function benefitPartAtPoint(component, point) {
+    const card = findBenefitParts(component) ? component : nearestBenefitCardComponent(component);
+    const parts = findBenefitParts(card);
+    if (!parts || !point) return null;
+
+    if (componentContainsPoint(parts.icon, point)) return parts.icon;
+    if (componentContainsPoint(parts.text, point)) return parts.text;
+
+    return null;
+}
+
+function serviceAreaPartAtPoint(component, point) {
+    const card = componentHasAttribute(component, 'data-service-area-card')
+        ? component
+        : nearestServiceAreaCardComponent(component);
+    const parts = serviceAreaCardParts(card);
+    if (!parts || !point) return null;
+
+    if (componentContainsPoint(parts.name, point)) return parts.name;
+    if (componentContainsPoint(parts.description, point)) return parts.description;
+    if (componentContainsPoint(parts.phone, point)) return parts.phone;
+
+    return null;
+}
+
+function nearestMultiStyleComponent(component, reference = null) {
+    const candidates = [];
+    let current = component;
+
+    while (current) {
+        if (isMultiStyleSelectableComponent(current)) candidates.push(current);
+        current = current.parent?.();
+    }
+
+    if (!candidates.length) return null;
+
+    if (reference) {
+        const compatible = candidates.find(candidate => componentsShareMultiStyleGroup(reference, candidate));
+        if (compatible) return compatible;
+    }
+
+    return candidates[0];
+}
+
+function directMultiStyleComponent(component) {
+    if (!component) return null;
+
+    return isMultiStyleSelectableComponent(component)
+        ? component
+        : nearestMultiStyleComponent(component);
+}
+
+function selectedMultiStyleComponent(reference = null) {
+    return nearestMultiStyleComponent(editor.getSelected(), reference);
+}
+
+function selectMultiStylePrimary(component) {
+    if (!component) return;
+
+    multiStyleSelection.primary = component;
+    multiStyleSelection.components.add(component);
+    multiStyleSelection.lastComponent = component;
+    multiStyleSelection.selectingPrimary = true;
+    editor.select(component);
+    setTimeout(() => {
+        multiStyleSelection.selectingPrimary = false;
+    }, 0);
+}
+
+function showMultiStyleSelectionPanel() {
+    if (multiStyleSelection.components.size > 1) showRightPane('style');
+}
+
+function toggleMultiStyleSelection(component, reference = null) {
+    const target = directMultiStyleComponent(component)
+        || nearestMultiStyleComponent(component, reference || multiStyleSelection.primary || multiStyleSelection.lastComponent);
+    if (!target) return;
+
+    const selectedTarget = selectedMultiStyleComponent(target);
+    if (!multiStyleSelection.primary) {
+        const primary = componentsShareMultiStyleGroup(selectedTarget, target)
+            ? selectedTarget
+            : componentsShareMultiStyleGroup(multiStyleSelection.lastComponent, target)
+                ? multiStyleSelection.lastComponent
+                : target;
+        selectMultiStylePrimary(primary);
+    }
+
+    if (!componentsShareMultiStyleGroup(multiStyleSelection.primary, target)) {
+        clearMultiStyleSelection();
+        selectMultiStylePrimary(target);
+    } else if (multiStyleSelection.components.has(target) && multiStyleSelection.components.size > 1) {
+        multiStyleSelection.components.delete(target);
+        if (multiStyleSelection.primary === target) {
+            multiStyleSelection.primary = multiStyleSelection.components.values().next().value || null;
+        }
+    } else {
+        multiStyleSelection.components.add(target);
+    }
+
+    if (!multiStyleSelection.primary) selectMultiStylePrimary(target);
+    multiStyleSelection.lastComponent = multiStyleSelection.primary;
+    refreshMultiStyleSelectionMarkers();
+    showMultiStyleSelectionPanel();
+}
+
+function expandMultiStyleSelectionToScope(component) {
+    let target = directMultiStyleComponent(component)
+        || nearestMultiStyleComponent(component, multiStyleSelection.primary || multiStyleSelection.lastComponent || component);
+    if (!target) return false;
+
+    let matches = collectMultiStyleScopeMatches(multiStyleScopeRoot(target), target);
+    if (matches.length < 2) {
+        matches = collectBestRepeatedDescendantGroup(target);
+        if (matches.length) target = matches[0];
+    }
+
+    if (matches.length < 2) return false;
+
+    const primary = matches.includes(target) ? target : matches[0];
+    multiStyleSelection.components.clear();
+    matches.forEach(match => multiStyleSelection.components.add(match));
+    multiStyleSelection.primary = primary;
+    multiStyleSelection.lastComponent = primary;
+    selectMultiStylePrimary(primary);
+    refreshMultiStyleSelectionMarkers();
+    showMultiStyleSelectionPanel();
+
+    return true;
+}
+
+function handleMultiStyleShiftSelection(component) {
+    const target = directMultiStyleComponent(component)
+        || nearestMultiStyleComponent(component, multiStyleSelection.primary || multiStyleSelection.lastComponent || component);
+    if (!target) return;
+
+    const now = Date.now();
+    if (
+        multiStyleSelection.lastShiftHandledComponent
+        && now - multiStyleSelection.lastShiftHandledAt < MULTI_STYLE_DUPLICATE_EVENT_MS
+        && componentsShareMultiStyleTree(multiStyleSelection.lastShiftHandledComponent, target)
+    ) {
+        return;
+    }
+
+    const previousTarget = multiStyleSelection.lastShiftClickComponent;
+    const isDoubleShiftClick = previousTarget
+        && now - multiStyleSelection.lastShiftClickAt <= MULTI_STYLE_EXPAND_CLICK_MS
+        && componentsShareMultiStyleTree(previousTarget, target);
+    const expansionTarget = moreSpecificMultiStyleTarget(target, previousTarget);
+
+    multiStyleSelection.lastShiftHandledComponent = target;
+    multiStyleSelection.lastShiftHandledAt = now;
+    multiStyleSelection.lastShiftClickComponent = target;
+    multiStyleSelection.lastShiftClickAt = now;
+
+    if (isDoubleShiftClick && expandMultiStyleSelectionToScope(expansionTarget)) {
+        resetMultiStyleShiftClick();
+        return;
+    }
+
+    toggleMultiStyleSelection(target);
+}
+
+function isBenefitCardElement(element) {
+    if (!element || element.tagName?.toLowerCase() !== 'div') return false;
+
+    const spans = [...element.children].filter(child => child.tagName?.toLowerCase() === 'span');
+    if (spans.length < 2) return false;
+
+    const iconText = spans[0].textContent.replace(/\u00a0/g, ' ').trim();
+    const labelText = spans[1].textContent.replace(/\u00a0/g, ' ').trim();
+    const inlineDisplay = String(element.style?.display || '').toLowerCase();
+    const computedDisplay = String(element.ownerDocument.defaultView.getComputedStyle(element).display || '').toLowerCase();
+
+    return (inlineDisplay.includes('flex') || computedDisplay.includes('flex'))
+        && iconText.length > 0
+        && iconText.length <= 3
+        && Boolean(labelText);
+}
+
+function multiStyleComponentFromCanvasTarget(target, reference = null, point = null) {
+    let element = target?.nodeType === 3 ? target.parentElement : target;
+    const canvasDocument = editor.Canvas.getDocument();
+    const groupReference = reference || multiStyleSelection.primary || multiStyleSelection.lastComponent || selectedMultiStyleComponent();
+
+    while (element && element !== canvasDocument?.body) {
+        const cardElement = isBenefitCardElement(element) ? element : null;
+        const directComponent = componentByCanvasElement(cardElement || element);
+        const directTarget = directMultiStyleComponent(directComponent);
+        const benefitPointTarget = benefitPartAtPoint(directTarget, point);
+        const serviceAreaPointTarget = serviceAreaPartAtPoint(directTarget, point);
+        const directTargetGroup = multiStyleComponentGroupKey(directTarget);
+
+        if (benefitPointTarget) return benefitPointTarget;
+        if (serviceAreaPointTarget) return serviceAreaPointTarget;
+
+        if (
+            directTargetGroup === 'benefit-icon'
+            || directTargetGroup === 'benefit-text'
+            || directTargetGroup === 'service-area-name'
+            || directTargetGroup === 'service-area-description'
+            || directTargetGroup === 'service-area-phone'
+        ) {
+            return directTarget;
+        }
+
+        if (
+            directTarget
+            && isMultiStyleTextComponent(directTarget)
+            && !componentsShareMultiStyleGroup(groupReference, directTarget)
+            && !componentHasBenefitAncestor(directTarget)
+        ) {
+            return directTarget;
+        }
+
+        if (directTarget) {
+            if (!groupReference || componentsShareMultiStyleGroup(groupReference, directTarget)) {
+                return directTarget;
+            }
+
+            const compatibleAncestor = nearestMultiStyleComponent(directComponent, groupReference);
+            const canUseAncestorGroup = compatibleAncestor
+                && compatibleAncestor !== directTarget
+                && repeatedDescendantGroupWeight(multiStyleComponentGroupKey(compatibleAncestor)) >= 75;
+            const ancestorMatchCount = canUseAncestorGroup
+                ? collectMultiStyleScopeMatches(multiStyleScopeRoot(compatibleAncestor), compatibleAncestor).length
+                : 0;
+
+            return ancestorMatchCount > 1 ? compatibleAncestor : directTarget;
+        }
+
+        element = element.parentElement;
+    }
+
+    return null;
+}
+
+function stopMultiStyleSelectionEvent(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation?.();
+}
+
+function handleMultiStyleCanvasMouseDown(event) {
+    const component = multiStyleComponentFromCanvasTarget(event.target, null, {
+        x: event.clientX,
+        y: event.clientY,
+    });
+
+    if (!event.shiftKey) {
+        resetMultiStyleShiftClick();
+        if (component || multiStyleSelection.components.size) clearMultiStyleSelection();
+        return;
+    }
+
+    if (!component) return;
+    stopMultiStyleSelectionEvent(event);
+    const now = Date.now();
+    if (now - multiStyleSelection.lastToggleAt < MULTI_STYLE_DUPLICATE_EVENT_MS) return;
+    multiStyleSelection.lastToggleComponent = component;
+    multiStyleSelection.lastToggleAt = now;
+    handleMultiStyleShiftSelection(component);
+}
+
+function handleMultiStyleCanvasClick(event) {
+    if (!event.shiftKey || !multiStyleComponentFromCanvasTarget(event.target, null, {
+        x: event.clientX,
+        y: event.clientY,
+    })) return;
+    stopMultiStyleSelectionEvent(event);
+}
+
+function trackMultiStyleShiftKey(event) {
+    if (event.key !== 'Shift') return;
+    multiStyleSelection.shiftPressed = event.type === 'keydown';
+}
+
+function clearMultiStyleShiftKey() {
+    multiStyleSelection.shiftPressed = false;
+    resetMultiStyleShiftClick();
+}
+
+function bindMultiStyleSelectionEvents() {
+    const canvasDocument = editor.Canvas.getDocument();
+    const canvasWindow = editor.Canvas.getWindow();
+    if (!canvasDocument || !canvasWindow || canvasWindow.__poseidonMultiStyleSelectionBound) return;
+
+    canvasWindow.__poseidonMultiStyleSelectionBound = true;
+    canvasWindow.addEventListener('pointerdown', handleMultiStyleCanvasMouseDown, true);
+    canvasWindow.addEventListener('mousedown', handleMultiStyleCanvasMouseDown, true);
+    canvasWindow.addEventListener('click', handleMultiStyleCanvasClick, true);
+    canvasWindow.addEventListener('keydown', trackMultiStyleShiftKey, true);
+    canvasWindow.addEventListener('keyup', trackMultiStyleShiftKey, true);
+    canvasWindow.addEventListener('blur', clearMultiStyleShiftKey);
+    ensureMultiStyleSelectionCanvasStyles();
+    refreshMultiStyleSelectionMarkers();
+}
+
+function scheduleMultiStyleSelectionBinding() {
+    setTimeout(bindMultiStyleSelectionEvents, 0);
+    setTimeout(bindMultiStyleSelectionEvents, 150);
+}
+
+function mirrorMultiStyleSelectionStyles(source) {
+    if (multiStyleSelection.applying) return;
+    if (!source || multiStyleSelection.components.size < 2) return;
+    if (!multiStyleSelection.components.has(source)) return;
+
+    const sourceStyles = { ...(source.getStyle?.() || {}) };
+    multiStyleSelection.applying = true;
+
+    try {
+        multiStyleSelection.components.forEach(component => {
+            if (component === source) return;
+            component.setStyle({ ...sourceStyles });
+            component.view?.render?.();
+        });
+    } finally {
+        multiStyleSelection.applying = false;
+        refreshMultiStyleSelectionMarkers();
+    }
+}
+
+function applyStylePatchToSelectedGroup(component, patch) {
+    if (!component || !patch || !Object.keys(patch).length) return;
+
+    pruneMultiStyleSelection();
+
+    const targets = new Set([component]);
+    if (multiStyleSelection.components.size > 1) {
+        multiStyleSelection.components.forEach(target => targets.add(target));
+    }
+
+    multiStyleSelection.applying = true;
+
+    try {
+        targets.forEach(target => target.addStyle({ ...patch }));
+    } finally {
+        multiStyleSelection.applying = false;
+        refreshMultiStyleSelectionMarkers();
+    }
+}
+
+editor.on('load', scheduleMultiStyleSelectionBinding);
+editor.on('canvas:frame:load', scheduleMultiStyleSelectionBinding);
+editor.on('component:styleUpdate', mirrorMultiStyleSelectionStyles);
+editor.on('component:selected', component => {
+    const selectedComponent = nearestMultiStyleComponent(component, multiStyleSelection.primary || multiStyleSelection.lastComponent);
+
+    if (multiStyleSelection.selectingPrimary) {
+        refreshMultiStyleSelectionMarkers();
+        return;
+    }
+
+    if (multiStyleSelection.shiftPressed && selectedComponent) {
+        handleMultiStyleShiftSelection(selectedComponent);
+        return;
+    }
+
+    if (!multiStyleSelection.components.size) {
+        multiStyleSelection.lastComponent = selectedComponent;
+        return;
+    }
+
+    if (multiStyleSelection.components.has(selectedComponent)) {
+        multiStyleSelection.primary = selectedComponent;
+        multiStyleSelection.lastComponent = selectedComponent;
+        refreshMultiStyleSelectionMarkers();
+        return;
+    }
+
+    multiStyleSelection.lastComponent = selectedComponent;
+    clearMultiStyleSelection();
+});
+scheduleMultiStyleSelectionBinding();
+window.addEventListener('keydown', trackMultiStyleShiftKey, true);
+window.addEventListener('keyup', trackMultiStyleShiftKey, true);
+window.addEventListener('blur', clearMultiStyleShiftKey);
+
 function isLegacyCardContainer(component) {
     if (getTagName(component) !== 'div') return false;
 
@@ -3509,7 +4214,7 @@ editor.on('component:selected', component => {
     const contentTraits = buildContentTraits(component);
     setComponentTraits(component, [...getSerializableTraits(component), ...contentTraits]);
 
-    if (contentTraits.length) {
+    if (contentTraits.length && !multiStyleSelection.components.size) {
         showRightPane('traits');
     }
 });
@@ -5244,7 +5949,7 @@ function applyBorderFromControls(options = {}) {
         patch[`border-${activeBorderEdge}-color`] = border.color;
     }
 
-    component.addStyle(patch);
+    applyStylePatchToSelectedGroup(component, patch);
     updateBorderPreview(border);
     syncNativeBorderFields(border);
 }
@@ -5524,7 +6229,7 @@ function applyShadowFromControls(forceEnabled = false) {
 
     const shadow = readShadowControls(forceEnabled);
     const value = buildShadowValue(shadow);
-    component.addStyle({ 'box-shadow': value });
+    applyStylePatchToSelectedGroup(component, { 'box-shadow': value });
     updateShadowPreview(shadow);
     syncNativeBoxShadowField(value);
     setActiveShadowPreset(matchingShadowPreset(shadow));

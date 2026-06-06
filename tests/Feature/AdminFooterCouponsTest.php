@@ -9,6 +9,8 @@ use App\Models\Page;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 class AdminFooterCouponsTest extends TestCase
@@ -241,6 +243,64 @@ class AdminFooterCouponsTest extends TestCase
         ])->assertSessionHasErrors('office_locations.0.address_line_1');
     }
 
+    public function test_admin_can_upload_affiliation_badge_and_render_it_on_public_pages(): void
+    {
+        $user = User::create([
+            'username' => 'admin',
+            'password' => 'password',
+        ]);
+
+        $page = Page::create([
+            'name' => 'Home',
+            'slug' => 'home',
+            'is_published' => true,
+            'is_indexed' => true,
+            'content' => '<section>Home page</section>',
+        ]);
+
+        $this->actingAs($user)->post(route('admin.footer.save'), [
+            'location_enabled' => '0',
+            'coupons_enabled' => '0',
+            'affiliations_enabled' => '1',
+            'affiliation_badge' => UploadedFile::fake()->create('IDA Badge.png', 12, 'image/png'),
+            'affiliation_badge_alt' => 'IDA member badge',
+            'affiliation_link_url' => 'https://example.com/affiliations',
+        ])->assertRedirect(route('admin.footer.index'));
+
+        $setting = FooterSetting::get();
+
+        try {
+            $this->assertTrue($setting->affiliations_enabled);
+            $this->assertNotNull($setting->affiliation_badge_path);
+            $this->assertTrue(File::exists(public_path('uploads/content/'.$setting->affiliation_badge_path)));
+
+            $this->get(route('pages.show', $page->slug))
+                ->assertOk()
+                ->assertSee('Affiliations')
+                ->assertSee('alt="IDA member badge"', false)
+                ->assertSee('href="https://example.com/affiliations"', false)
+                ->assertSee('/uploads/content/', false);
+        } finally {
+            if ($setting->affiliation_badge_path) {
+                File::delete(public_path('uploads/content/'.$setting->affiliation_badge_path));
+            }
+        }
+    }
+
+    public function test_enabled_affiliations_requires_a_badge(): void
+    {
+        $user = User::create([
+            'username' => 'admin',
+            'password' => 'password',
+        ]);
+
+        $this->actingAs($user)->post(route('admin.footer.save'), [
+            'location_enabled' => '0',
+            'coupons_enabled' => '0',
+            'affiliations_enabled' => '1',
+        ])->assertSessionHasErrors('affiliation_badge');
+    }
+
     public function test_footer_sections_render_in_the_saved_order(): void
     {
         $user = User::create([
@@ -282,7 +342,7 @@ class AdminFooterCouponsTest extends TestCase
         ])->assertRedirect(route('admin.footer.index'));
 
         $this->assertSame(
-            ['coupons', 'main_location', 'office_locations'],
+            ['coupons', 'main_location', 'office_locations', 'affiliations'],
             FooterSetting::get()->normalizedSectionOrder()
         );
 
@@ -314,11 +374,13 @@ class AdminFooterCouponsTest extends TestCase
             'section_alignments' => [
                 'main_location' => 'right',
                 'office_locations' => 'center',
+                'affiliations' => 'left',
                 'coupons' => 'right',
             ],
             'section_content_alignments' => [
                 'main_location' => 'center',
                 'office_locations' => 'right',
+                'affiliations' => 'left',
                 'coupons' => 'left',
             ],
             'location_enabled' => '1',
@@ -347,12 +409,14 @@ class AdminFooterCouponsTest extends TestCase
         $this->assertSame([
             'main_location' => 'right',
             'office_locations' => 'center',
+            'affiliations' => 'left',
             'coupons' => 'right',
         ], FooterSetting::get()->normalizedSectionAlignments());
 
         $this->assertSame([
             'main_location' => 'center',
             'office_locations' => 'right',
+            'affiliations' => 'left',
             'coupons' => 'left',
         ], FooterSetting::get()->normalizedSectionContentAlignments());
 
