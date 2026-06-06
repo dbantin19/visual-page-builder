@@ -755,6 +755,27 @@
         .gjs-hovered { outline: 1px dashed #818cf8 !important; outline-offset: -1px !important; }
         .gjs-badge { background: #4f46e5 !important; color: #fff !important; border-radius: 4px !important; }
 
+        /* Responsive visibility preview toggle */
+        .vis-toggle {
+            display: flex; align-items: center; gap: 5px;
+            background: #1e293b; border: 1px solid #1e293b; color: #94a3b8;
+            padding: 6px 12px; border-radius: 7px;
+            font-size: 12px; font-weight: 600; cursor: pointer; transition: all .15s;
+        }
+        .vis-toggle:hover { color: #f1f5f9; border-color: #334155; }
+        .vis-toggle.active { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+
+        /* Responsive visibility corner symbol on the selected element's toolbar */
+        .poseidon-vis-indicator {
+            display: inline-flex !important; align-items: center; gap: 4px;
+            padding: 3px 7px; vertical-align: top;
+            font-size: 10px; font-weight: 700; line-height: 1; color: #fff;
+            border-radius: 0 6px 6px 0;
+        }
+        .poseidon-vis-indicator svg { width: 13px; height: 13px; }
+        .poseidon-vis-indicator.poseidon-vis-desktop { background: #b45309 !important; }
+        .poseidon-vis-indicator.poseidon-vis-mobile { background: #1d4ed8 !important; }
+
         /* ─── GRADIENT & OPACITY (injected into Background sector) ─── */
         #gi-wrap {
             width: 100%;
@@ -1418,6 +1439,16 @@
             Mobile
         </button>
     </div>
+
+    {{-- Responsive visibility preview toggle --}}
+    <button id="preview-vis-btn" class="vis-toggle" type="button"
+            title="Preview mobile show/hide for the current device (off = everything stays visible for editing)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/>
+            <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Preview
+    </button>
 
     <div class="tb-sep"></div>
 
@@ -3774,11 +3805,18 @@ editor.TraitManager.addType('editor-upload-picker', {
 });
 
 const RESPONSIVE_VISIBILITY_CSS = `
+/* Edit mode: keep restricted elements visible with a colored hint so they stay editable */
+.mobile-hide { box-shadow: inset 0 0 0 2px rgba(245, 158, 11, .45) !important; }
+.mobile-show { box-shadow: inset 0 0 0 2px rgba(59, 130, 246, .45) !important; }
+
+/* Preview mode (toggle on): drop the hints and apply the real responsive visibility */
+.poseidon-preview-visibility .mobile-hide,
+.poseidon-preview-visibility .mobile-show { box-shadow: none !important; }
 @media (max-width: 767px) {
-    .mobile-hide { display: none !important; }
+    .poseidon-preview-visibility .mobile-hide { display: none !important; }
 }
-.mobile-show {
-    box-shadow: inset 0 0 0 2px rgba(59, 130, 246, .45) !important;
+@media (min-width: 768px) {
+    .poseidon-preview-visibility .mobile-show { display: none !important; }
 }`;
 const RESPONSIVE_VISIBILITY_TRAITS = [
     {
@@ -3932,6 +3970,7 @@ editor.TraitManager.addType('editor-responsive-visibility', {
 
             setResponsiveVisibilityClass(component, traitData, checkbox.checked);
             syncResponsiveVisibilityTraitInputs(component);
+            updateSelectedVisibilityIndicator(component);
         });
 
         return label;
@@ -3947,6 +3986,55 @@ editor.TraitManager.addType('editor-responsive-visibility', {
 editor.on('load', ensureResponsiveVisibilityCanvasStyles);
 editor.on('canvas:frame:load', ensureResponsiveVisibilityCanvasStyles);
 editor.on('component:selected', component => setTimeout(() => syncResponsiveVisibilityTraitInputs(component), 0));
+
+// ─── Responsive visibility: faithful preview toggle ───
+let responsiveVisibilityPreview = false;
+
+function applyResponsiveVisibilityPreview() {
+    const root = editor.Canvas.getDocument()?.documentElement;
+    if (root) root.classList.toggle('poseidon-preview-visibility', responsiveVisibilityPreview);
+    document.getElementById('preview-vis-btn')?.classList.toggle('active', responsiveVisibilityPreview);
+}
+
+document.getElementById('preview-vis-btn')?.addEventListener('click', () => {
+    responsiveVisibilityPreview = !responsiveVisibilityPreview;
+    applyResponsiveVisibilityPreview();
+});
+
+editor.on('load', applyResponsiveVisibilityPreview);
+editor.on('canvas:frame:load', applyResponsiveVisibilityPreview);
+
+// ─── Responsive visibility: corner symbol on the selected element ───
+const RESPONSIVE_VISIBILITY_ICONS = {
+    desktop: '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path stroke-linecap="round" d="M8 21h8M12 17v4"/></svg>',
+    mobile: '<svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><circle cx="12" cy="17.5" r=".5" fill="currentColor"/></svg>',
+};
+
+function selectedVisibilityState(component) {
+    if (!component) return null;
+    if (componentHasClass(component, 'mobile-hide')) return 'desktop';
+    if (componentHasClass(component, 'mobile-show')) return 'mobile';
+    return null;
+}
+
+function updateSelectedVisibilityIndicator(component = editor.getSelected()) {
+    document.querySelectorAll('.poseidon-vis-indicator').forEach(el => el.remove());
+
+    const toolbar = document.querySelector('.gjs-toolbar');
+    const state = selectedVisibilityState(component);
+    if (!toolbar || !state) return;
+
+    const badge = document.createElement('div');
+    badge.className = 'poseidon-vis-indicator poseidon-vis-' + state;
+    badge.title = state === 'desktop'
+        ? 'Desktop only — hidden on mobile'
+        : 'Mobile only — hidden on desktop';
+    badge.innerHTML = RESPONSIVE_VISIBILITY_ICONS[state];
+    toolbar.appendChild(badge);
+}
+
+editor.on('component:selected', () => setTimeout(() => updateSelectedVisibilityIndicator(), 0));
+editor.on('component:deselected', () => updateSelectedVisibilityIndicator(null));
 
 function contentTrait(name, label, field, options = {}) {
     return {
