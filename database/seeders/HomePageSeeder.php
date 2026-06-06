@@ -393,7 +393,7 @@ class HomePageSeeder extends Seeder
 
 <!-- ══ FOOTER BANNER ══ -->
 <section style="background:linear-gradient(145deg,#1e3a5f 0%,#0f2744 100%);padding:88px 24px;text-align:center;position:relative;overflow:hidden;">
-  <div style="position:absolute;inset:0;opacity:.04;background:repeating-linear-gradient(45deg,#fff,#fff 2px,transparent 2px,transparent 22px);"></div>
+  <div data-poseidon-decoration="background-pattern" data-gjs-selectable="false" data-gjs-hoverable="false" aria-hidden="true" style="position:absolute;inset:0;opacity:.04;background:repeating-linear-gradient(45deg,#fff,#fff 2px,transparent 2px,transparent 22px);pointer-events:none;"></div>
   <div style="position:relative;max-width:780px;margin:0 auto;">
     <div style="display:flex;align-items:center;justify-content:center;gap:20px;margin-bottom:24px;">
       <div style="height:2px;background:rgba(217,119,6,.55);width:90px;border-radius:1px;"></div>

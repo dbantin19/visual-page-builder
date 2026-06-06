@@ -4432,6 +4432,68 @@ function syncBackgroundShorthandToLonghands(component) {
     }
 }
 
+function isDecorativeBackgroundOverlay(component) {
+    if (!component || getTagName(component) !== 'div') return false;
+
+    const attrs = component.getAttributes?.() || {};
+    if (attrs['data-poseidon-decoration'] === 'background-pattern') return true;
+
+    const styles = component.getStyle?.() || {};
+    const position = String(cssPropertyValue(styles, 'position')).trim().toLowerCase();
+    const inset = String(cssPropertyValue(styles, 'inset')).replace(/\s+/g, ' ').trim().toLowerCase();
+    const background = String(
+        cssPropertyValue(styles, 'background-image') || cssPropertyValue(styles, 'background')
+    ).toLowerCase();
+
+    return position === 'absolute'
+        && ['0', '0px', '0 0 0 0', '0px 0px 0px 0px'].includes(inset)
+        && background.includes('repeating-linear-gradient(');
+}
+
+function normalizeDecorativeBackgroundOverlay(component) {
+    if (!isDecorativeBackgroundOverlay(component)) return false;
+
+    component.set({
+        selectable: false,
+        hoverable: false,
+        draggable: false,
+        droppable: false,
+        copyable: false,
+        removable: false,
+        highlightable: false,
+        badgable: false,
+        layerable: false,
+    });
+
+    const attrs = component.getAttributes?.() || {};
+    if (attrs['data-poseidon-decoration'] !== 'background-pattern' || attrs['aria-hidden'] !== 'true') {
+        component.setAttributes({
+            ...attrs,
+            'data-poseidon-decoration': 'background-pattern',
+            'aria-hidden': 'true',
+        });
+    }
+
+    const styles = component.getStyle?.() || {};
+    if (cssPropertyValue(styles, 'pointer-events') !== 'none') {
+        component.addStyle({ 'pointer-events': 'none' });
+    }
+
+    return true;
+}
+
+function normalizeDecorativeBackgroundOverlays(root = editor.getWrapper?.()) {
+    if (!root) return;
+
+    normalizeDecorativeBackgroundOverlay(root);
+    walkComponents(root, normalizeDecorativeBackgroundOverlay);
+}
+
+function scheduleDecorativeBackgroundOverlayNormalization(root = null) {
+    setTimeout(() => normalizeDecorativeBackgroundOverlays(root || editor.getWrapper?.()), 0);
+    setTimeout(() => normalizeDecorativeBackgroundOverlays(root || editor.getWrapper?.()), 250);
+}
+
 function normalizeAllServiceAreasWidgets(root = editor.getWrapper?.()) {
     if (!root) return;
 
@@ -4449,8 +4511,19 @@ editor.on('canvas:frame:load', () => scheduleServiceAreasWidgetNormalization());
 editor.on('component:add', component => scheduleServiceAreasWidgetNormalization(component));
 scheduleServiceAreasWidgetNormalization();
 
+editor.on('load', () => scheduleDecorativeBackgroundOverlayNormalization());
+editor.on('canvas:frame:load', () => scheduleDecorativeBackgroundOverlayNormalization());
+editor.on('component:add', component => scheduleDecorativeBackgroundOverlayNormalization(component));
+scheduleDecorativeBackgroundOverlayNormalization();
+
 editor.on('component:selected', component => {
     if (!component) return;
+
+    if (normalizeDecorativeBackgroundOverlay(component)) {
+        const parent = component.parent?.();
+        if (parent) setTimeout(() => editor.select(parent), 0);
+        return;
+    }
 
     syncBackgroundShorthandToLonghands(component);
     normalizeServiceAreasWidget(component);
@@ -4729,7 +4802,7 @@ bm.add('pb-footer-banner', {
     label: 'Footer Banner', category: 'Service Sections',
     media: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="16" width="20" height="6" rx="1.5"/><path d="M12 2v10M7 7l5-5 5 5"/></svg>`,
     content: `<section style="background:linear-gradient(135deg,#1e3a5f,#0f2744);padding:80px 24px;text-align:center;position:relative;overflow:hidden;">
-  <div style="position:absolute;inset:0;opacity:.05;background:repeating-linear-gradient(45deg,#fff,#fff 2px,transparent 2px,transparent 20px);"></div>
+  <div data-poseidon-decoration="background-pattern" data-gjs-selectable="false" data-gjs-hoverable="false" aria-hidden="true" style="position:absolute;inset:0;opacity:.05;background:repeating-linear-gradient(45deg,#fff,#fff 2px,transparent 2px,transparent 20px);pointer-events:none;"></div>
   <div style="position:relative;max-width:760px;margin:0 auto;">
     <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:20px;">
       <div style="height:2px;background:rgba(217,119,6,.6);width:80px;"></div>
