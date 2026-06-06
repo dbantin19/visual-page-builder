@@ -450,13 +450,20 @@
     @endif
     </div>
 
-    <aside class="bg-white rounded-xl border border-gray-200 overflow-hidden xl:sticky xl:top-6">
+    <aside id="published-pages" data-open="true" class="bg-white rounded-xl border border-gray-200 overflow-hidden xl:sticky xl:top-6">
         <div class="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-3">
             <h2 class="text-sm font-semibold text-gray-700">Published Pages</h2>
-            <span class="text-xs font-medium text-gray-400">{{ $publishedPages->count() }}</span>
+            <div class="flex items-center gap-3">
+                <span class="text-xs font-medium text-gray-400 mr-2">{{ $publishedPages->count() }}</span>
+                <button id="btn-published-pages" type="button" aria-expanded="true" onclick="togglePublishedPages()" class="p-1 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors">
+                    <svg id="published-pages-chevron" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+            </div>
         </div>
 
-        <div class="max-h-[calc(100vh-12rem)] overflow-y-auto divide-y divide-gray-100">
+        <div id="published-pages-panel" class="max-h-[calc(100vh-12rem)] overflow-y-auto divide-y divide-gray-100">
             @forelse($publishedPages as $page)
                 <div draggable="true"
                      data-page-source
@@ -949,6 +956,41 @@ function outdentItem(id) {
         });
     }
 })();
+
+// ── Published Pages dropdown (open by default) ──────────────────────────
+function togglePublishedPages() {
+    var aside = document.getElementById('published-pages');
+    var panel = document.getElementById('published-pages-panel');
+    var chev  = document.getElementById('published-pages-chevron');
+    var btn   = document.getElementById('btn-published-pages');
+    if (!aside || !panel) return;
+
+    var open = aside.getAttribute('data-open') === 'true';
+    if (open) {
+        panel.classList.add('hidden');
+        aside.setAttribute('data-open', 'false');
+        if (chev) chev.classList.remove('rotate-180');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+    } else {
+        panel.classList.remove('hidden');
+        aside.setAttribute('data-open', 'true');
+        if (chev) chev.classList.add('rotate-180');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+    }
+}
+
+// Initialize published pages chevron state based on data-open
+document.addEventListener('DOMContentLoaded', function() {
+    var aside = document.getElementById('published-pages');
+    var panel = document.getElementById('published-pages-panel');
+    var chev  = document.getElementById('published-pages-chevron');
+    var btn   = document.getElementById('btn-published-pages');
+    if (!aside || !panel) return;
+    var open = aside.getAttribute('data-open') !== 'false';
+    if (!open) panel.classList.add('hidden');
+    if (chev && open) chev.classList.add('rotate-180');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+});
 
 // ── Read state & Save ────────────────────────────────────────────────────
 function readNavState() {
