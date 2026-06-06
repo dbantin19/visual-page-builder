@@ -19,7 +19,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen">
 
-<div class="flex min-h-screen">
+<div class="flex h-screen overflow-hidden">
     {{-- Sidebar --}}
     <aside class="w-56 bg-gray-900 text-white flex flex-col">
         <div class="px-6 py-5 border-b border-gray-700">
